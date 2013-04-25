@@ -1,4 +1,5 @@
 use strict;
+use File::Copy;
 sub process_annotation (@);
 
 ##############################################################################
@@ -168,9 +169,23 @@ sub process_input_data (@) {
 	    # 1) grep '>' there is fasta_rename.pl in scripts dir -- see specs.cgi header
 	    # 2) modify it ouput the original header and the replacement name, ann save that info to jobdir
 	    # 3) make sure that the refseq name correponds to the new shortened name
-
-
-
+	    my $index_file = "$jobdir/nameindex";
+	    my $input_seq_backup = "$input_seq_file.bak";
+	    move($input_seq_file, $input_seq_backup);
+	    system("$fasta_rename $input_seq_backup $index_file > $input_seq_file");
+	    if ($ref_seq_name) {
+		open(my $index, "<", $index_file);
+		while(<$index>) {
+		    my ($oldname, $newname) = split;
+		    if ($oldname == $ref_seq_name) {
+			$ref_seq_name = $newname;
+			last;
+		    }
+		}
+	    } else {
+		# Reload first name line
+		$first_name_line = `grep '>' $input_seq_file | head -n1`;
+	    }
 	}
 
 	# if we still don't have the $ref_seq_name take the first one that appears in the alignment
@@ -312,7 +327,6 @@ sub process_input_data (@) {
     $cmd = "$afa2msf  $alignment_file > $alignment_file_msf";
     system($cmd) && html_die ("$log\nerror running $cmd\n");
     
- 
     return ("", $ref_seq_name, $alignment_file_msf, $group_file, $structure_name, $structure_file);
 
 }

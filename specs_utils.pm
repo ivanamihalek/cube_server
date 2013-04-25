@@ -102,7 +102,7 @@ sub add_annotation(@){
     close (OFH);
 
     `pr -m -t -s $score_file $tmp_file > $score_annot_file`;
-    #`rm $tmp_file`;
+    `rm $tmp_file`;
 
  
     return  $score_annot_file;

@@ -253,10 +253,10 @@ sub  html_spreadsheet_cube(@){ # this is specific for cube output; won't work fo
 		    $bgcolor = ${$format->{Fill}}[1];
 		    $value = $cell->value();
 		    $bgcolor_rgb = $parser->ColorIdxToRGB($bgcolor);
-		    if($value !~ /(CONSERVATION|SPECIFICITY|REPRESENTATIVE SEQUENCES)|(ANNOTATION)/){
+		    if($value !~ /(CONSERVATION|SPECIFICITY|REPRESENTATIVE SEQUENCES|ANNOTATION)/){
 			
 			if($value ne "" ){
-			    if($value =~ /(alm|gaps|pdb_id|pdb_aa)/){
+			    if($value =~ /(alm|gaps|pdb_id|pdb_aa|annot)/){
 			    
 				$html .= "<td rowspan = '2' width='80' bgcolor='\#$bgcolor_rgb'>$value</td>\n";
 			    }
