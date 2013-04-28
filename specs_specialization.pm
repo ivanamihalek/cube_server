@@ -13,8 +13,9 @@ sub generate_cmd_file (@);
 sub specialization (@){
 
     my ($jobID, $jobdir, $alignment_file, $group_file, $score_method,
-	$seq_not_aligned,  $seq_annotation_ref, $structure, $struct_name,
-	$cube, $cube_cmd_template, $hc2xls, $hc2pml, $zip, $jmol_folder) = @_;
+	$seq_not_aligned,  $seq_annotation_ref, $name_resolution_file,
+	$structure, $struct_name, $chainID,  $dssp,
+	$cube, $cube_cmd_template, $hc2xls, $hc2pml, $pymol, $zip, $jmol_folder) = @_;
 
     my $cmd_file = "$jobdir/cmd"; #cmd file for hyper cube
     my $htmlf    = "$jobdir/display.html";
@@ -32,10 +33,26 @@ sub specialization (@){
     my $number_of_annotated_seqs;
 	
 
-    my $number_of_groups = `grep "name" $group_file | wc -l`;
+    my  @lines =  split "\n", `grep "name" $group_file`;
+    my  @group_names = ();
+    foreach my $line (@lines) {
+	my @aux = split " ", $line;
+	push @group_names, $aux[1];
+    }
+    my $number_of_groups = int  @group_names;
 
     ($number_of_groups > 1) ||  html_die ("Malformatted group file." );
 
+
+    #############################################
+    # run dssp (solvent accessibility):
+    my $dssp_file = "";
+    if($structure){
+	$dssp_file = $structure;
+	$dssp_file =~ s/pdb$/dssp/;
+	$cmd = "$dssp -i $structure -o $dssp_file";
+	(system $cmd) && ($dssp_file="");
+    }
 
     #############################################
     # lines for the cmd file for cube a.k.a. hyper_c program
@@ -69,7 +86,7 @@ sub specialization (@){
     my $score_file          = "$jobdir/out.score";
     my $input_for_xls       = $score_file;
     if ( $seq_annotation_ref) {
-	$input_for_xls  = add_annotation ($score_file, $seq_annotation_ref, $alignment_file);
+	$input_for_xls  = add_annotation ($score_file, $seq_annotation_ref, $name_resolution_file, $alignment_file);
     } 
 
     #############################################
@@ -79,20 +96,30 @@ sub specialization (@){
     (system $cmd) && ($xls="");
 
     #############################################
-    # generate pymol and chimera sessions
-    my $pymolscript         = "$jobdir/out.pml";
-    my $chimerascript_specs = "$jobdir/out_specs.com";
-    my $chimerascript_cons  = "$jobdir/out_cons.com";
+    # generate pymol session
+    my $pymol_session = "";
+
     if($structure){
 	    
-	my $cmd = "$hc2pml rvet $score_file $structure $pymolscript";
-	(system $cmd) && html_die("Error running $cmd");
+	my $pymolscript = "$jobdir/out.pml";
+	$pymol_session  = $pymolscript;
+	$pymol_session  =~ s/pml/pse/;
 
-	my($err) = molgfxRunScript("pymol", $pymolscript);
-	($err eq "") || html_die($err);
+	my $cmd = "$hc2pml $score_file $structure $pymolscript -c $chainID";
+	if ( @group_names < 3 ) {
+	    $cmd .= "  -g @group_names "; # determinants for the groups 
+	}
+	(system $cmd) &&  ($pymol_session = "");
+	
+	$cmd = "$pymol -qc -u $pymolscript > /dev/null";
+	system($cmd)  &&  ($pymol_session = "");
 
-	($err) = molgfxRunScript("chimera", $chimerascript_specs);
-	($err eq "") || html_die($err);
+	if ( $pymol_session ) {
+
+	    # on sucess the returned $pymol_session  will be $pymol_session.".zip"
+	    # on failure it will be ""
+	    $pymol_session = zip_file ($zip,$pymol_session);
+	}
 
     }  
 
@@ -122,19 +149,11 @@ sub specialization (@){
 
     if($structure){
 	my ($html_pyml,$html_chi_specs, $html_chi_cons);
-	my $pymsession = $pymolscript;
-	$pymsession =~ s/pml/pse/;
-
-	my $chisession_specs = $chimerascript_specs;
-	$chisession_specs =~ s/.com/.py/;
-
-	my $chisession_cons = $chimerascript_cons;
-	$chisession_cons  =~ s/.com/.py/;
 
 	$html_body .= html_generic_downloadables ($xls,  $score_file, $dirzipfile,
-						 "$pymsession.zip","$chisession_specs.zip","$chisession_cons.zip");
-	# jmol
-	$html_body .= html_jmol ($jobdir, $jmol_folder, $pymolscript);
+						  $pymol_session, "", "");
+	# jmol just too foogly
+	#$html_body .= html_jmol ($jobdir, $jmol_folder, $pymolscript);
 
     } else{
 	$html_body .= html_generic_downloadables ($xls,  $score_file, $dirzipfile);

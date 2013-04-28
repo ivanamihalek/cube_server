@@ -60,11 +60,11 @@ my $cube             = "$dir/bin/hyper_c";
 my $specs            = "$dir/bin/specs";
 
 # perlscripts
-my $fasta_rename      = "$dir/scripts/fasta_rename.pl";
+my $fasta_rename      = "$dir/scripts/fasta_rename_seqs.pl";
 my $afa2msf           = "$dir/scripts/afa2msf.pl";
 my $msf2afa           = "$dir/scripts/msf2afa.pl";
 my $hc2xls            = "$dir/scripts/hc2xls.pl";
-my $hc2pml            = "$dir/scripts/hc2pml_com.pl";
+my $hc2pml            = "$dir/scripts/hc2pml.pl";
 my $pdb_extract_chain = "$dir/scripts/pdb_extract_chain.pl";
 my $pdb2seq           = "$dir/scripts/pdb2seq.pl";
 my $sort_by_taxonomy  = "$dir/scripts/sort_by_taxonomy.pl"; # needs $tax_attempt
@@ -121,9 +121,9 @@ if ( ! defined $cgi->param ("jobID") ) { # new run
 } else { # update
 
     $new_job = 0;
-    $jobID = $cgi->param ("jobID");
-  
+    $jobID   = $cgi->param ("jobID");
 }
+
 
 ###################################################
 my $jobdir = "$scratchdir/specs_$jobID";
@@ -137,7 +137,7 @@ if ($new_job) {
 
     my ($errmsg, $ref_seq_name, $input_seq_files_ref,  $score_method, 
 	$job_type,  $seq_not_aligned, $group_file, 
-	$geneL_ref, $geneF, $seq_annotation_ref, $alignment_file,
+	$geneL_ref, $geneF, $seq_annotation_ref, $name_resolution_file, $alignment_file,
 	$structure_file, $structure_name, $chainID);
     
     ($errmsg, $ref_seq_name, $input_seq_files_ref, $score_method, 
@@ -148,7 +148,7 @@ if ($new_job) {
 
     ($errmsg eq '') || html_die ("Error processing the input parameters. $errmsg");
 
-    ($errmsg, $ref_seq_name, $alignment_file, $group_file, 
+    ($errmsg, $ref_seq_name, $alignment_file, $name_resolution_file, $group_file, 
      $structure_name, $structure_file) = process_input_data ($jobdir, $job_type, $input_seq_files_ref, 
 							     $seq_not_aligned, $ref_seq_name,
 							     $structure_name, $chainID, 
@@ -161,14 +161,15 @@ if ($new_job) {
 
     if ($job_type == CONSERVATION) {
 	conservation ($jobID, $jobdir,  $ref_seq_name,   $alignment_file, $score_method,
-		      $seq_not_aligned, $seq_annotation_ref, 
+		      $seq_not_aligned, $seq_annotation_ref, $name_resolution_file, 
 		      $structure_file, $structure_name, $chainID,  $dssp,
 		      $specs, $specs2pml, $restrict, $specs2excel, $seqReport, $pymol, $zip);
 
     } else {
 	specialization($jobID, $jobdir, $alignment_file, $group_file, $score_method,
-		       $seq_not_aligned, $seq_annotation_ref,
-		       $structure_file, $structure_name, $cube, $cube_cmd_template, $hc2xls, $hc2pml, $zip, $jmol_folder);
+		       $seq_not_aligned, $seq_annotation_ref, $name_resolution_file,
+		       $structure_file, $structure_name,  $chainID,  $dssp,
+		       $cube, $cube_cmd_template, $hc2xls, $hc2pml, $pymol, $zip, $jmol_folder);
     }
 
 # spit out previously calculated page

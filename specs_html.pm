@@ -11,8 +11,8 @@ sub  html_die (@) {
     $html .= "<table width='75%'  border='0' align='center' cellpadding='0' cellspacing='0' style='overflow:auto'> \n";
     $html .= "<tr ><td align='left'> <left_title>A problem seems to have occured:</left_title> </td><tr> \n";
     $html .= "<tr ><td align='left' style='overflow:auto'> \n";
-    $html .= "<pre>$msg</pre> \n";
-    #$html .= " $msg\n";
+    #$html .= "<pre>$msg</pre> \n";
+    $html .= " $msg\n";
     $html .= "</td></tr>\n";
     $html .= "</table>  \n";  
     $html .= html_generic_body_bottom ();
@@ -44,7 +44,7 @@ sub html_generic_head(@){
     $html .= "    <div class='mainmenu'>";
     $html .= "        <ul>";
     $html .= "            <li><a href='http://eopsf.org/cube/cube.html' >HOME</a></li>";
-    $html .= "            <li><a href='http://eopsf.org/cube/help.html' >HELP</a></li>";
+    $html .= "            <li><a href='http://eopsf.org/cube/help/help.html' >HELP</a></li>";
     $html .= "            <li><a href='http://eopsf.org/cube/code_dwnld.html'>CODE</a></li>";
     $html .= "            <li><a href='http://eopsf.org/'>ABOUT US</a></li>";
     $html .= "        </ul>";

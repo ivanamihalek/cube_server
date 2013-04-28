@@ -35,7 +35,7 @@ sub process_input_params(@){
     #my $mthd = 0;
     my $ref_seq_name = "";
     my $gene_nm_file    = 0;
-    my $seq_not_aligned = 0;
+    my $seq_not_aligned = 1;
     my $structure_f     = 0;
     
     if( defined($q->param("similarity")) && $q->param("similarity")){
@@ -44,10 +44,11 @@ sub process_input_params(@){
 	
     if($job_type == CONSERVATION){ #specs requires a reference sequence
 	$ref_seq_name = $q->param("qry_nm");
+	$ref_seq_name =~ s/\s//g;
     }
 
     if (defined($q->param("ckb")) && $q->param("ckb")) {
-	$seq_not_aligned = 1;
+	$seq_not_aligned = 0;
     }
     
 
@@ -124,6 +125,7 @@ sub process_input_data (@) {
     my $cmd;
     my $group_name    = "";
     my %group_members = ();
+    my $name_resolution_file = "";
 
     defined($ref_seq_name) || ($ref_seq_name="");
 
@@ -142,7 +144,8 @@ sub process_input_data (@) {
 	    return ($errmsg, "");
 	}
     }
-
+    
+    my $file_ct = 0;
     for my $input_seq_file (@input_seq_files ) {
 
 	# do we recognize the format?
@@ -164,24 +167,43 @@ sub process_input_data (@) {
 		    " for the two formats that the current implementation recognizes.";
 		return ($errmsg, "");
 	    }
-	    # TODO: clean up and simplify names - I think clustalw and such would have already
+	    # clean up and simplify names - I think clustalw and such would have already
 	    # chooped the names, so we have to worry only about afa files
 	    # 1) grep '>' there is fasta_rename.pl in scripts dir -- see specs.cgi header
-	    # 2) modify it ouput the original header and the replacement name, ann save that info to jobdir
+	    # 2) modify it ouput the original header and the replacement name, and save that info to jobdir
 	    # 3) make sure that the refseq name correponds to the new shortened name
-	    my $index_file = "$jobdir/nameindex";
-	    my $input_seq_backup = "$input_seq_file.bak";
+	    $name_resolution_file = "$jobdir/nameindex";
+	    my $input_seq_backup  = "$input_seq_file.bak";
 	    move($input_seq_file, $input_seq_backup);
-	    system("$fasta_rename $input_seq_backup $index_file > $input_seq_file");
+	    my $suffix;
+	    
+	    if (@input_seq_files==1) {
+		$suffix = "";
+	    } else {
+		$file_ct++;
+		$suffix = "_$file_ct";
+	    }
+	    system("$fasta_rename $input_seq_backup $name_resolution_file $suffix  > $input_seq_file");
+
 	    if ($ref_seq_name) {
-		open(my $index, "<", $index_file);
-		while(<$index>) {
-		    my ($oldname, $newname) = split;
-		    if ($oldname == $ref_seq_name) {
-			$ref_seq_name = $newname;
-			last;
-		    }
+
+		my @lines = split "\n", `grep  $ref_seq_name  $name_resolution_file`;
+		if ( @lines > 1) {
+		    my $errmsg = "Error processing reference sequence name.";
+		    $errmsg .=	" More than one name matched the input $ref_seq_name:\n";
+		    $errmsg .= join "\n", @lines;
+		    $errmsg .= "\n";
+		    html_die ($errmsg);
+
+		} elsif ( @lines < 1) {
+		    my $errmsg = "Error processing reference sequence name.";
+		    $errmsg .=	" $ref_seq_name not found in the input.\n"; 
+		    html_die ($errmsg);
+
 		}
+		my ($server_name, $old_name, $orig_hdr) = split "\t", $lines[0];
+		$ref_seq_name = $server_name;
+		
 	    } else {
 		# Reload first name line
 		$first_name_line = `grep '>' $input_seq_file | head -n1`;
@@ -235,7 +257,7 @@ sub process_input_data (@) {
 	} else { 
 	    # afa, turn to msf
 	    if($alignment_format eq "AFA" ){
-		$alignment_file = $input_seq_file;
+		`cp $input_seq_file  $alignment_file`;
 	    } else {
 		# msf2afa  muscle does not like outputing msf
 		$cmd = "$msf2afa  $input_seq_file > $alignment_file";
@@ -327,7 +349,7 @@ sub process_input_data (@) {
     $cmd = "$afa2msf  $alignment_file > $alignment_file_msf";
     system($cmd) && html_die ("$log\nerror running $cmd\n");
     
-    return ("", $ref_seq_name, $alignment_file_msf, $group_file, $structure_name, $structure_file);
+    return ("", $ref_seq_name, $alignment_file_msf, $name_resolution_file, $group_file, $structure_name, $structure_file);
 
 }
 ##############################################################################
@@ -351,8 +373,10 @@ sub process_annotation (@) {
 
 	if($nm =~ /^gene_name/){
 	    my $tp = $q->param($nm);
-	    defined($tp) && $tp  && push(@annotated_sequence, $tp);
-			
+	    if  (defined($tp) && $tp) {
+		$tp =~ s/\s//g;
+		$tp && push(@annotated_sequence, $tp);
+	    }		
 	} elsif($nm =~ /^range/){
 	    my $tp = $q->param($nm);
 	    defined($tp) && $tp && push(@annotation_range, $tp);

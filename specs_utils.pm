@@ -16,16 +16,33 @@ sub zip_directory(@){
     return $dirzipfile;
 }
 
-
 ##################################################################################################
+sub zip_file(@){
+    my ($zip, $fullpath)  = @_;
+    
+    my @absolute_path   = split "/", $fullpath;
+    my $file    = pop @absolute_path;
+    my $jobdir  = join "/", @absolute_path;
+    my $zipfile = "$file.zip";
+    my $pwd = `pwd`;
+    chomp $pwd;
+    chdir $jobdir;
+    my $cmd = "$zip  $zipfile $file > /dev/null";
+    system($cmd) && ($zipfile = "");
+    chdir $pwd;
+    return $jobdir."/".$zipfile;
+}
+
+
+#############################################################################################
 sub add_annotation(@){
 
-    my ($score_file, $seq_annotation_ref, $alm_msf) = @_;
+    my ($score_file, $seq_annotation_ref, $name_resolution_file, $alm_msf) = @_;
     my $score_annot_file = $score_file . ".annotated";
     my $tmp_file = $score_file . ".tmp";
 
     my %seq_annotation = %{$seq_annotation_ref};
-    my @annotated_seqs = keys %seq_annotation; 
+    my @annotated_seqs_user = keys %seq_annotation; 
 
     ############################################
     # read in the alignment
@@ -51,25 +68,49 @@ sub add_annotation(@){
     } while ( <MSF>);
 
     ############################################
+    # name resolution
+    my %name_translation = ();
+    foreach my $user_name (@annotated_seqs_user ) {
+	my @lines = split "\n", `grep  $user_name  $name_resolution_file`;
+	if ( @lines > 1) {
+	    my $errmsg = "Error processing the annotation.";
+	    $errmsg .=	" More than one name matched the input $user_name:\n";
+	    $errmsg .= join "\n", @lines;
+	    $errmsg .= "\n";
+	    html_die ($errmsg);
+
+	} elsif ( @lines < 1) {
+	    my $errmsg = "Error processing the annotation.";
+	    $errmsg .=	" $user_name not found in the input.\n"; 
+	    html_die ($errmsg);
+
+	}
+	my ($server_name, $oldname, $orig_hdr) = split "\t", $lines[0];
+	$name_translation{$user_name} = $server_name;
+    }
+
+    ############################################
     # turn the msf into a table (first index= sequence, 2nd index= position
     my $seq = 0;
     my (%array,%counter,%seqno);
-   
-    # recalculate the position numbers for each sequence
-    foreach my $name ( @annotated_seqs) {
+
+    ############################################
+    # recalculate the position numbers for each annotated sequence
+    foreach my $user_name (@annotated_seqs_user ) {
 	
-	my @aux = split '', $sequence{$name};
+	my $server_name = $name_translation{$user_name};
+	my @aux = split '', $sequence{$server_name};
 
 	foreach my $pos ( 0 .. $#aux ) {
-	    $array{$name}[$pos] = $aux[$pos];
+	    $array{$server_name}[$pos] = $aux[$pos];
 	    if ( $aux[$pos] !~ /[\.\-]/ ) {
-		(defined  $counter{$name}) || ($counter{$name} = 0);
+		(defined  $counter{$server_name}) || ($counter{$server_name} = 0);
 		# take care of the fact that people count from 1
 		# by incrementing first
-		$counter{$name} ++; 
-		$seqno{$name}[$pos] = $counter{$name};
+		$counter{$server_name} ++; 
+		$seqno{$server_name}[$pos] = $counter{$server_name};
 	    } else {
-		$seqno{$name}[$pos] = "-";
+		$seqno{$server_name}[$pos] = "-";
 	    }
 	}
 	$seq++;
@@ -81,17 +122,20 @@ sub add_annotation(@){
     print OFH " annotation \n"; # header
 
     # [ZH: ] here random chose $annot_name[0],since all seq are the same length with gappes
-    my $alignment_length = length $sequence{$annotated_seqs[0]};
+    my $alignment_length = length ((values %sequence)[0]);
 
-    for my $pos  (0 .. $alignment_length-1) { 
+    for my $pos (0 .. $alignment_length-1) { 
 	    
 	my $annot_str = "";
-	foreach  my $name (keys %seq_annotation){
+	
+	foreach my $user_name (@annotated_seqs_user ) {
+	    
+	    my $server_name = $name_translation{$user_name};
+	    my $pos_map     = $seqno{$server_name}[$pos];
 
-	    my $pos_map  = $seqno{$name}[$pos];
-	    if (defined $seq_annotation{$name}[$pos_map]) {
+	    if (defined $seq_annotation{$user_name}[$pos_map]) {
 		$annot_str && ($annot_str.="; ");
-		$annot_str .= $seq_annotation{$name}[$pos_map];
+		$annot_str .= $seq_annotation{$user_name}[$pos_map];
 	    }
 	}
 	$annot_str || ($annot_str="none");

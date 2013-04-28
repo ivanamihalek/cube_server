@@ -19,7 +19,7 @@ sub delete_extension(@) {
 sub conservation (@) {
 
     my  ($jobID, $jobdir, $ref_seq_name, $alignment_file,  $score_method,
-	 $seq_not_aligned,  $seq_annotation_ref, $structure, $struct_name, $chainID,  $dssp, 
+	 $seq_not_aligned,  $seq_annotation_ref, $name_resolution_file, $structure, $struct_name, $chainID,  $dssp, 
 	 $specs, $specs2pml, $restrict, $specs2excel,  $seqReport, $pymol, $zip) = @_;
 
     my $input_name_root = delete_extension($alignment_file);
@@ -137,7 +137,7 @@ sub conservation (@) {
     my $score_file      = "$jobdir/specs_out.score";
     my $input_for_xls   = $score_file;
     if ($seq_annotation_ref) {
-	$input_for_xls  = add_annotation ($score_file, $seq_annotation_ref, $restrict_msf);
+	$input_for_xls  = add_annotation ($score_file, $seq_annotation_ref, $name_resolution_file, $restrict_msf);
     } 
 
     ##############################################
