@@ -12,10 +12,10 @@ sub generate_cmd_file (@);
 
 sub specialization (@){
 
-    my ($jobID, $jobdir, $alignment_file, $group_file, $score_method,
+    my ($jobID, $jobdir,  $ref_seq_name, $alignment_file, $group_file, $score_method,
 	$seq_not_aligned,  $seq_annotation_ref, $name_resolution_file,
 	$structure, $struct_name, $chainID,  $dssp,
-	$cube, $cube_cmd_template, $hc2xls, $hc2pml, $pymol, $zip, $jmol_folder) = @_;
+	$cube, $cube_cmd_template, $hc2xls,  $seqReportEE, $hc2pml, $pymol, $zip, $jmol_folder) = @_;
 
     my $cmd_file = "$jobdir/cmd"; #cmd file for hyper cube
     my $htmlf    = "$jobdir/display.html";
@@ -42,7 +42,6 @@ sub specialization (@){
     my $number_of_groups = int  @group_names;
 
     ($number_of_groups > 1) ||  html_die ("Malformatted group file." );
-
 
     #############################################
     # run dssp (solvent accessibility):
@@ -79,11 +78,17 @@ sub specialization (@){
 	html_die ( "$cmd\n$stdout\n$stderr\n");
     }
 
+    ###############################################
+    #generate png with the conservation mapped on the sequence
+    my $score_file          = "$jobdir/out.score";
+    my $png_input            = "$jobdir/png_input";
+    $cmd = "awk \'\$1 \!= \"\%\"  && \$4 \!= \".\"   \{print \$3 \"  \" \$4 \"   \" \$5\}\' $score_file > $png_input"; 
+    (system $cmd) && html_die ("<pre> $cmd </pre>");
+    
 
     #############################################
     # add annotation, if provided
     my $score_annotated;
-    my $score_file          = "$jobdir/out.score";
     my $input_for_xls       = $score_file;
     if ( $seq_annotation_ref) {
 	$input_for_xls  = add_annotation ($score_file, $seq_annotation_ref, $name_resolution_file, $alignment_file);
@@ -145,7 +150,7 @@ sub specialization (@){
     #generate body
     my $html_body=  "";
 	
-    $html_body .= html_specialization_body_top($jobID);
+    $html_body .= html_specialization_body_top($jobID, $ref_seq_name);
 
     if($structure){
 	my ($html_pyml,$html_chi_specs, $html_chi_cons);

@@ -6,21 +6,11 @@ use strict;
 
 sub add_annotation(@); # in specs_utils.pm
 
-sub delete_extension(@) {
-    my $in_name= $_[0];
-    if ( $in_name =~ /(.+)\.(\w+)$/) {
-	my $root = $1;
-	return $root;
-    } else {
-	return $in_name;
-    }
-}
-
 sub conservation (@) {
 
     my  ($jobID, $jobdir, $ref_seq_name, $alignment_file,  $score_method,
 	 $seq_not_aligned,  $seq_annotation_ref, $name_resolution_file, $structure, $struct_name, $chainID,  $dssp, 
-	 $specs, $specs2pml, $restrict, $specs2excel,  $seqReport, $pymol, $zip) = @_;
+	 $specs, $specs2pml, $specs2excel,  $seqReport, $pymol, $zip) = @_;
 
     my $input_name_root = delete_extension($alignment_file);
     
@@ -29,23 +19,12 @@ sub conservation (@) {
     my $prms_string;
     my $htmlf            = "$jobdir/display.html";
     my $excel_out        = "$input_name_root";
-    my $restrict_msf     = "$input_name_root\.restr.msf";
     my $pdbf;
     my $png_input        = "$input_name_root\.$score_method";
     my $png_f            = "$input_name_root";
     my $para_string;
     my $score_f          = "$jobdir/specs_out\.score";
 
-    #############################################
-    # restrict the sequence to the query -- so why is there a mismatch btw the spread sheet and jpg with Tin2?
-    # 
-    if($structure){
-	$cmd = "$restrict $alignment_file $ref_seq_name pdb_$struct_name > $restrict_msf";
-    } else {
-	$cmd = "$restrict $alignment_file $ref_seq_name > $restrict_msf";
-    }
-    
-    (system $cmd) &&  html_die ("Error running\n$cmd.\n");
 
     #############################################
     # run dssp (solvent accessibility):
@@ -69,7 +48,7 @@ sub conservation (@) {
     $prms_string .= "skip_query \n";
     $prms_string .= "\n";
  
-    $prms_string .= "align   $restrict_msf\n";
+    $prms_string .= "align   $alignment_file\n";
     $prms_string .= "refseq  $ref_seq_name\n";
     $prms_string .= "method  $score_method\n";
     $prms_string .= "\n";
@@ -137,7 +116,8 @@ sub conservation (@) {
     my $score_file      = "$jobdir/specs_out.score";
     my $input_for_xls   = $score_file;
     if ($seq_annotation_ref) {
-	$input_for_xls  = add_annotation ($score_file, $seq_annotation_ref, $name_resolution_file, $restrict_msf);
+	$input_for_xls  = add_annotation ($score_file, $seq_annotation_ref, 
+					  $name_resolution_file, $alignment_file);
     } 
 
     ##############################################
@@ -150,19 +130,14 @@ sub conservation (@) {
 
     ##############################################
     #generate pymol session
-    #my $script_rvet = "$jobdir/$ref_seq_name.rvet.pml";
-    #my $script_entr = "$jobdir/$ref_seq_name.entr.pml";
     my $script = "$jobdir/$ref_seq_name.pml";
     my ($zipfile,$session);
     
     if($structure){
 	$cmd = "$specs2pml  $score_method  $score_f  $structure $script $chainID"; 
-	#$cmd = "$specs2pml $score_method specs_out.score $structure $script";
-	#printResult($cmd);
 	system($cmd) && diehard("SPECS", "Error running $cmd:$!");
 
 	$cmd = "$pymol -qc -u $script > /dev/null";
-	#printResult($cmd);
 	system($cmd) && diehard("SPECS", "Error running $cmd $!");
 
 	$session = $script;
@@ -184,7 +159,7 @@ sub conservation (@) {
     my ($html_head, $html_top, $html_middle, $html_bottom);
 
     $html_head   = html_generic_head ();
-    $html_top    = html_conservation_body_top ($jobID);
+    $html_top    = html_conservation_body_top ($jobID, $ref_seq_name);
     $html_middle = html_generic_downloadables ($score_f, $excel_out, $zipfile, $dirzipfile,$png_ref);
     $html_bottom = html_generic_body_bottom();
 

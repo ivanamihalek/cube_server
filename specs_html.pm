@@ -11,7 +11,7 @@ sub  html_die (@) {
     $html .= "<table width='75%'  border='0' align='center' cellpadding='0' cellspacing='0' style='overflow:auto'> \n";
     $html .= "<tr ><td align='left'> <left_title>A problem seems to have occured:</left_title> </td><tr> \n";
     $html .= "<tr ><td align='left' style='overflow:auto'> \n";
-    #$html .= "<pre>$msg</pre> \n";
+    $html .= "<pre>$msg</pre> \n";
     $html .= " $msg\n";
     $html .= "</td></tr>\n";
     $html .= "</table>  \n";  
@@ -63,19 +63,21 @@ sub html_generic_head(@){
 ##################################################################################
 sub  html_conservation_body_top (@) {
 
-    my ($jobID) = @_;
+    my ($jobID, $refseq) = @_;
     my $html="";
 
-    $html .= "<div class='main'>";
+    $html .= "<div class='main'> \n";
 
-    $html .= "<img class='centerimg' width='430' src='http://eopsf.org/images/cons_legend.png'>";
+    $html .= "<left_title> Conservation mapped onto $refseq sequence</left_title>\n";
+    $html .= "<p> &nbsp; \n";
+    $html .= "<img class='centerimg' width='430' src='http://eopsf.org/images/cons_legend.png'>\n" ;
 
-    $html .= "<p>The residues are ranked according to the conservation score, and binned into 5% bins. ".
-	"The bins are colored according to the legend. Note that if 30% or more positions are conserved, ".
+    $html .= "<p>The residues are ranked according to the conservation score, and binned into 5% bins. \n".
+	"The bins are colored according to the legend. Note that if 30% or more positions are conserved, \n".
 	"the topmost bins will be empty, and the resulting map will be black-and-white.</p>\n";
 
     $html .= "<p>The results will stay available for a week at this URL:<br>\n".
-	"<a href='http://eopsf.org/cgi-bin/cube/specs.cgi?jobID=$jobID' target='new'>".
+	"<a href='http://eopsf.org/cgi-bin/cube/specs.cgi?jobID=$jobID' target='new'>\n".
 	"http://eopsf.org/cgi-bin/cube/specs.cgi?jobID=$jobID</a></p>\n";
     
     return $html;
@@ -86,10 +88,13 @@ sub  html_conservation_body_top (@) {
 ##################################################################################
 sub  html_specialization_body_top (@) {
 
-    my ($jobID) = @_;
+    my ($jobID, $refseq) = @_;
     my $html="";
 
     $html .= "<div class='main'>\n";
+
+    $html .= "<left_title> Specialization  mapped onto $refseq sequence</left_title>\n";
+    $html .= "<p> &nbsp; \n";
 
     $html .= "<img class='centerimg' width='420' src='http://eopsf.org/images/cons_spec_legend.png'>\n";
 
@@ -150,7 +155,7 @@ sub html_generic_downloadables(@){
 		if($downloadable =~ /(xls)$/){
             
 		    $html .= "<li><a href='http://eopsf.org/cgi-bin/struct_server/download.cgi?ID=$downloadable'>".
-			"per-residue score in excel format</a></li>\n";
+			"per-residue score in xls (spreadsheet) format</a></li>\n";
 		}
 		if($downloadable =~ /(score)$/){
 		    $html .= "<li><a href='http://eopsf.org/cgi-bin/struct_server/download.cgi?ID=$downloadable'>".

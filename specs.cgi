@@ -72,16 +72,18 @@ my $tax_attempt       = "$dir/db/tax_attempt";
 my $specs2pml         = "$dir/scripts/specs2pml.pl";
 my $restrict          = "$dir/scripts/restrict_msf_to_query.pl";
 my $specs2excel       = "$dir/scripts/specs2xls.pl";
-
+my $reorder           = "$dir/scripts/reorder_fasta.pl";
 # templates
 my $cube_cmd_template = "$dir/cmd_template_cube";
 
 # java
 my $seqReport         = "$dir/bin/SeqReport.jar";
+my $seqReportEE       = "$dir/bin/SeqReportEE.jar";
 
 
 # third party 
 my $muscle            = "$dir/bin/muscle";
+my $mafft             = "/usr/local/bin/mafft";
 my $dssp              = "$dir/bin/dssp";
 
 my $pymol             = "/cluster/apps/x86_64/bin/pymol";
@@ -150,10 +152,10 @@ if ($new_job) {
 
     ($errmsg, $ref_seq_name, $alignment_file, $name_resolution_file, $group_file, 
      $structure_name, $structure_file) = process_input_data ($jobdir, $job_type, $input_seq_files_ref, 
-							     $seq_not_aligned, $ref_seq_name,
-							     $structure_name, $chainID, 
-							     $pdb_extract_chain, $pdb2seq, 
-							     $fasta_rename,  $msf2afa, $muscle, $afa2msf);
+							     $seq_not_aligned, $ref_seq_name, $structure_name, 
+							     $chainID, $pdb_extract_chain, $pdb2seq, 
+							     $fasta_rename, $msf2afa, $mafft, $muscle, $reorder, 
+							     $afa2msf, $restrict);
 
     ($errmsg eq '') || html_die ("Error processing the input. $errmsg");
 
@@ -163,13 +165,13 @@ if ($new_job) {
 	conservation ($jobID, $jobdir,  $ref_seq_name,   $alignment_file, $score_method,
 		      $seq_not_aligned, $seq_annotation_ref, $name_resolution_file, 
 		      $structure_file, $structure_name, $chainID,  $dssp,
-		      $specs, $specs2pml, $restrict, $specs2excel, $seqReport, $pymol, $zip);
+		      $specs, $specs2pml,  $specs2excel, $seqReport, $pymol, $zip);
 
     } else {
-	specialization($jobID, $jobdir, $alignment_file, $group_file, $score_method,
+	specialization($jobID, $jobdir, $ref_seq_name, $alignment_file, $group_file, $score_method,
 		       $seq_not_aligned, $seq_annotation_ref, $name_resolution_file,
 		       $structure_file, $structure_name,  $chainID,  $dssp,
-		       $cube, $cube_cmd_template, $hc2xls, $hc2pml, $pymol, $zip, $jmol_folder);
+		       $cube, $cube_cmd_template, $hc2xls, $seqReportEE, $hc2pml, $pymol, $zip, $jmol_folder);
     }
 
 # spit out previously calculated page

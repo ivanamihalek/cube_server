@@ -1,5 +1,64 @@
 use strict;
 
+
+##################################################################################################
+sub reorder_fasta (@) {
+    my ($list, $fasta, $outfile, $flag) = @_; 
+    (-e $list) || return 1;
+
+    my @temp = split "\n", `cat $list`;
+    my @list = ();
+    foreach (@temp) {
+	next if ( !/\S/);
+	my @aux = split;
+	push @list, $aux[0];
+    }
+    my %sequence = ();
+    my $name;
+
+    open ( FASTA, "<$fasta") ||
+	die "Cno $fasta: $!\n";
+
+    while ( <FASTA> ) {
+	next if ( !/\S/);
+	chomp;
+	if (/^>\s*(.+)\s*/ ) {
+	    $name = $1;
+	    $name =~ s/\s//g;
+	    $sequence{$name} = "";
+	} else  {
+	    $sequence{$name} .= $_."\n";
+	} 
+ 
+    }
+    close FASTA;
+
+
+
+    open (OUTF, ">$outfile") ||
+	die "Cno $outfile: $!\n";
+
+    foreach $name (@list) {
+	defined $sequence{$name} || next;
+	print OUTF  ">$name \n";
+	print OUTF $sequence{$name};
+    }
+    close OUTF;
+   
+    return 0;
+}
+
+
+##################################################################################################
+sub delete_extension(@) {
+    my $in_name= $_[0];
+    if ( $in_name =~ /(.+)\.(\w+)$/) {
+	my $root = $1;
+	return $root;
+    } else {
+	return $in_name;
+    }
+}
 ##################################################################################################
 sub zip_directory(@){
     my ($zip, $jobdir)  = @_;
