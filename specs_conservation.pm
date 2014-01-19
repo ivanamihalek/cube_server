@@ -1,7 +1,7 @@
 use strict;
 
 ###################################################
-# SPECS
+#  CONSERVATION
 ###################################################
 
 sub add_annotation(@); # in specs_utils.pm
@@ -9,7 +9,8 @@ sub add_annotation(@); # in specs_utils.pm
 sub conservation (@) {
 
     my  ($jobID, $jobdir, $ref_seq_name, $alignment_file,  $score_method,
-	 $seq_not_aligned,  $seq_annotation_ref, $name_resolution_file, $structure, $struct_name, $chainID,  $dssp, 
+	 $seq_not_aligned,  $seq_annotation_ref, $name_resolution_file, 
+	 $structure, $struct_name, $chainID, $structure_single_chain,  $dssp, 
 	 $specs, $specs2pml, $specs2excel,  $seqReport, $pymol, $zip) = @_;
 
     my $input_name_root = delete_extension($alignment_file);
@@ -54,10 +55,11 @@ sub conservation (@) {
     $prms_string .= "\n";
     $prms_string .= "outn  $jobdir/specs_out\n";
 
+
     if($structure){
 	
-	$prms_string .= "pdbf      $structure  \n";
-	$prms_string .= "pdbseq    pdb_$struct_name\n";
+	$prms_string .= "pdbf      $jobdir/$structure_single_chain.pdb  \n";
+	$prms_string .= "pdbseq    pdb_$structure_single_chain\n";
 	$dssp_file  &&  ($prms_string .= "dssp   $dssp_file\n");
 	    
     }
@@ -85,13 +87,6 @@ sub conservation (@) {
 	html_die("Error running \n$cmd\n$errlog\n");
     }
 
-    
-    if( $errmsg = `grep \"Structure/alignment mismatch\" $stderr`){
-	chomp($errmsg);
-	html_die("$jobdir: $errmsg.\n".
-		 " When mapping to structure, please make the reference sequence correspond to the uploaded PDB file.");
-
-    }
     if($errmsg = `grep \"Unrecognized amino acid code\" $stdout`){
 	chomp($errmsg);
 	html_die("$errmsg in the uploaded strucure");
@@ -134,11 +129,19 @@ sub conservation (@) {
     my ($zipfile,$session);
     
     if($structure){
-	$cmd = "$specs2pml  $score_method  $score_f  $structure $script $chainID"; 
-	system($cmd) && diehard("SPECS", "Error running $cmd:$!");
+
+	# check whether chain really exist in this structure
+	# otherwise we get nonsense
+	my $ret  = `awk \$1=="ATOM" $structure`;
+	my $chainID_in_pdb_file = substr ( $ret,  21, 1);
+	
+	$cmd = "$specs2pml  $score_method  $score_f  $structure $script ";
+	($chainID_in_pdb_file =~ /\w/) && ($cmd .= " $chainID");
+	
+	system($cmd) && html_die("Error running $cmd:$!");
 
 	$cmd = "$pymol -qc -u $script > /dev/null";
-	system($cmd) && diehard("SPECS", "Error running $cmd $!");
+	system($cmd) && html_die("Error running $cmd $!");
 
 	$session = $script;
 	(($session =~ s/\.pml$/\.pse/)==1) || 
@@ -160,7 +163,7 @@ sub conservation (@) {
 
     $html_head   = html_generic_head ();
     $html_top    = html_conservation_body_top ($jobID, $ref_seq_name);
-    $html_middle = html_generic_downloadables ($score_f, $excel_out, $zipfile, $dirzipfile,$png_ref);
+    $html_middle = html_generic_downloadables ($score_f, $excel_out, $zipfile, $dirzipfile,$png_ref, "Conservation map", CONSERVATION);
     $html_bottom = html_generic_body_bottom();
 
     print $html_head.$html_top.$html_middle.$html_bottom;
@@ -188,10 +191,12 @@ sub make_conservation_map_png(@){
 	}
 	$command = "java -jar $seqReport $score $png_root.$frm\_$to $frm $to";
 	
-
+	if (system($command)) {
+	    $command =~ s/\s+/\n/g;
+	    html_die "Error Running $command:$!";
+	}
 	push(@pngfiles,"$png_root.$frm\_$to.png");
 	
-	system($command) && return "Error Running $command:$!";
     }
     
     return ("",\@pngfiles);

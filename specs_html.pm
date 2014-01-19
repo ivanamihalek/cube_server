@@ -12,7 +12,7 @@ sub  html_die (@) {
     $html .= "<tr ><td align='left'> <left_title>A problem seems to have occured:</left_title> </td><tr> \n";
     $html .= "<tr ><td align='left' style='overflow:auto'> \n";
     $html .= "<pre>$msg</pre> \n";
-    $html .= " $msg\n";
+    #$html .= " $msg\n";
     $html .= "</td></tr>\n";
     $html .= "</table>  \n";  
     $html .= html_generic_body_bottom ();
@@ -34,6 +34,11 @@ sub html_generic_head(@){
 	$html .= "<script type='text/javascript' src='$java_script'></script>\n";
     }
     $html .= "<link rel='stylesheet' href='http://eopsf.org/cube/cube_style.css' type='text/css'>\n";
+    $html .= "<link rel='stylesheet' href='http://cdn.jsdelivr.net/qtip2/2.0.1/basic/jquery.qtip.min.css'>\n";
+    $html .= "<link rel='stylesheet' href='http://eopsf.org/cube/cube_style.css' type='text/css'>\n";
+    $html .= "<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js'></script>\n";
+    $html .= "<script src='http://cdn.jsdelivr.net/qtip2/2.0.1/basic/jquery.qtip.min.js'></script>\n";
+    $html .= "<script src='http://eopsf.org/cube/tooltip.js'> </script>\n";
     $html .= "<title> Cube - results page </title>\n";
     $html .= "</head>\n\n";
 
@@ -101,7 +106,7 @@ sub  html_specialization_body_top (@) {
     $html .= "<p>This page shows two different scores side by side.\n".
 	"The first one (white-black-red scale) scores the overall conservation, \n".
 	"while the other one (blue-white-orange scale) scores the specialization between the sequence groups. \n".
-	"Click <a href='http://eopsf.org/cube/help.html'>here</a> to read more.</p>\n";
+	"Click <a href='http://eopsf.org/cube/help/help.html#output'>here</a> to read more.</p>\n";
     
     $html .= "<p>In either scheme, the residues are ranked according to the score, and binned into 5% bins. \n".
 	"The bins are  colored according to the legend. Note that if 30% or more positions are conserved, \n".
@@ -121,6 +126,8 @@ sub  html_specialization_body_top (@) {
 sub html_generic_downloadables(@){
 
     my $html="";
+    my $job_type = pop @_;
+    my $map_name = pop @_;
     my @downloadables = @_;
     
     $html .= "<p>Downloadables:</p>\n";
@@ -141,57 +148,62 @@ sub html_generic_downloadables(@){
 		$html .= "<tr> <td>&nbsp;&nbsp;</td></tr> \n";
 		$html .= "<tr> <td width =\"10%\"> &nbsp;&nbsp;</td> \n";
 		$html .= "<td> \n";
-		$html .= "Conservation map: positions $from to $to<br>\n";
+		$html .= $map_name;
+		$html .= ": positions $from to $to<br>\n";
 		$html .= "<img src='./showImg.cgi?params=$png' style='float:center'>\n";
 		$html .= "</td></tr> \n";
 		$html .= "</table>\n";
-		
 	    }
-	}
-	else{ 
 
-	    if($downloadable =~ /(xls)$|(score)$|(zip)$/){
+	} elsif($downloadable =~ /(xls)$|(score)$|(zip)$/){
 		
-		if($downloadable =~ /(xls)$/){
-            
-		    $html .= "<li><a href='http://eopsf.org/cgi-bin/struct_server/download.cgi?ID=$downloadable'>".
-			"per-residue score in xls (spreadsheet) format</a></li>\n";
-		}
-		if($downloadable =~ /(score)$/){
-		    $html .= "<li><a href='http://eopsf.org/cgi-bin/struct_server/download.cgi?ID=$downloadable'>".
-			"per-residue  score in plain text format</a></li>\n";
-		}
+	    my $tag="spec";
+	    ($job_type==CONSERVATION) && ($tag="cons");
 
-		if($downloadable =~ /(zip)$/ && -e $downloadable){ #when user uploads a sequence file, $downloadable  does not exist
+	    if($downloadable =~ /(xls)$/){
+            
+		$html .= "<li><a href='http://eopsf.org/cgi-bin/struct_server/download.cgi?ID=$downloadable'".
+		    " title=\" <a href='http://eopsf.org/cube/help/xls_output.html#$tag'>Read more</a> ".
+			"about the xls output\">".
+		    "per-residue score in xls (spreadsheet) format</a></li>\n";
+
+	    } elsif ($downloadable =~ /(score)$/){
+		#$html .= "<li><a href='http://eopsf.org/cgi-bin/struct_server/download.cgi?ID=$downloadable'>".
+		#    "per-residue  score in plain text format</a></li>\n";
+
+	    } elsif ($downloadable =~ /(zip)$/ ){
 		   
 		    
-		    if($downloadable =~ /(\d+\.zip)$/){
+		if($downloadable =~ /(\d+\.zip)$/){
 		    
-			$html .= "<li><a href='http://eopsf.org/cgi-bin/".
-			    "struct_server/download.cgi?ID=$downloadable'>the whole work directory</a></li>\n";
-		    }
-		    elsif($downloadable =~ /\.afa/){
-			$html .= "<li><a href='http://eopsf.org/cgi-bin/struct_server/download.cgi?ID=$downloadable'>".
-			    "the alignements(sorted by species)</a></li>\n";
-		    }
-		    elsif($downloadable =~ /\.pse/){
-			$html .= "<li><a href='http://eopsf.org/cgi-bin/struct_server/download.cgi?ID=$downloadable'>".
-			    "pymol session file</a></li>\n";
-		    }
-		    elsif($downloadable =~ /\_specs.py/){
-			$html .= "<li><a href='http://eopsf.org/cgi-bin/struct_server/download.cgi?ID=$downloadable'>".
-			    "chimera session file for specialization</a></li>\n";
-		    }
-		    elsif($downloadable =~ /\_cons.py/){
-			$html .= "<li><a href='http://eopsf.org/cgi-bin/struct_server/download.cgi?ID=$downloadable'>".
-			    "chimera session file for conservation</a></li>\n";
-		    }
+		    $html .= "<li><a href='http://eopsf.org/cgi-bin/struct_server/download.cgi?ID=$downloadable'".
+			" title=\" <a href='http://eopsf.org/cube/help/workdir_output.html#$tag'>Read more</a>".
+			" about the contents <br> of Cube's work directory\">".
+			"the whole work directory</a></li>\n";
 
+		} elsif($downloadable =~ /\.afa/){
+		    $html .= "<li><a href='http://eopsf.org/cgi-bin/struct_server/download.cgi?ID=$downloadable'>".
+			    "the alignements(sorted by species)</a></li>\n";
+
+		} elsif($downloadable =~ /\.pse/){
+		    $html .= "<li><a href='http://eopsf.org/cgi-bin/struct_server/download.cgi?ID=$downloadable'".
+			" title=\" <a href='http://eopsf.org/cube/help/pymol_output.html#$tag'>Read more</a> ".
+			"about the PyMol session\">".
+			"pymol session file</a></li>\n";
+
+		} elsif($downloadable =~ /\_specs.py/){
+		    $html .= "<li><a href='http://eopsf.org/cgi-bin/struct_server/download.cgi?ID=$downloadable'>".
+			"chimera session file for specialization</a></li>\n";
+
+		} elsif($downloadable =~ /\_cons.py/){
+		    $html .= "<li><a href='http://eopsf.org/cgi-bin/struct_server/download.cgi?ID=$downloadable'>".
+			"chimera session file for conservation</a></li>\n";
 		}
 	    }
-	    else{
-		$html .= "$downloadable\n";
-	    }
+
+
+	} else {
+	    $html .= "$downloadable\n";
 	}
     }
     $html .="</ul>\n";
@@ -229,8 +241,9 @@ sub  html_spreadsheet_cube(@){ # this is specific for cube output; won't work fo
     my $parser   = Spreadsheet::ParseExcel->new();
     my $workbook = $parser->parse($excel_file);
     
-    
+
     if ( !defined $workbook ) {
+	html_die ($parser->error() . $excel_file);
         return ($parser->error() . $excel_file);
     }
 

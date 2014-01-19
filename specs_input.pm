@@ -6,7 +6,7 @@ sub process_annotation (@);
 sub process_input_params(@){
 
 
-    my ($q,$jobdir) = @_;
+    my ($q,$jobdir,$docx2txt) = @_;
     my $job_type;
     my @input_seq_files = ();
     my $similarity_ckbox = 0;
@@ -39,9 +39,6 @@ sub process_input_params(@){
     my $seq_not_aligned = 1;
     my $structure_f     = 0;
     
-    if( defined($q->param("similarity")) && $q->param("similarity")){
-	$similarity_ckbox = $q->param("similarity");
-    }
 	
     $ref_seq_name = $q->param("qry_nm");
     $ref_seq_name =~ s/\s//g;
@@ -51,19 +48,71 @@ sub process_input_params(@){
     }
     
 
+    ###########################################################
+    # upload sequence files
     for my $upload_fhd ( @upload_filehandles) {
 	
 	my @tmp = split(/\\/, $upload_fhd);
 	my $filename = pop @tmp;
-	my $in_fasta = "$jobdir/$filename";
-	
-	open(OF, ">$in_fasta") || return "Cno: $in_fasta:$!\n";
-	undef $/;
-	print OF <$upload_fhd>;
-	$/ = "\n";
-	close(OF);
+	my $input_file = "$jobdir/$filename";
 
-	push @input_seq_files, $in_fasta;
+	if ( $filename =~ /\.doc$/) {
+	    my $msg = "&nbsp;\n".
+		"By the file name extension (.doc) I am guessing $filename is in a Word document format,\n".
+		"which Cube is currently not equipped to handle. Please save your file as .docx, \n".
+		"or 'Export' it in Plain Text format, and then upload again in one of these two formats.\n\n".
+		"MS Office help pages ".
+		"(<a href='http://office.microsoft.com/en-sg/mac-word-help/".
+		"save-a-file-in-a-different-file-format-HA102927395.aspx?CTT=5&origin=HA102929513'>click here</a>) ".
+		"provide a description on how to save files from Word in different formats.\n\n".
+		"Mac users: <a href='http://support.apple.com/kb/PH10512'>read here</a> ".
+		"about exporting Plain Text files from Pages'09.\n".
+		"(Exporting as docx does not not seem to be supported there.)";
+	    html_die ($msg);
+
+	} elsif ($filename =~ /\.docx$/) {
+
+	    my $docx_file  = $input_file;
+	    $input_file = $filename;
+	    $input_file =~ s/\.docx$/\.txt/;
+	    open(OF, ">$docx_file") || return "Cno: $docx_file:$!\n";
+	    undef $/;
+	    print OF <$upload_fhd>;
+	    $/ = "\n";
+	    close(OF);
+
+	    my $cmd = `$docx2txt  $docx_file $input_file $jobdir`;
+	    $input_file = "$jobdir/$input_file";
+	    system($cmd); # looks like this crap gives something on the exit;
+	    if  (! -e  $input_file || -z $input_file  ) {
+		my $msg = "&nbsp;\n".
+		    "$cmd\n".
+		    "*********************\n".
+		    "$input_file\n".
+		    "*********************\n".
+		    "Error converting docx to Plain Text format. Exit status: $!.\n".
+		    "Try saving  your file  in Plain Text format, and then upload again.\n\n".
+		    "MS Office help pages ".
+		    "(<a href='http://office.microsoft.com/en-sg/mac-word-help/".
+		    "save-a-file-in-a-different-file-format-HA102927395.aspx?CTT=5&origin=HA102929513'>click here</a>) ".
+		    "provide a description on how to save files from Word in different formats.\n\n".
+		    "Mac users: <a href='http://support.apple.com/kb/PH10512'>read here</a> ".
+		    "about exporting Plain Text files from Pages'09.\n";
+		html_die ($msg);
+	    }
+
+	} else {
+	    open(OF, ">$input_file") || return "Cno: $input_file:$!\n";
+	    undef $/;
+	    # get rid of carriage return (newline in Windows and Mac)
+	    my $tmp_container =  <$upload_fhd>;
+	    $tmp_container    =~ s/\r/\n/g;
+	    print OF $tmp_container;
+	    $/ = "\n";
+	    close(OF);
+	}
+
+	push @input_seq_files, $input_file;
     }
 	
     if(defined($q->param("method")) && $q->param("method")){
@@ -89,7 +138,10 @@ sub process_input_params(@){
 	
 	open(OF, ">$jobdir/$structure_name.pdb") || return "Cno: $jobdir/$structure_name.pdb:$!";
 	undef $/;
-	print OF <$upload_fhd>;
+	# get rid of carriage return (newline in Windows and Mac)
+	my $tmp_container =  <$upload_fhd>;
+	$tmp_container =~ s/\r/\n/g;
+	print OF $tmp_container;
 	$/ = "\n";
 	close(OF);
 	
@@ -115,7 +167,7 @@ sub process_input_params(@){
 sub process_input_data (@) {
 
     my ($jobdir, $job_type, $input_seq_files_ref, $seq_not_aligned, $ref_seq_name,  
-	$structure_name, $chainID, $pdb_extract_chain, $pdb2seq, 
+	$structure_name, $chainID, $pdb_extract_n_clean, $pdb2seq, 
 	$fasta_rename, $msf2afa, $mafft,  $muscle, $reorder, $afa2msf, $restrict) = @_;
     my $errmsg = "";
     
@@ -147,6 +199,7 @@ sub process_input_data (@) {
     
     my $ref_seq_automatic = 0;
     my $file_ct           = 0;
+    my @group_names       = ();
     for my $input_seq_file (@input_seq_files ) {
 
 	# do we recognize the format?
@@ -162,10 +215,11 @@ sub process_input_data (@) {
 	    if($first_name_line){
 		$alignment_format = "AFA";
 	    } else {
-		$errmsg = "The alignment format not recognized for $input_seq_file. Check ".
-		    " <a href=\"http://eopsf.org/cube/gcg_example.txt\">here (GCG, a.k.a. MSF)</a>".
-		    " and  <a href=\"http://eopsf.org/cube/fasta_example.txt\">here (FASTA)</a>" .
-		    " for the two formats that the current implementation recognizes.";
+		$errmsg = "<P>The alignment format not recognized for $input_seq_file.\n".
+		    "Check ".
+		    " <a href=\"http://eopsf.org/cube/help/gcg_example.txt\">here (GCG, a.k.a. MSF)</a>".
+		    " and  <a href=\"http://eopsf.org/cube/help/fasta_example.txt\">here (FASTA)</a>\n" .
+		    "for  examples of the two formats that the current implementation recognizes.";
 		return ($errmsg, "");
 	    }
 	    # clean up and simplify names - I think clustalw and such would have already
@@ -182,50 +236,34 @@ sub process_input_data (@) {
 		$suffix = "";
 	    } else {
 		$file_ct++;
-		$suffix = "_$file_ct";
+		$suffix = "_g$file_ct"; # g, as in in "group number x"
 	    }
 	    system("$fasta_rename $input_seq_backup $name_resolution_file $suffix  > $input_seq_file");
 	}
 
-
-	if ($ref_seq_name) {
-	    
-	    my @lines = split "\n", `grep  $ref_seq_name  $name_resolution_file`;
-	    if ( @lines > 1) {
-		my $errmsg = "Error processing reference sequence name.";
-		$errmsg .=	" More than one name matched the input $ref_seq_name:\n";
-		$errmsg .= join "\n", @lines;
-		$errmsg .= "\n";
-		html_die ($errmsg);
-
-	    } elsif ( @lines < 1) {
-		my $errmsg = "Error processing reference sequence name.";
-		$errmsg .=	" $ref_seq_name not found in the input.\n$jobdir\n"; 
-		html_die ($errmsg);
-
-	    }
-	    my ($server_name, $old_name, $orig_hdr) = split "\t", $lines[0];
-	    $ref_seq_name = $server_name;
-	    
-	} else {
-	    # Reload first name line
-	    $first_name_line = `grep '>' $input_seq_file | head -n1`;
-	}
-
-	# if we still don't have the $ref_seq_name take the first one that appears in the alignment
+       
+        # if we still don't have the $ref_seq_name take the first one that appears in the alignment
 	if (!$ref_seq_name) {
+	    # 
 	    if($alignment_format eq "MSF" ){
+		$first_name_line = `grep 'Name' $input_seq_file | head -n1`;
 		$first_name_line =~ /Name\:\s*(\w+)/;
 		(defined $1 && $1) && ($ref_seq_name = $1);
 	    } else {
+		# Reload first name line
+		$first_name_line = `grep '>' $input_seq_file | head -n1`;
 		$first_name_line =~ />\s*(\w+)/;
 		(defined $1 && $1) && ($ref_seq_name = $1);
 	    } 
 	    
-	    $ref_seq_name || html_die ("Unspecified error in the input alignment format.");
+	    $ref_seq_name || html_die ("Unspecified error in the input alignment format.".
+				       "\n$jobdir\nformat: $alignment_format\nname line: ".
+				       "$first_name_line\ninput file: $input_seq_file\n");
 	    
 	    $ref_seq_automatic = 1;
+
 	}
+
 
 	# generate new name for the aligned file
 	if ( $input_seq_file =~ /(.+)\.(\w+)$/) {
@@ -239,6 +277,7 @@ sub process_input_data (@) {
 	    if ($job_type!=CONSERVATION) {
 		my @tmp     = split '/',  $root;
 		$group_name =  pop @tmp;
+		push @group_names, $group_name;
 	    }
 	} else {
 	    $alignment_file  = "$input_seq_file.afa";
@@ -255,19 +294,26 @@ sub process_input_data (@) {
 	    }
 	    
 	    # muscle reorders, but mafft makes somewhat crappier alignments
+	    #  mafft is more robust for bigger alignments 
+	    my $number_seqs  = `grep  \'>\' $input_seq_file | wc -l`;
+	    chomp $number_seqs;
+	    if ( $number_seqs < 150 ) {
+		$cmd = "$muscle -in $input_seq_file -out  $jobdir/tmp.afa >>  $jobdir/muscle.out 2>&1";
+		$errlog = `cat $jobdir/muscle.out`;
+		system($cmd) && html_die("Error running $cmd:\n$errlog\n");
 
-	    $cmd = "$muscle -in $input_seq_file -out  $jobdir/tmp.afa >>  $jobdir/muscle.out 2>&1";
-	    #$cmd = "$mafft $input_seq_file 1>  $alignment_file 2>  $jobdir/mafft.out ";
-	    $errlog = `cat $jobdir/muscle.out`;
-	    system($cmd) && html_die("Error running $cmd:\n$errlog\n");
+		if  ( reorder_fasta ($name_resolution_file,  "$jobdir/tmp.afa",  $alignment_file) ) {
+		    $cmd = "mv  $jobdir/tmp.afa $alignment_file";
+		    system($cmd) && html_die("Error reordering $name_resolution_file $jobdir/tmp.afa");
+		} else {
+		    `rm  $jobdir/tmp.afa`;
+		}
 
-	    if  ( reorder_fasta ($name_resolution_file,  "$jobdir/tmp.afa",  $alignment_file) ) {
-		$cmd = "mv  $jobdir/tmp.afa $alignment_file";
-		system($cmd) && html_die("Error reordering $name_resolution_file $jobdir/tmp.afa");
 	    } else {
-		`rm  $jobdir/tmp.afa`;
+		$cmd = "$mafft $input_seq_file 1>  $alignment_file 2>  $jobdir/mafft.out ";
+		$errlog = `cat $jobdir/mafft.out`;
+		system($cmd) && html_die("Error running $cmd:\n$errlog\n");
 	    }
-
 
 	} else { 
 	    # afa, turn to msf
@@ -287,7 +333,45 @@ sub process_input_data (@) {
 	}
     }
 
+    # check the reference sequence name
+    if (!$ref_seq_automatic) { # we are trying to figure out what the user has in mind
+	    
+	my @lines = split "\n", `grep  $ref_seq_name  $name_resolution_file`;
+	my ($server_name, $old_name, $orig_hdr);
 
+	if ( @lines == 1) {
+	    ($server_name, $old_name, $orig_hdr) = split "\t", $lines[0];
+
+	} elsif ( @lines < 1) {
+
+	    my $errmsg = "Error processing reference sequence name.";
+	    $errmsg .=   " $ref_seq_name not found in the input.\n$jobdir\n"; 
+	    html_die ($errmsg);
+	    
+
+	} elsif ( @lines > 1) {
+
+	    my $name_found = 0;
+
+	    foreach  (@lines) {
+		($server_name, $old_name, $orig_hdr) = split "\t";
+		if  ($old_name eq $ref_seq_name) {
+		    $name_found = 1;
+		    last;
+		}
+	    } 
+	    if ( !$name_found) {
+		my $errmsg = "Error processing reference sequence name.";
+		$errmsg .=	" More than one name matched the input $ref_seq_name:\n";
+		$errmsg .= join "\n", @lines;
+		$errmsg .= "\n";
+		html_die ($errmsg);
+	    }
+	}
+	
+	$ref_seq_name = $server_name;
+	    
+    }
     # we want one single file
     if (@alignment_files==1) {
 	$alignment_file = $alignment_files[0];
@@ -312,41 +396,49 @@ sub process_input_data (@) {
 	$alignment_file = $last_aln;
     }
 
-    my $structure_file = "";
+    my $structure_file         = "";
+    my $structure_single_chain = "";
+
     if ($structure_name) {
 
-	my $structure_chain_f;
-	$structure_file    = "$jobdir/$structure_name.pdb";
+	$structure_file = "$jobdir/$structure_name.pdb";
 
-	# are we using the whole PDB file, or just one chain?
-	if( $chainID ){
-	    $structure_chain_f    = "$jobdir/$structure_name.".uc($chainID).".pdb";
-	    my $cmd = "$pdb_extract_chain $structure_file $chainID > $structure_chain_f";
-	    system($cmd)&&return "Error running \n$cmd\n$!";
-
-	} else{
-	    $structure_chain_f = $structure_file;
+	# we always want a single chain
+	if (!$chainID) {
+	    # if $chainID is given, it is going to be the one
+	    # if not, sneakpeek for the chain
+	    my $ret  = `awk \$1=="ATOM" $structure_file`;
+	    $chainID = substr ( $ret,  21, 1) ||  "A";
 	}
+	$chainID = uc($chainID);
+	# we'll always process, because there is no and to pdb shennanigans 
+	my $cmd = "$pdb_extract_n_clean $structure_file pdb_$structure_name$chainID $chainID";
+	my $ret = `$cmd`;
+	$ret && html_die ($ret);
+
+	$structure_single_chain = "$structure_name$chainID";
 	# add the structure sequence to the alignment
-	# pdb2seq
-	my $seq_file = "$jobdir/$structure_name.seq";
-	$cmd = "$pdb2seq $structure_chain_f  pdb_$structure_name >  $seq_file";
-	system($cmd) && html_die ("error running $cmd\n");
+	my $seq_file =  "$jobdir/$structure_name$chainID.seq";
         # muscle
 	$cmd = "$muscle -profile -in1 $alignment_file  -in2 $seq_file -out $jobdir/tmp.afa";
 	system($cmd) && html_die ("error running $cmd\n");
 	`mv $jobdir/tmp.afa $alignment_file`;
+
     }
 
     my $group_file = "";
+    my $ref_group  = "";
+
     if ($job_type!=CONSERVATION) {
+
+	$ref_group = $group_names[0];
 
 	$group_file = "$jobdir/groups";
 	open(GFH, ">$group_file") || html_die ("Error writing to a file (?!)");
 
 	if ($ref_seq_automatic) {
 
-	    for $group_name (keys %group_members) {
+	    for $group_name (@group_names) {
 		print  GFH  "name  $group_name\n";
 		print  GFH  $group_members{$group_name};
 		print  GFH  "\n";
@@ -356,43 +448,41 @@ sub process_input_data (@) {
 	} else {
 	    
 	    # find ref group corresponding to the ref seq
-	    my $odered_names = "";
-	    my $ref_group = (keys %group_members)[0];
-	    for $group_name (keys %group_members) {
+	    my $ordered_names = "";
+	    for $group_name (@group_names) {
 		foreach my $mem (split " ", $group_members{$group_name} ) {
 		    if ($mem eq $ref_seq_name) {
 			$ref_group = $group_name;
 		    }
-
 		}
 	    }
 
 	    $group_name = $ref_group;
 	    print  GFH  "name  $group_name\n";
 	    print  GFH   "$ref_seq_name\n";
-	    $odered_names .= "$ref_seq_name\n";
+	    $ordered_names .= "$ref_seq_name\n";
 	    foreach my $mem (split " ", $group_members{$group_name} ) {
 		next if ($mem eq $ref_seq_name);
 		print  GFH   "$mem\n";
-		$odered_names .= "$mem\n";
+		$ordered_names .= "$mem\n";
 	    }
 	    print  GFH  "\n";
 
 
-	    for $group_name (keys %group_members) {
+	    for $group_name (@group_names) {
 		next if $group_name eq  $ref_group;
 		print  GFH  "name  $group_name\n";
 		print  GFH  $group_members{$group_name};
 		print  GFH  "\n";
-		$odered_names .= $group_members{$group_name};
+		$ordered_names .= $group_members{$group_name};
 	    }
 	    close GFH;
 	    
-	    ($structure_name)  && ($odered_names .= "pdb_$structure_name");
+	    ($structure_name)  && ($ordered_names .= "pdb_$structure_name$chainID");
 	    # reorder the alignment  one more time so that the ref group is first, 
 	    # with the reference  sequence on top - easier than hacking itno hypercube
 	    open ( OF, ">$jobdir/tmp.list") || die "oink?";
-	    print OF $odered_names."\n";
+	    print OF $ordered_names."\n";
 	    close OF;
 	    
 	    `mv $alignment_file $jobdir/tmp.afa`;
@@ -400,7 +490,7 @@ sub process_input_data (@) {
 		$cmd = "mv  $jobdir/tmp.afa  $alignment_file";
 		system($cmd) && html_die("Error reordering $name_resolution_file $jobdir/tmp.afa");
 	    } else {
-		`rm  $jobdir/tmp.afa  $jobdir/tmp.list`;
+		#`rm  $jobdir/tmp.afa  $jobdir/tmp.list`;
 	    }
 	}
 
@@ -415,19 +505,23 @@ sub process_input_data (@) {
     system($cmd) && html_die ("error running $cmd\n");
     
     #############################################
-    # restrict the sequence to the query -- so why is there a mismatch btw the spread sheet and jpg with Tin2?
+    # restrict the sequence to the query 
     # 
+    open (LOG, ">$jobdir/log");
+
     my $input_name_root = delete_extension($alignment_file);
     my $restricted_msf = "$input_name_root\.restr.msf";
     if($structure_file){
-	$cmd = "$restrict $alignment_file_msf $ref_seq_name pdb_$structure_name > $restricted_msf";
+	$cmd = "$restrict $alignment_file_msf '$ref_seq_name' 'pdb_$structure_single_chain' > $restricted_msf";
     } else {
 	$cmd = "$restrict $alignment_file_msf $ref_seq_name > $restricted_msf";
     }
+    print LOG $cmd."\n";
     (system $cmd) &&  html_die ("Error running\n$cmd.\n");
 
-    return ("", $ref_seq_name, $restricted_msf, $name_resolution_file, 
-	    $group_file, $structure_name, $structure_file);
+
+    return ("", $ref_seq_name, $ref_group, $restricted_msf, $name_resolution_file, 
+	    $group_file, $structure_name, $structure_file, $structure_single_chain);
 
 }
 ##############################################################################
@@ -517,7 +611,6 @@ sub process_annotation (@) {
 	}
     }
 
-
     open(OFH, ">$annotation_file_name") || html_die ("Some weirdness: $annotation_file_name:$!");
     foreach my $seq_name (keys %seq_annotation){
 	my $largest_pos = $#{$seq_annotation{$seq_name}};
@@ -535,3 +628,11 @@ sub process_annotation (@) {
 
 
 return 1;
+
+=pod
+    open (LOG, ">$jobdir/debuglog");
+
+	print LOG "structure_file: $structure_file\n";
+	print LOG "$cmd\n";
+	print LOG "$alignment_file\n";
+=cut

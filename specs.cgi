@@ -60,12 +60,13 @@ my $cube             = "$dir/bin/hyper_c";
 my $specs            = "$dir/bin/specs";
 
 # perlscripts
+my $docx2txt          = "$dir/scripts/docx2txt.pl";
 my $fasta_rename      = "$dir/scripts/fasta_rename_seqs.pl";
 my $afa2msf           = "$dir/scripts/afa2msf.pl";
 my $msf2afa           = "$dir/scripts/msf2afa.pl";
 my $hc2xls            = "$dir/scripts/hc2xls.pl";
 my $hc2pml            = "$dir/scripts/hc2pml.pl";
-my $pdb_extract_chain = "$dir/scripts/pdb_extract_chain.pl";
+my $pdb_extract_n_clean = "$dir/scripts/pdb_extract_chain_and_cleanup.pl";
 my $pdb2seq           = "$dir/scripts/pdb2seq.pl";
 my $sort_by_taxonomy  = "$dir/scripts/sort_by_taxonomy.pl"; # needs $tax_attempt
 my $tax_attempt       = "$dir/db/tax_attempt";
@@ -137,25 +138,24 @@ $new_job   && `mkdir $jobdir`;
 # process the incoming request
 if ($new_job) {
 
-    my ($errmsg, $ref_seq_name, $input_seq_files_ref,  $score_method, 
+    my ($errmsg, $ref_seq_name, $ref_group, $input_seq_files_ref,  $score_method, 
 	$job_type,  $seq_not_aligned, $group_file, 
 	$geneL_ref, $geneF, $seq_annotation_ref, $name_resolution_file, $alignment_file,
-	$structure_file, $structure_name, $chainID);
+	$structure_file, $structure_name, $chainID, $structure_single_chain);
     
     ($errmsg, $ref_seq_name, $input_seq_files_ref, $score_method, 
      $job_type,  $seq_not_aligned,
-     $geneL_ref, $geneF, $seq_annotation_ref, $structure_name, $chainID) = process_input_params($cgi,$jobdir);
-
-
+     $geneL_ref, $geneF, $seq_annotation_ref, $structure_name, $chainID) = process_input_params($cgi,$jobdir,$docx2txt);
 
     ($errmsg eq '') || html_die ("Error processing the input parameters. $errmsg");
 
-    ($errmsg, $ref_seq_name, $alignment_file, $name_resolution_file, $group_file, 
-     $structure_name, $structure_file) = process_input_data ($jobdir, $job_type, $input_seq_files_ref, 
-							     $seq_not_aligned, $ref_seq_name, $structure_name, 
-							     $chainID, $pdb_extract_chain, $pdb2seq, 
-							     $fasta_rename, $msf2afa, $mafft, $muscle, $reorder, 
-							     $afa2msf, $restrict);
+    ($errmsg, $ref_seq_name,  $ref_group, $alignment_file, $name_resolution_file, $group_file, 
+     $structure_name, $structure_file, $structure_single_chain) = 
+	 process_input_data ($jobdir, $job_type, $input_seq_files_ref, 
+			     $seq_not_aligned, $ref_seq_name, $structure_name, 
+			     $chainID, $pdb_extract_n_clean, $pdb2seq, 
+			     $fasta_rename, $msf2afa, $mafft, $muscle, $reorder, 
+			     $afa2msf, $restrict);
 
     ($errmsg eq '') || html_die ("Error processing the input. $errmsg");
 
@@ -164,13 +164,13 @@ if ($new_job) {
     if ($job_type == CONSERVATION) {
 	conservation ($jobID, $jobdir,  $ref_seq_name,   $alignment_file, $score_method,
 		      $seq_not_aligned, $seq_annotation_ref, $name_resolution_file, 
-		      $structure_file, $structure_name, $chainID,  $dssp,
+		      $structure_file, $structure_name, $chainID, $structure_single_chain,  $dssp,
 		      $specs, $specs2pml,  $specs2excel, $seqReport, $pymol, $zip);
 
     } else {
-	specialization($jobID, $jobdir, $ref_seq_name, $alignment_file, $group_file, $score_method,
+	specialization($jobID, $jobdir, $ref_seq_name,  $ref_group, $alignment_file, $group_file, $score_method,
 		       $seq_not_aligned, $seq_annotation_ref, $name_resolution_file,
-		       $structure_file, $structure_name,  $chainID,  $dssp,
+		       $structure_file, $structure_name,  $chainID, $structure_single_chain,  $dssp,
 		       $cube, $cube_cmd_template, $hc2xls, $seqReportEE, $hc2pml, $pymol, $zip, $jmol_folder);
     }
 
