@@ -209,6 +209,16 @@ sub process_input_data (@) {
 
 	if($first_name_line){ # we are assuming the msf format
 	    $alignment_format = "MSF";
+	    # how about we just get rid of the pesky msf input
+	    my $orig_input_seq_file = $input_seq_file;
+	    if ( $input_seq_file =~ /\.msf$/ ) {
+		$input_seq_file =~ s/msf$/afa/;
+	    } else {
+		$input_seq_file .= ".afa"
+	    }
+	    system("$msf2afa  $orig_input_seq_file > $input_seq_file ");
+	    $alignment_format = "AFA";
+
 	} else {
 	    $cmd = "grep \">\"  $input_seq_file | head -n1";
 	    $first_name_line = `$cmd`;
@@ -222,24 +232,26 @@ sub process_input_data (@) {
 		    "for  examples of the two formats that the current implementation recognizes.";
 		return ($errmsg, "");
 	    }
-	    # clean up and simplify names - I think clustalw and such would have already
-	    # chooped the names, so we have to worry only about afa files
-	    # 1) grep '>' there is fasta_rename.pl in scripts dir -- see specs.cgi header
-	    # 2) modify it ouput the original header and the replacement name, and save that info to jobdir
-	    # 3) make sure that the refseq name correponds to the new shortened name
-	    $name_resolution_file = "$jobdir/nameindex";
-	    my $input_seq_backup  = "$input_seq_file.bak";
-	    move($input_seq_file, $input_seq_backup);
-	    my $suffix;
-	    
-	    if (@input_seq_files==1) {
-		$suffix = "";
-	    } else {
-		$file_ct++;
-		$suffix = "_g$file_ct"; # g, as in in "group number x"
-	    }
-	    system("$fasta_rename $input_seq_backup $name_resolution_file $suffix  > $input_seq_file");
 	}
+
+	# clean up and simplify names - I think clustalw and such would have already
+	# chooped the names, so we have to worry only about afa files
+	# 1) grep '>' there is fasta_rename.pl in scripts dir -- see specs.cgi header
+	# 2) modify it ouput the original header and the replacement name, and save that info to jobdir
+	# 3) make sure that the refseq name correponds to the new shortened name
+	$name_resolution_file = "$jobdir/nameindex";
+	my $input_seq_backup  = "$input_seq_file.bak"; # what's the purpose of this - more garbage production?
+	move($input_seq_file, $input_seq_backup);
+	my $suffix;
+	    
+	if (@input_seq_files==1) {
+	    $suffix = "";
+	} else {
+	    $file_ct++;
+	    $suffix = "_g$file_ct"; # g, as in in "group number x"
+	}
+	system("$fasta_rename $input_seq_backup $name_resolution_file $suffix  > $input_seq_file");
+	`rm $input_seq_backup`;
 
        
         # if we still don't have the $ref_seq_name take the first one that appears in the alignment
@@ -249,6 +261,7 @@ sub process_input_data (@) {
 		$first_name_line = `grep 'Name' $input_seq_file | head -n1`;
 		$first_name_line =~ /Name\:\s*(\w+)/;
 		(defined $1 && $1) && ($ref_seq_name = $1);
+
 	    } else {
 		# Reload first name line
 		$first_name_line = `grep '>' $input_seq_file | head -n1`;
@@ -344,7 +357,7 @@ sub process_input_data (@) {
 
 	} elsif ( @lines < 1) {
 
-	    my $errmsg = "Error processing reference sequence name.";
+	    my $errmsg = "Error processing reference sequence name:";
 	    $errmsg .=   " $ref_seq_name not found in the input.\n$jobdir\n"; 
 	    html_die ($errmsg);
 	    
