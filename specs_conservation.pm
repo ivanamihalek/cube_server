@@ -130,9 +130,9 @@ sub conservation (@) {
     
     if($structure){
 
-	# check whether chain really exist in this structure
+	# check whether chain really exists in this structure
 	# otherwise we get nonsense
-	my $ret  = `awk \$1=="ATOM" $structure`;
+	my $ret  = `awk '\$1=="ATOM"' $structure | head -n1`;
 	my $chainID_in_pdb_file = substr ( $ret,  21, 1);
 	
 	$cmd = "$specs2pml  $score_method  $score_f  $structure $script ";
