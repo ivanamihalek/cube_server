@@ -274,7 +274,7 @@ sub  html_spreadsheet_cube(@){ # this is specific for cube output; won't work fo
 		    if($value !~ /(CONSERVATION|SPECIFICITY|REPRESENTATIVE SEQUENCES|ANNOTATION)/){
 			
 			if($value ne "" ){
-			    if($value =~ /(alm|gaps|pdb_id|pdb_aa|annot)/){
+			    if($value =~ /(alm|gaps|pdb_id|pdb_aa|annot|surf)/){
 			    
 				$html .= "<td rowspan = '2' width='80' bgcolor='\#$bgcolor_rgb'>$value</td>\n";
 			    }
