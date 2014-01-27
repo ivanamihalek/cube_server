@@ -252,6 +252,7 @@ sub  html_spreadsheet_cube(@){ # this is specific for cube output; won't work fo
     $html .= "<div class='exceldiv'>\n";
     $html .= "<table width='800' border='1' align='left' cellpadding='1' cellspacing='0' class='exceltable'>\n"; 
     
+    # I can't believe we are parsing the spreadsheet here ...
     for my $worksheet ( $workbook->worksheets() ) {
 
         my ( $row_min, $row_max ) = $worksheet->row_range();
@@ -273,17 +274,18 @@ sub  html_spreadsheet_cube(@){ # this is specific for cube output; won't work fo
 		    $bgcolor_rgb = $parser->ColorIdxToRGB($bgcolor);
 		    if($value !~ /(CONSERVATION|SPECIFICITY|REPRESENTATIVE SEQUENCES|ANNOTATION)/){
 			
-			if($value ne "" ){
-			    if($value =~ /(alm|gaps|pdb_id|pdb_aa|annot|surf)/){
+			if($value){
+			    if( ($value =~ /(alm|gaps|pdb_id|pdb_aa|annot)/) ||  ($row<2 && $value =~ /surf/) ){
 			    
 				$html .= "<td rowspan = '2' width='80' bgcolor='\#$bgcolor_rgb'>$value</td>\n";
-			    }
-			    elsif($value =~ /^insert/){
+
+			    }  elsif($value =~ /^insert/){
+
 				my $num_colspan = $col_max-7;
 				$html .= "<td colspan = '$num_colspan' width='80' ".
 				    "bgcolor='\#$bgcolor_rgb'><font size='0.5'>$value</font></td>\n";
-			    }
-			    else{
+
+			    }  else{
 				$html .= "<td width='80' bgcolor='\#$bgcolor_rgb'><font size='0.5'>$value</font></td>\n";
 			    }
 			}
