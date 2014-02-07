@@ -436,8 +436,9 @@ sub process_input_data (@) {
 	#$cmd = "$muscle -profile -in1 $alignment_file  -in2 $seq_file -out $jobdir/tmp.afa";
 	# actually lets use mafft - muscle profile can miss tha alignment for the sequence
         # which is already present in the big alignment
-	$cmd = "$mafft --add $seq_file $alignment_file  >$jobdir/tmp.afa";
+	$cmd = "$mafft --add $seq_file $alignment_file  > $jobdir/tmp.afa";
 	system($cmd) && html_die ("error running $cmd\n");
+	(-z "$jobdir/tmp.afa") && html_die ("error running $cmd:\nthe output is empty\n");
 	`mv $jobdir/tmp.afa $alignment_file`;
 
     }
