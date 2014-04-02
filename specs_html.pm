@@ -79,7 +79,7 @@ sub  html_conservation_body_top (@) {
 
     $html .= "<p>The residues are ranked according to the conservation score, and binned into 5% bins. \n".
 	"The bins are colored according to the legend. Note that if 30% or more positions are conserved, \n".
-	"the topmost bins will be empty, and the resulting map will be black-and-white. ".
+	"the topmost bins will be empty, and the resulting map will be black-and-white. \n".
 	"<a href='http://eopsf.org/cube/help/help.html#exons>Blue bars</a>, when present, indicate exon boundaries.</p>\n";
 
     $html .= "<p>The results will stay available for a week at this URL:<br>\n".
