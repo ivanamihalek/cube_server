@@ -297,14 +297,19 @@ sub process_input_data (@) {
 	}
 
 
+	# let's take that MSF represents aligned sequences - this
+        # way we don't have to pass the tickmark from ExoLocator
+
+	($alignment_format eq "MSF" ) && ($seq_not_aligned=0);
+
 	# if not aligned, align
 	if ($seq_not_aligned) {
 	    my $errlog;
-	    if($alignment_format eq "MSF" ){ #how could this happen ?
-		$cmd = "$msf2afa $input_seq_file > $input_seq_file.afa";
-		system($cmd) && html_die ("Error running $cmd\n");
-		`mv $input_seq_file.afa $input_seq_file`; 
-	    }
+	    #if($alignment_format eq "MSF" ){ #how could this happen ?
+	    #	$cmd = "$msf2afa $input_seq_file > $input_seq_file.afa";
+	    #	system($cmd) && html_die ("Error running $cmd\n");
+	    #	`mv $input_seq_file.afa $input_seq_file`; 
+	    #}
 	    
 	    # muscle reorders, but mafft makes somewhat crappier alignments
 	    #  mafft is more robust for bigger alignments 
