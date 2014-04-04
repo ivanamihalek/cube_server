@@ -305,8 +305,7 @@ sub process_input_data (@) {
 	# if not aligned, align
 	if ($seq_not_aligned) {
 	    open (LOG, ">$jobdir/log");
-	    print LOG "$alignment_format not aligned\n";
-	    print LOG "inputfile: $input_seq_file n";
+	    print LOG "input file  $input_seq_file ($alignment_format  format) not aligned\n";
 	    close LOG;
 
 	    my $errlog;
