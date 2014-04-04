@@ -304,6 +304,11 @@ sub process_input_data (@) {
 
 	# if not aligned, align
 	if ($seq_not_aligned) {
+	    open (LOG, ">$jobdir/log");
+	    print LOG "$alignment_format not aligned\n";
+	    print LOG "inputfile: $input_seq_file n";
+	    close LOG;
+
 	    my $errlog;
 	    #if($alignment_format eq "MSF" ){ #how could this happen ?
 	    #	$cmd = "$msf2afa $input_seq_file > $input_seq_file.afa";
@@ -529,7 +534,6 @@ sub process_input_data (@) {
     #############################################
     # restrict the sequence to the query 
     # 
-    open (LOG, ">$jobdir/log");
 
     my $input_name_root = delete_extension($alignment_file);
     my $restricted_msf = "$input_name_root\.restr.msf";
@@ -538,7 +542,6 @@ sub process_input_data (@) {
     } else {
 	$cmd = "$restrict $alignment_file_msf $ref_seq_name > $restricted_msf";
     }
-    print LOG $cmd."\n";
     (system $cmd) &&  html_die ("Error running\n$cmd.\n");
 
 
