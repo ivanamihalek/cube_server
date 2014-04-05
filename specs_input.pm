@@ -208,8 +208,12 @@ sub process_input_data (@) {
 	my $alignment_format = "";
 
 	if($first_name_line){ # we are assuming the msf format
+
 	    $alignment_format = "MSF";
-	    # how about we just get rid of the pesky msf input
+	    # let's take that MSF represents aligned sequences - this
+	    # way we don't have to pass the tickmark from ExoLocator
+	    $seq_not_aligned = 0;
+	    # otherwise,  we just get rid of the pesky msf input
 	    my $orig_input_seq_file = $input_seq_file;
 	    if ( $input_seq_file =~ /\.msf$/ ) {
 		$input_seq_file =~ s/msf$/afa/;
@@ -297,10 +301,6 @@ sub process_input_data (@) {
 	}
 
 
-	# let's take that MSF represents aligned sequences - this
-        # way we don't have to pass the tickmark from ExoLocator
-
-	($alignment_format eq "MSF" ) && ($seq_not_aligned=0);
 
 	# if not aligned, align
 	if ($seq_not_aligned) {
