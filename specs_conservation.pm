@@ -184,7 +184,7 @@ sub make_conservation_map_png(@){
     
     for my $i(0..$f_counter){
 	my $frm = $i*$range + 1;
-	my $to =  (($i+1)*$range > $f_counter+1) ?  $f_counter+1 : ($i+1)*$range;
+	my $to =  (($i+1)*$range > $resi_count) ?  $resi_count  : ($i+1)*$range;
 	
 	
 	$command = "java -jar $seqReport $score $png_root.$frm\_$to $frm $to";
