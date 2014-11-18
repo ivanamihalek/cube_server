@@ -1,0 +1,230 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01" >
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+  <title>specs</title>
+  <link rel="stylesheet" href="../cube_style.css" type="text/css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/qtip2/2.0.1/basic/jquery.qtip.min.css">
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/qtip2/2.0.1/basic/jquery.qtip.min.js"></script>
+  <script>
+    $(function(){$('[title]').qtip({hide:{delay:250,fixed:true},position:{at:'bottom left'}});});
+  </script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44819428-1', 'eopsf.org');
+  ga('send', 'pageview');
+
+</script>
+</head>
+
+<body>
+<div class="container">
+    <div class="mainmenu">
+        <ul>
+            <li><a href="http://cube.local/cube.html" >HOME</a></li>
+            <li><a href="http://cube.local/help/help.html" >HELP</a></li>
+            <li><a href="http://cube.local/code_dwnld.html">CODE</a></li>
+            <li><a href="http://eopsf.org/">ABOUT US</a></li>
+        </ul>
+    </div>
+
+    <div class="logo">
+        <img src="../images/cube_banner.png" width="830">
+    </div>
+
+    <div class="main">
+
+   <left_title>Obtaining homologous sequences  </left_title> 
+
+ 
+   <!------------------------------------------------------------------------->
+   <table  border="0" cellpadding="0" cellspacing="0" width="90%" align="left" >
+
+          <tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+          </tr>
+          <tr>
+		<td align="left" colspan=2> Why should I collect sequences on my own? 
+                <a href="why_get_seqs.html">Read here.</a></td>
+          </tr>
+          <tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+          </tr>
+
+          <tr>
+		<td align="left">A nice, but certainly not the only, place to look for sequences is  
+                   <a href  ="http://www.ncbi.nlm.nih.gov/blast/Blast.cgi?DATABASE=refseq_protein&PAGE=Proteins&PROGRAM=blastp" 
+                      target="_blank">NCBI's protein BLAST</a> website. We suggest using  RefSeq database, as shown on the right.
+	          <a href  ="http://en.wikipedia.org/wiki/RefSeq">RefSeq</a> 
+                      is non-redundant and curated, and thus provides good basis for the analysis.
+		</td>
+		<td> <img src="../images/refseq.608px.png" width="608"> </td>
+          </tr>
+
+          <tr>
+		<td align="left" colspan=2> Note also, that you can choose an organism group, 
+		such as 'Animalia'  in the drop-down menu.
+                 This too is a good idea, to keep your input into the downstream analysis controled.</a> 
+		</td>
+          </tr>
+    </table>	  
+
+   <!------------------------------------------------------------------------->
+    <table  border="0" cellpadding="0" cellspacing="0" width="90%" align="left" >
+         <tr>
+		<td align="left" colspan=2> Since we want a reliable alignment, rather than remote homologues of our guery sequence, 
+                  you might want to set the similarity ('Expect threshold') for your search to some small value.  
+		  You can also increase the number of sequences to be returned.
+                  </a> 
+		<td> <img src="../images/ncbi_params.310px.png" width="310"> </td>
+		</td>
+         </tr>
+          <tr>
+		<td align="left" colspan=3> Finally, select all sequences, and from Download menu select "FASTA (complete sequence)."
+                You might want to rename the file to something more descriptive then the name that NCBI's server provides.</a> 
+		</td>
+          </tr>
+
+        <tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+          </tr>
+          <tr>
+		<td align="left" colspan=3>An important caveat. 
+		  Getting sequences by simply blast-ing against a database is a strategy that will work for proteins
+                  (or their coding genes) that have no close relatives 
+                  (<a href="homologues.html">paralogues</a>)
+		  in the same genome. The 
+		  <a href="worked_examples/cons_examples.html">worked example for the conservation case</a> 
+		  is in that sense rigged: there, we are using a
+		  protein without known  paralogues in human and other vertebrates. 
+		  In the cases when this is not true - when your protein of interest falls in a whole family of related genes, 
+		  a <a href="getting_orthologues.html">different, safer, approach</a>  is needed.</td>
+          </tr>
+
+    </table>	  
+
+    <br>
+
+
+    <!------------------------------------------------------------------------>
+    <!------------------------------------------------------------------------>
+    <!------------------------------------------------------------------------>
+    <table  border="0" cellpadding="0" cellspacing="0" width="90%" align="left" >
+
+
+ 
+
+         <tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+          </tr>
+          <tr>
+		<td align="left" colspan=2>  Other places to explore:
+		</td>
+          </tr>
+         <tr>
+		<td>&nbsp;</td>
+		<td align="left"> <a href="http://www.uniprot.org/">UNPIROT</a> itself, as well as phylogenomic links for each protein
+		</td>
+		<td>&nbsp;</td>
+          </tr>
+
+         <tr>
+		<td>&nbsp;</td>
+		<td align="left"> <a href="http://www.ensembl.org/">ENSEMBL</a>
+		</td>
+		<td>&nbsp;</td>
+          </tr>
+
+         <tr>
+		<td>&nbsp;</td>
+		<td align="left"> <a href="http://flybase.org/">FlyBase</a>
+		</td>
+		<td>&nbsp;</td>
+          </tr>
+
+         <tr>
+		<td>&nbsp;</td>
+		<td align="left"> <a href="http://www.wormbase.org/">WormBase</a>
+		</td>
+		<td>&nbsp;</td>
+          </tr>
+
+
+         <tr>
+		<td>&nbsp;</td>
+		<td align="left"> <a href="http://www.yeastgenome.org/">Saccharomyces Genome Database (SGD)</a>
+		</td>
+		<td>&nbsp;</td>
+          </tr>
+
+ 
+
+ 
+        <tr>
+		<td>&nbsp;</td>
+		<td align="left"> <a href="http://genome-www.stanford.edu/"> Stanford Genomic Resources</a>
+		</td>
+		<td>&nbsp;</td>
+          </tr>
+
+ 
+        <tr>
+		<td>&nbsp;</td>
+		<td align="left"> <a href="http://www.genedb.org/"> GeneDB</a>
+		</td>
+		<td>&nbsp;</td>
+          </tr>
+
+ 
+          <tr>
+		<td align="left" colspan=2> Our own:
+		</td>
+          </tr>
+
+         <tr>
+		<td>&nbsp;</td>
+		<td align="left"> <a href="http://exolocator.bii.a-star.edu.sg/">ExoLocator</a>
+		</td>
+		<td>&nbsp;</td>
+          </tr>
+
+ 
+         <tr>
+		<td>&nbsp;</td>
+		<td align="left"> <a href="http://orthobalancer.bmad.bii-sg.org">OrthoBalancer</a>
+		</td>
+		<td>&nbsp;</td>
+          </tr>
+
+ 
+    </table>
+
+    
+    </div>
+
+    <div class="footer">
+           By <a href="http://eopsf.org/">EPSF</a>, 
+           a part of <a href="http://www.bii.a-star.edu.sg/research/bmad/bmad.php"> 
+           Biomolecular Modeling and Design Division</a>, 
+           <a href="http://www.bii.a-star.edu.sg">BII</a>, <a href="http://www.a-star.edu.sg">A*STAR</a>. Design by Harpy.
+    </div>
+
+
+</div>
+
+
+</body>
+</html>
+

@@ -44,6 +44,7 @@ use Spreadsheet::ParseExcel;
 use Spreadsheet::ParseExcel::Format;
 use IO::Handle;
 
+# can I delet this?
 use lib '/var/www/dept/bmad/htdocs/projects/EPSF/struct_server/scripts';
 use MiscUtil;
 use MolGfx;

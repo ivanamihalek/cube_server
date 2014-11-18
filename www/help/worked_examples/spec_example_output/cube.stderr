@@ -1,0 +1,17 @@
+	                           acc    10.00
+	                      almtname     /tmp/specs_050119495618151/all.restr.msf
+	                       compare     OFF
+	                          dssp     /tmp/specs_050119495618151/2fyd.dssp
+	               exchangeability     OFF
+	                        extern     (string array)
+	                        groups     /tmp/specs_050119495618151/groups
+	                      max_gaps     0.30
+	                       outname     /tmp/specs_050119495618151/out
+	              patch_sim_cutoff     0.40
+	              patch_min_length     0.40
+	              guess_bad_transl     OFF
+	                      pdb_file     /tmp/specs_050119495618151/2fyd.pdb
+	                           raw     OFF
+	                   rate_matrix     /var/www/dept/bmad/htdocs/projects/EPSF/specs_server/src/hypercube/08_data/tillier.table
+	                      pdb_name     pdb_2fyd
+No chain specified. Using the first one.

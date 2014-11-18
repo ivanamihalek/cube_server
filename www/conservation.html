@@ -1,0 +1,259 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01" >
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+  <title>Cube - conservation</title>
+  <link rel="stylesheet" href="cube_style.css" type="text/css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/qtip2/2.0.1/basic/jquery.qtip.min.css">
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/qtip2/2.0.1/basic/jquery.qtip.min.js"></script>
+  <script src="cube.js"></script>
+  <script>
+    $(function(){
+	$('[title]').qtip({hide:{delay:250,fixed:true},position:{at:'bottom left'}});
+	moreFields();
+	document.getElementById("ar").disabled = true;
+	$('.annotations').hide(); });
+  </script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44819428-1', 'eopsf.org');
+  ga('send', 'pageview');
+
+</script>
+</head>
+
+<body>
+
+<div id="readroot" style="display:none"><input type="text" name="gene_name"></div>
+<div id="readroot_range" style="display:none"><input type="text" name="range"></div>
+<div id="readroot_inf" style="display:none"><input type="text" name="information"></div>
+
+<div class="container">
+
+  <div class="mainmenu">
+    <ul>
+      <li><a href="http://cube.local/cube.html" >HOME</a></li>
+      <li><a href="http://cube.local/help/help.html" >HELP</a></li>
+      <li><a href="http://cube.local/code_dwnld.html">CODE</a></li>
+      <li><a href="http://eopsf.org/">ABOUT US</a></li>
+    </ul>
+  </div>
+
+  <div class="logo">
+    <img src="images/cube_banner.png" width="830">
+  </div>
+
+  <div class="main">
+
+
+
+    <table  border="0" align="center"  cellpadding="0" cellspacing="0" width="100%" align="right" >
+        <tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+        </tr>
+
+        <tr>
+		<td align="left" width="25%">&nbsp;</td>
+		<td align="left" width ="65%" > <left_title>Relative conservaton of protein residues
+		 </left_title>  </td>
+		<td >&nbsp;</td>
+        </tr>
+    </table>    
+
+
+    <form action="../cgi-bin/cube/specs.cgi" enctype="multipart/form-data" method="post" name="specsform">
+    <table border="0" align="center"  cellpadding="0" cellspacing="0" width="90%" align="right">
+
+      <tr>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+      </tr>
+
+      <tr>
+	<td align="left" width="25%"> <a title=
+	"The results will be reported only for the positions that exist in this sequence.
+	 If no reference sequence is given, the first squence in the alignment will be used."
+	href="./help/help.html#input">
+	The name of the reference sequence</a> [optional]</td>	
+      	<td align="left" width="35%"> <input name="qry_nm" type="text" size="15"> </td>
+	<td>&nbsp;</td>
+      </tr>
+    
+      <tr>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+      </tr>
+
+      <tr>
+	<td align="left" width="25%"> <a title="A file containing input sequences - presumably all 
+	                               <a href='http://en.wikipedia.org/wiki/Homology_%28biology%29#Sequence_homology'>
+				       homologous</a> to each other. &nbsp;
+	                                        <a href='help/getting_seqs.html'>Click here</a> 
+                                                if you do not have a set of sequences yet.  &nbsp;
+					<a href='help/help.html#names'>Read more</a> about FASTA format." 
+	                                 href="help/help.html#input">File with a list of sequences</a>
+	<br>[in GCG or FASTA format]</td>
+	<td align="left" width="35%"><input  type="file" name="fnm" size="15">
+	  <br> examples: <a href="help/fasta_example.txt">FASTA</a> &nbsp; <a href="help/gcg_example.txt">GCG</a>
+	</td>
+	<td align="left"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="checkbox" name="ckb" value=1>
+              <span title="Tick here if you do not want  the server to (re)align your set of sequences.">
+		        Already aligned?</span></td>
+      </tr>
+
+      <tr>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+      </tr>
+
+      <tr>
+	<td align="left" width="25%"><a title="PDB file with structure of reference sequence. <br>
+	A <a href='help/pymol_output.html'>PyMol session</a> 
+           will be generated indicating the levels of conservation on the structure. 
+	   <a href='help/getting_structure.html'>Click here</a>  if you are not sure where to look for the structure."
+	 href="help/help.html#input">Structure file</a><br>[optional]</td>
+	<td align="left" width="35%"><input  type="file" name="structure" size="15"> </td>
+	<td align="left"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Chain <input type="text" name="chain" size="1" value ="A"></td>
+      </tr>       
+
+      <tr>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+      </tr>
+
+      <tr>
+	<td align="left" width="25%"> <a title="Conservation scoring method." 
+	href="help/help.html#refs">Method</a></td>
+	<td align="left" width="35%"> 
+	  <select name="method">
+	     <option value="rvet">   real-valued ET  </option>
+	     <option value="entr">   Shannon entropy  </option>
+	     <option value="maj">    majority fraction   </option>
+	     <option value="valdar"> Valdar </option>
+	     <option value="ivet">   integer-valued ET</option>
+	     <option value="rvet_s"> rvET    with similarity</option>
+	     <option value="entr_s"> entropy with similarity</option>
+	     <option value="iv_s">   ivET with similarity</option>
+	     <option value="maj_s">  majority  fraction with similarity</option>
+	   </select></td>
+	<td align="left" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	    <a href="help/worked_examples/cons_examples.html">worked examples</a>
+        </td>
+      </tr>
+
+     <tr>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+      </tr>
+
+
+      <tr>
+	<td width="20%" align="left"> <input type ="submit" name="sub" value="submit" onclick="return submitform(specsform)"> </td>
+	<td width="20%" align="left"> <input type ="reset"  name ="reset" value = "clear"></td>
+	<td align="left" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	    <a href="help/help.html#refs">how to cite</a> </td>
+      </tr>
+      <tr>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+      </tr>
+
+     <tr> <td colspan="3"> <hr> </td> </tr>
+      <tr>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+      </tr>
+      
+
+      <tr>
+        <td align="left">  <input type="button" name="addanno" 
+	             title="Contribute your own annotation, using numbering in any sequence you have provided.
+                             It will be added to the 
+			    <a href='http://cube.local/help/xls_output.html#cons'>spreadsheet</a> Cube produces." 
+	             value="Add annotation" 
+		     onclick=toggleA(this)>
+              <input id="anno" type="hidden" 
+                     name="anno" value="0">
+        </td>
+
+	<td>&nbsp;</td>
+
+        <td align="left"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" name="addrows" id="ar" 
+                          value="Add row" onclick=moreFields() disabled="true">
+        </td>
+      </tr>
+
+      <tr class="annotations">
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+
+      <tr class="annotations">
+        <th align="left" title="For long names <a href='help/help.html#names'>check here</a>.">Sequence name
+	</th>
+        <th align="left" title="Example: 45-56, 83, 115">
+	Position(s)
+	</th>
+        <th align="left" title="Almost anything can be processed, but please<br>try to stay away from special characters.">Annotation</th>
+      </tr>
+
+      <tr class="annotations">
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+
+      <tr class="annotations">
+        <td align="left"><span id="writeroot"></span></td>
+        <td align="left"><span id="writeroot_range"></span></td>
+        <td align="left"><span id="writeroot_inf"></span></td>
+      </tr>
+
+ 
+      <tr>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+      </tr>
+
+       <tr>
+	<td width="20%" align="left"> <input type="submit" name="sub" value="submit" onclick="return submitform(specsform)"> </td>
+	<td width="20%" align="left" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
+	<td align="left" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+      </tr>
+
+      <tr>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+      </tr>
+    </table>
+    </form>
+  </div>
+
+  <div class="footer">
+     By <a href="http://eopsf.org/">EPSF</a>, a part of
+     <a href="http://www.bii.a-star.edu.sg/research/bmad/bmad.php">Biomolecular Modeling and Design Division</a>, 
+     <a href="http://www.bii.a-star.edu.sg">BII</a>, <a href="http://www.a-star.edu.sg">A*STAR</a>. Design by Harpy.
+  </div>
+
+</div>
+</body>
+
+</html>

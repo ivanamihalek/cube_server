@@ -1,0 +1,17 @@
+almtname
+
+
+groups
+patch_sim_cutoff  .40
+patch_min_length  .40
+
+outname
+
+!pdb_name
+!pdb_file
+
+!exchangeability
+
+max_gaps  0.3
+
+rate_matrix  /var/www/dept/bmad/htdocs/projects/EPSF/specs_server/src/hypercube/08_data/tillier.table

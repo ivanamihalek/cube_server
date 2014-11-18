@@ -1,6 +1,9 @@
 
 # Compiled source #
 ###################
+bin
+# src fiels are to be pulled from their own git repos
+src
 struct
 *.com
 *.class
