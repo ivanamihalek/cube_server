@@ -2,32 +2,23 @@
 
 use strict;
 
-use File::Spec;
 use CGI;
-
-#use lib "/home/westleys/cgi-bin";
-#use lib "/var/www/dept/bmad/htdocs/projects/EPSF/cgi-bin";
-use lib "/var/www/dept/bmad/htdocs/projects/EPSF/struct_server/scripts";
-
-use MiscUtil;
-use MolGfx;
-use PostShow;
 
 my $errmsg;
 
 my $cgi = new CGI;
 ($errmsg, my $filenm) = getCgiParams($cgi);
-($errmsg eq '') or dieErrPage($cgi, "couldn't get CGI params: $errmsg");
+($errmsg eq '') or exit;
 
 
 ($errmsg, my $data) = slurp("$filenm");
-    ($errmsg eq '') or dieErrPage($cgi, "couldn't slurp zipfile: $errmsg");
+($errmsg eq '') or exit;
 
-    print("Content-Type:image/png\n");  
-    print("\n");
+print("Content-Type:image/png\n");  
+print("\n");
 
-    burp($data);
-    exit;
+burp($data);
+exit;
 
 
 

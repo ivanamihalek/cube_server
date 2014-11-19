@@ -1,16 +1,13 @@
-#!/usr/bin/perl -w -I/var/www/dept/bmad/htdocs/projects/EPSF/struct_server/scripts/SendMail-2.09
+#!/usr/bin/perl -w 
 
 use strict;
-use Switch;
 use warnings;
 use CGI;
 use CGI::Push qw(:standard);
 use CGI qw(:standard -debug);
 use Data::Dumper;
-use SendMail;
 use MIME::QuotedPrint;
 use MIME::Base64;
-use Mail::Sendmail;
 use File::Copy;
 
 #use lib '/home/zhangzh/struct_server/scripts';

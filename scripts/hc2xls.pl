@@ -6,7 +6,6 @@
 # doc: 
 # http://search.cpan.org/dist/Spreadsheet-WriteExcel/lib/Spreadsheet/WriteExcel.pm
 
-use Switch;
 
 use Spreadsheet::WriteExcel;                             # Step 0
 

@@ -1,7 +1,6 @@
 #! /usr/bin/perl -w
  
 
-use Switch;
 sub set_palettes();
 
 

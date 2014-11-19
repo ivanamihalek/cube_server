@@ -16,7 +16,7 @@ sub specialization (@){
     my ($jobID, $jobdir,  $ref_seq_name,  $ref_group, $alignment_file, $group_file, $score_method,
 	$seq_not_aligned,  $seq_annotation_ref, $name_resolution_file,
 	$structure, $struct_name, $chainID, $structure_single_chain,  $dssp,
-	$cube, $cube_cmd_template, $hc2xls,  $seqReportEE, $hc2pml, $pymol, $zip, $jmol_folder) = @_;
+	$cube, $cube_cmd_template, $hc2xls,  $seqReportEE, $hc2pml, $pymol, $zip) = @_;
 
     my $cmd_file = "$jobdir/cmd"; #cmd file for hyper cube
     my $htmlf    = "$jobdir/display.html";
@@ -177,9 +177,7 @@ sub specialization (@){
     #############################################
     #generate header
     my $html_header;
-    my $java_script = "";
-    $structure &&  ($java_script = "$jmol_folder/Jmol.js");
-    $html_header = html_generic_head($java_script);
+    $html_header = html_generic_head("");
     
 
     #############################################
@@ -194,8 +192,6 @@ sub specialization (@){
 	my ($html_pyml,$html_chi_specs, $html_chi_cons);
 	$html_body .= html_generic_downloadables ($xls,  $score_file, $dirzipfile,
 						  $pymol_session,  $png_ref, $map_name, $job_type);
-	# jmol just too foogly
-	#$html_body .= html_jmol ($jobdir, $jmol_folder, $pymolscript);
 
     } else{
 	$html_body .= html_generic_downloadables ($xls,  $score_file, $dirzipfile, $png_ref, $map_name, $job_type);

@@ -2,6 +2,8 @@ use strict;
 use File::Copy;
 sub process_annotation (@);
 
+my $homepage = "cube.local";
+
 ##############################################################################
 sub process_input_params(@){
 
@@ -231,8 +233,8 @@ sub process_input_data (@) {
 	    } else {
 		$errmsg = "<P>The alignment format not recognized for $input_seq_file.\n".
 		    "Check ".
-		    " <a href=\"http://eopsf.org/cube/help/gcg_example.txt\">here (GCG, a.k.a. MSF)</a>".
-		    " and  <a href=\"http://eopsf.org/cube/help/fasta_example.txt\">here (FASTA)</a>\n" .
+		    " <a href=\"http://$homepage/help/gcg_example.txt\">here (GCG, a.k.a. MSF)</a>".
+		    " and  <a href=\"http://$homepage/help/fasta_example.txt\">here (FASTA)</a>\n" .
 		    "for  examples of the two formats that the current implementation recognizes.";
 		return ($errmsg, "");
 	    }

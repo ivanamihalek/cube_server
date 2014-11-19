@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w -I/var/www/dept/bmad/htdocs/projects/EPSF/struct_server/scripts/SendMail-2.09
+#!/usr/bin/perl -w
 ######################################################################
 ## Script : Specs.pl
 ## 
@@ -8,9 +8,7 @@
 ## Description : Get input from Specs server   
 ## Modifications : 
 ######################################################################
-#use FileHandle;
-#use Switch;
-#use POSIX qw(:sys_wait_h);
+
 use strict;
 
 
@@ -27,7 +25,6 @@ use specs_conservation;
 use specs_specialization;
 
 use DB_File;
-use Switch;
 use warnings;
 use CGI;
 #use CGI::Carp qw(carpout fatalsToBrowser);
@@ -35,24 +32,19 @@ use CGI;
 use CGI qw(:standard -debug);
 use CGI::Push qw(:standard);
 use Data::Dumper;
-use SendMail;
 use MIME::QuotedPrint;
 use MIME::Base64;
-use Mail::Sendmail;
 use File::Copy;
 use Spreadsheet::ParseExcel;
 use Spreadsheet::ParseExcel::Format;
 use IO::Handle;
 
-# can I delet this?
-use lib '/var/www/dept/bmad/htdocs/projects/EPSF/struct_server/scripts';
-use MiscUtil;
-use MolGfx;
 
-
+# host machine  - used to set up the paths to third-party dependencies - see below
+my $host = "bigmac";
 
 # directory tree
-my $dir              = "/var/www/dept/bmad/htdocs/projects/EPSF/specs_server";
+my $dir              = "/Users/ivana/cube_server/";
 my $scratchdir       = "/tmp";
 
 
@@ -85,15 +77,29 @@ my $seqReportEE       = "$dir/bin/SeqReportEE.jar";
 
 # third party 
 my $muscle            = "$dir/bin/muscle";
-my $mafft             = "/usr/local/bin/mafft";
 my $dssp              = "$dir/bin/dssp";
 
-my $pymol             = "/cluster/apps/x86_64/bin/pymol";
-my $zip               = "/usr/bin/zip";
-my $jmol_folder       = "http://eopsf.org/cube/db/jmol";
+
+my $mafft;
+my $pymol;
+my $zip;
+
+if ($host eq  "reindeer") {
+    $mafft             = "/usr/local/bin/mafft";
+    $pymol             = "/cluster/apps/x86_64/bin/pymol";
+    $zip               = "/usr/bin/zip";
+
+} elsif ($host eq "bigmac") {
+    $mafft             = "/usr/local/bin/mafft";
+    $pymol             = "/Applications/molviz/MacPyMOL.app/Contents/MacOS/MacPyMOL";
+    $zip               = "/usr/bin/zip";
+
+} else {
+    diehard ("SPECS","no setup for the host machine $host provided\n");
+}
 
 
-foreach ($scratchdir,$dir,$restrict,$specs){
+foreach ($scratchdir, $dir, $restrict, $specs){
     (-e $_) || diehard ("SPECS","$0: $_ not found\n");
 }
 
@@ -172,7 +178,7 @@ if ($new_job) {
 	specialization($jobID, $jobdir, $ref_seq_name,  $ref_group, $alignment_file, $group_file, $score_method,
 		       $seq_not_aligned, $seq_annotation_ref, $name_resolution_file,
 		       $structure_file, $structure_name,  $chainID, $structure_single_chain,  $dssp,
-		       $cube, $cube_cmd_template, $hc2xls, $seqReportEE, $hc2pml, $pymol, $zip, $jmol_folder);
+		       $cube, $cube_cmd_template, $hc2xls, $seqReportEE, $hc2pml, $pymol, $zip);
     }
 
 # spit out previously calculated page

@@ -1,7 +1,8 @@
+
 use strict;
 
 
-##################################################################################################
+#########################################################################
 sub reorder_fasta (@) {
     my ($list, $fasta, $outfile, $flag) = @_; 
     (-e $list) || return 1;
@@ -211,5 +212,29 @@ sub add_annotation(@){
     return  $score_annot_file;
 }
 
+##############################################
+
+sub diehard{
+
+    my ($server_nm, $msg) = @_;
+    print "Content-type: text/html\n\n";
+    #print "<br>deconSTRUCT server ran into a problem. The authors have been notified. <br><br>\n";
+    print "<br>$server_nm server ran into a problem. The authors have been notified. <br><br>\n";
+
+    close STDIN; 
+    close STDOUT;
+    close STDERR;
+    exit;
+}
+
+sub diesoft{
+    print "Content-type: text/html\n\n";
+    print "$_[0] <br><br>\n";
+
+    close STDIN; 
+    close STDOUT;
+    close STDERR;
+    exit;
+}
 
 return 1;
