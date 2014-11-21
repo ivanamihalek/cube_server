@@ -18,7 +18,7 @@ sub reorder_fasta (@) {
     my $name;
 
     open ( FASTA, "<$fasta") ||
-	die "Cno $fasta: $!\n";
+	die "spec_utils, reorder_fasta():  Cno $fasta: $!\n";
 
     while ( <FASTA> ) {
 	next if ( !/\S/);
@@ -229,7 +229,7 @@ sub diehard{
 
 sub diesoft{
     print "Content-type: text/html\n\n";
-    print "$_[0] <br><br>\n";
+    print "$_[0] <br><br> $_[1]  <br><br> \n";
 
     close STDIN; 
     close STDOUT;

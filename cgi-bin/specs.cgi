@@ -44,7 +44,7 @@ use IO::Handle;
 my $host = "bigmac";
 
 # directory tree
-my $dir              = "/Users/ivana/cube_server/";
+my $dir              = "/Users/ivana/cube_server";
 my $scratchdir       = "/tmp";
 
 

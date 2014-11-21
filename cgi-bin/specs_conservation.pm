@@ -97,11 +97,10 @@ sub conservation (@) {
     $cmd = "awk \'\$1 \!= \"\%\"  && \$4 \!= \".\"   \{print \$3 \"  \" \$4 \"   \" \$5\}\' $score_f > $png_input"; 
     (system $cmd) && html_die ("<pre> $cmd </pre>");
     
-
-    my @resi_cnt = split(/\s/, `awk '\$2 \!= "Z"' $png_input | wc -l `);
-    my $num_resi = $resi_cnt[0];
+    my $num_resi =  `awk '\$2 \!= "Z"' $png_input | wc -l `;  $num_resi =~ s/\s//g;
     my $range = 400;
-    ($errmsg, my $png_ref) = make_conservation_map_png($seqReport, $num_resi, $png_f, $png_input, $range);
+
+    ($errmsg, my $png_ref) = make_conservation_map_png($seqReport, $num_resi, $png_f, $png_input, $range, $jobdir);
 
     ($errmsg eq "") || html_die("<pre> $errmsg </pre>");
     
@@ -177,7 +176,7 @@ sub conservation (@) {
 ######################################################################################################
 ######################################################################################################
 sub make_conservation_map_png(@){
-    my($seqReport, $resi_count, $png_root, $score, $range) = @_;
+    my($seqReport, $resi_count, $png_root, $score, $range, $jobdir) = @_;
     my $f_counter = int($resi_count/$range);
     my @pngfiles = ();
     my $command;
@@ -185,9 +184,8 @@ sub make_conservation_map_png(@){
     for my $i(0..$f_counter){
 	my $frm = $i*$range + 1;
 	my $to =  (($i+1)*$range > $resi_count) ?  $resi_count  : ($i+1)*$range;
-	
-	
-	$command = "java -jar $seqReport $score $png_root.$frm\_$to $frm $to";
+
+	$command = "java -jar $seqReport $score $png_root.$frm\_$to $frm $to > $jobdir/seqReport.out 2>&1";
 	
 	if (system($command)) {
 	    $command =~ s/\s+/\n/g;
@@ -198,8 +196,6 @@ sub make_conservation_map_png(@){
     }
     
     return ("",\@pngfiles);
-
-    
 }
 
 

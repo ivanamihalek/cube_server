@@ -1,4 +1,5 @@
-Migrating a server
+<pre>
+Migrating the server
 
 ==========================================================
 1) COMPILING SPECS AND HYPERCUBE
@@ -72,3 +73,4 @@ my $homepage = "cube.local";
 If you really want to claim the server as yours, replace the reference to eopsf.org
 to whatever your address is.  We might have to sue you over that. Otherwise the addrese 
 should be relative.
+</pre>

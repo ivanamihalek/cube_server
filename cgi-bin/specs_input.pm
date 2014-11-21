@@ -322,9 +322,9 @@ sub process_input_data (@) {
 	    my $number_seqs  = `grep  \'>\' $input_seq_file | wc -l`;
 	    chomp $number_seqs;
 	    if ( $number_seqs < 150 ) {
-		$cmd = "$muscle -in $input_seq_file -out  $jobdir/tmp.afa >>  $jobdir/muscle.out 2>&1";
-		$errlog = `cat $jobdir/muscle.out`;
-		system($cmd) && html_die("Error running $cmd:\n$errlog\n");
+		$cmd = "$muscle -in $input_seq_file -out  $jobdir/tmp.afa >  $jobdir/muscle.out 2>&1";
+		system($cmd);
+		(-e "$jobdir/tmp.afa" && ! -z "$jobdir/tmp.afa") || html_die("Error running<br>$cmd<br>$!\n");
 
 		if  ( reorder_fasta ($name_resolution_file,  "$jobdir/tmp.afa",  $alignment_file) ) {
 		    $cmd = "mv  $jobdir/tmp.afa $alignment_file";
@@ -408,12 +408,12 @@ sub process_input_data (@) {
 	for my $aln ( @alignment_files[1 .. $#alignment_files] ) {
 	    `mv  $last_aln $prev_aln`;
 	    $cmd  = "$muscle -profile -in1 $prev_aln -in2 $aln  -out $last_aln >>  $jobdir/muscle.out 2>&1";
-	    if (system($cmd))  {
+	    if (-z $last_aln)  {
 		my $errlog = `cat $jobdir/muscle.out`;
 		my $msg = "Error creating profile alignment.\n".
 		    "Are your sequences aligned? If not, please ".
 		    "tick the 'My sequences are not aligned' checkbox.\n";
-		html_die("$msg\n$errlog\n");
+		diesoft("$msg", "$errlog");
 	    }
 	}
 	`rm $prev_aln`;
