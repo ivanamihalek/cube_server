@@ -264,22 +264,29 @@ sub  html_spreadsheet_cube(@){ # this is specific for cube output; won't work fo
 	
 	
 	for $row ( $row_min .. $row_max ) {
-
+	    
 	    $html .= "<tr>\n";
-
-            for $col ( $col_min .. ($col_max -7)) {
+	    # $col_max -7 because we are skipping the colorbar legend
+            for $col ( $col_min .. ($col_max-7)) {
 		$cell = $worksheet->get_cell( $row, $col );
                 
 		if($cell){
+		    $value  = $cell->value();
 		    $format = $cell->get_format();
-		    $bgcolor = ${$format->{Fill}}[1];
-		    $value = $cell->value();
-		    $bgcolor_rgb = $parser->ColorIdxToRGB($bgcolor);
+		    # something's off with the naming scheme in xls:
+		    # (you would thingk that bg and fg are switched here)
+		    my ($pattern, $front_color, $back_color) = @{$format->{Fill}};
+		    if ($pattern) {		    
+			$bgcolor_rgb = $parser->ColorIdxToRGB($front_color);
+		    } else {
+			$bgcolor_rgb = "FFFFFF";
+		    }
+		    
 		    if($value !~ /(CONSERVATION|SPECIFICITY|REPRESENTATIVE SEQUENCES|ANNOTATION)/){
 			
-			if($value){
+			if ($value || $value=~/\d/) { # this is the only way I could smuggle the numeric equal to zero through here
 			    if( ($value =~ /(alm|gaps|pdb_id|pdb_aa|annot)/) ||  ($row<2 && $value =~ /surf/) ){
-			    
+				
 				$html .= "<td rowspan = '2' width='80' bgcolor='\#$bgcolor_rgb'>$value</td>\n";
 
 			    }  elsif($value =~ /^insert/){
@@ -292,7 +299,7 @@ sub  html_spreadsheet_cube(@){ # this is specific for cube output; won't work fo
 				$html .= "<td width='80' bgcolor='\#$bgcolor_rgb'><font size='0.5'>$value</font></td>\n";
 			    }
 			}
-		
+			
 		    }
 		    else{
 			($value =~ /(CONSERVATION)/) && ($colspan = $number_of_ref_seqs+1);

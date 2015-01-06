@@ -14,4 +14,4 @@ outname
 
 max_gaps  0.3
 
-rate_matrix  /var/www/dept/bmad/htdocs/projects/EPSF/specs_server/src/hypercube/08_data/tillier.table
+rate_matrix /Users/ivana/cube_server/src/hypercube/08_data/tillier.table

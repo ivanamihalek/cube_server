@@ -11,8 +11,30 @@ Clone to whichever directory you find handy, and compile by moving to 10_objects
 and typing make. That should work in both cases. Move the produced binaries to
 bin directory of the server.
 
+In particular, make sure that src/hypercube/08_data/tillier.table exists,
+and that the full path to is is given in cmd_template_cub, as
+rate_matrix  $PATH_TO_SPECS_SERVER/src/hypercube/08_data/tillier.table
+
 ==========================================================
-2) MUSCLE AND DSSP
+2) COMPILING JAVA PIECES
+
+In java dir:
+mkdir seqreport
+cp SeqReport.java seqreport/
+cd seqreport/
+javac SeqReport.java
+cd ..
+jar cvfe SeqReport.jar seqreport.SeqReport seqreport
+rm -rf seqreport
+
+(Alternatively, you can just let NetBeans or Eclipse to this for you)
+
+Repeat for SeqReportEE.
+
+Move the jarfiles to (this server's) bin directory.
+
+==========================================================
+3) MUSCLE AND DSSP
 
 Obtain a copy of Muscle and DSSP program for your platform, and place in bin.
 http://www.drive5.com/muscle/
@@ -31,7 +53,10 @@ mkdssp section
 * dssp is called mkdssp, for some reason
 
 ==========================================================
-3) OTHER DEPENDENCIES
+4) OTHER DEPENDENCIES
+
+On several places we use perl's system() command, with  the underlying assumption
+that it will invoke bash shell for controlled stdout/stderr redirection.
 
 THe following programs are expected to be installed on the computer the server 
 will be running on: mafft, pymol  and zip. See the next section about fixing
@@ -47,7 +72,7 @@ As it goes, these two modules depend on Crypt-RC4 and Digest-Perl-MD5, so the pr
 has to be repeated for them too.
 
 ==========================================================
-4) FIXING THE PATHS
+5) FIXING THE PATHS
 
 == In cgi-bin/specs.cgi ==
 
@@ -58,7 +83,7 @@ Adjust the paths to the third party programs: $mafft, $pymol and $zip. You can
 add a chunk of code corresponding to your $host, defined at the top of the file.
 
 ==========================================================
-5) FIXING THE HTML ADDRESSES
+6) FIXING THE HTML ADDRESSES
 
 == In cgi-bin/specs_html.pm and  cgi-bin/specs_input.pm ==
 

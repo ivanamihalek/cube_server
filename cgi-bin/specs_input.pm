@@ -254,7 +254,7 @@ sub process_input_data (@) {
 	    $suffix = "";
 	} else {
 	    $file_ct++;
-	    $suffix = "_g$file_ct"; # g, as in in "group number x"
+	    $suffix = "_g$file_ct"; # gx, as  in "group number x"
 	}
 	system("$fasta_rename $input_seq_backup $name_resolution_file $suffix  > $input_seq_file");
 	`rm $input_seq_backup`;
@@ -407,7 +407,9 @@ sub process_input_data (@) {
 	`cp $alignment_files[0] $last_aln`;
 	for my $aln ( @alignment_files[1 .. $#alignment_files] ) {
 	    `mv  $last_aln $prev_aln`;
-	    $cmd  = "$muscle -profile -in1 $prev_aln -in2 $aln  -out $last_aln >>  $jobdir/muscle.out 2>&1";
+	    $cmd  = "$muscle -profile -in1 $prev_aln -in2 $aln  -out $last_aln >  $jobdir/muscle.out 2>&1";
+	    # system  commaind will use bash, usually -- we are ounting on it for the output redirect
+	    system ($cmd);
 	    if (-z $last_aln)  {
 		my $errlog = `cat $jobdir/muscle.out`;
 		my $msg = "Error creating profile alignment.\n".
