@@ -1,103 +1,119 @@
 {% extends "base.html" %}
 {% block content %}
-  <div class="main">
-    <table  border="0" cellpadding="0" cellspacing="0" width="90%" align="left" >
-         <tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-       </tr>
+<div class="main">
+	<table  border="0" cellpadding="0" cellspacing="0" width="90%" align="left" >
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
 
-      <tr>
-                <td width = "30%">&nbsp;
-		</td>
-     		<td align="center" width="40%">
-		    <img src="{{ url_for('static', filename='images/cons_map.frame.png') }}" width="245">
-		</td>
-		<td align="left" width = "30%">
-		   <table width= 100%>
-		       <tr><td>
-		        <a href="{{ url_for('activity.cons') }}"> (conservation - this way) </a>
- 		       </td></tr>
-		       <tr><td>
-		          <a href="{{ url_for('activity.cons') }}" title="Upload your sequences for the analysis" >
-		          <img src="{{ url_for('static', filename='images/this_way.png') }}" width="113">
-			  </a>
- 		       </td></tr>
-		       <tr><td>
-		          <a href="{{ url_for('help.cons_why') }}" title="Click to read more">
-		          <img src="{{ url_for('static', filename='images/question_mark.130px.png') }}" width="60" align="center">
- 			  </a>
- 		       </td></tr>
+		<tr>
+			<td width = "30%">&nbsp;</td>
 
-		     </table>
-		</td>
-       </tr>
-
-       <tr>
-		<td width = "30%">&nbsp;</td>
-		<td align="left" width="40%">
-		<left_title>Score the overall
-			<b title="<a href='http://en.wikipedia.org/wiki/Sequence_conservation'>Conserved subsequences</a>
-			across species are likely<br>to have functional value, and can guide e.g.
-			<br><a href='http://en.wikipedia.org/wiki/Site-directed mutagenesis'>site-directed mutagenesis</a>.">conservation</b>
-			in your set of protein sequences.
-		    Map it onto  reference sequence and structure.</h5></left_title>
+			<td align="center" width="40%">
+				<img src="{{ url_for('static', filename='images/cons_map.frame.png') }}" width="245">
+			</td>
 
 
-		</td>
-		<td>&nbsp;</td>
-       </tr>
+			<td align="left" width = "30%">
+				<table width= 100%>
+					<tr>
+						<td>
+							<a href="{{ url_for('activity.cons') }}"> (conservation - this way) </a>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="{{ url_for('activity.cons') }}" title="Upload your sequences for the analysis" >
+								<img src="{{ url_for('static', filename='images/this_way.png') }}" width="113">
+							</a>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="{{ url_for('help.cons_why') }}" title="Click to read more">
+								<img src="{{ url_for('static', filename='images/question_mark.130px.png') }}" width="60" align="center">
+							</a>
+						</td>
+					</tr>
 
-       <tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-       </tr>
+				</table>
+			</td>
+		</tr>
 
 
-       <tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-       </tr>
 
-       <tr>
-		<td>&nbsp;</td>
-     		<td align="left" width="40%">
-		<left_title>Score residue
-                <b title="Specific subsequences across species are likely to<br>indicate where separation of function has occurred.">specialization</b>
-                    across members of a protein family.
-		    Map it onto reference sequence and structure.</left_title>
-		    </td>
-                <td>  </td>
-        </tr>
+		<tr>
+			<td width = "30%">&nbsp;</td>
+			<td align="left" width="40%">
+				<left_title>Score the overall
+					<b title="<a href='http://en.wikipedia.org/wiki/Sequence_conservation'>Conserved subsequences</a>
+					   across species are likely<br>to have functional value, and may be relevant in detecting
+					   relevant mutations in inborn genetic diseases or cancer, or can be used to  guide
+					   <br><a href='http://en.wikipedia.org/wiki/Site-directed mutagenesis'>site-directed mutagenesis</a>.">conservation</b>
+					in your set of protein sequences.
+					Map it onto  reference sequence and structure.</h5></left_title>
 
-      <tr>
-		<td width=30%>
-		   <table width= 100%>
-		       <tr><td>
-		          <a href="help/spec_why.html" title="Click to read more">
-		          <img src="{{ url_for('static', filename='images/question_mark.130px.png') }}" width="60" align="center">
- 			  </a>
- 		       </td></tr>
-		       <tr><td>
-                            <a href="{{ url_for('activity.spec') }}" title="Upload your sequences for the analysis">
-			    <img src="{{ url_for('static', filename='images/that_way.png') }}" width="113" style="float:lefright"></a>
-		       </td></tr>
-		       <tr><td>
-		            <a href="{{ url_for('activity.spec') }}"> (specialization - that way)</a>
-		       </td></tr>
-		   </table>
 
-                </td>
-                <td>
-                    <img src="{{ url_for('static', filename='images/ifnar2_frame.png') }}" width="240">
-                  </td>
-		<td>&nbsp;</td>
-       </tr>
+			</td>
+			<td>&nbsp;</td>
+		</tr>
 
-    </table>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+
+
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+
+		<tr>
+			<td>&nbsp;</td>
+			<td align="left" width="40%">
+				<left_title>Score residue
+					<b title="Specific subsequences across species are likely to<br>indicate where separation of function has occurred.">specialization</b>
+					across members of a protein family.
+					Map it onto reference sequence and structure.</left_title>
+			</td>
+			<td>  </td>
+		</tr>
+
+		<tr>
+			<td width=30%>
+				<table width= 100%>
+					<tr><td>
+						<a href="help/spec_why.html" title="Click to read more">
+							<img src="{{ url_for('static', filename='images/question_mark.130px.png') }}" width="60" align="center">
+						</a>
+					</td></tr>
+					<tr><td>
+						<a href="{{ url_for('activity.spec') }}" title="Upload your sequences for the analysis">
+							<img src="{{ url_for('static', filename='images/that_way.png') }}" width="113" style="float:lefright"></a>
+					</td></tr>
+					<tr><td>
+						<a href="{{ url_for('activity.spec') }}"> (specialization - that way)</a>
+					</td></tr>
+				</table>
+
+			</td>
+			<td>
+				<img src="{{ url_for('static', filename='images/ifnar2_frame.png') }}" width="240">
+			</td>
+			<td>&nbsp;</td>
+		</tr>
+
+
+
+
+	</table>
+
+
 
 
 </div>

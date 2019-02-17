@@ -1,0 +1,6 @@
+These conf files are what worked for me as a workaround for
+crtbot --apache
+bug: "Name duplicates previous WSGI daemon definition."
+The bug has been since fixed in certbot 0.31, but because
+the provider i'm using is stuck with Ubuntu 16.04,
+I am stuck with certbot 0.28.

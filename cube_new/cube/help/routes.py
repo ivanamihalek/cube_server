@@ -2,6 +2,16 @@ from flask import render_template,  Blueprint
 
 help = Blueprint('help', __name__)
 
+@help.route('/cons_why')
+def cons_why():
+    return render_template('help/cons_why.html')
+
+@help.route('/spec_why')
+def spec_why():
+    return render_template('help/spec_why.html')
+
+
+'''
 @help.route('/aligning_seqs')
 def aligning_seqs():
     return render_template('help/aligning_seqs.html')
@@ -70,3 +80,4 @@ def workdir_output():
 def xls_output():
     return render_template('help/xls_output.html')
 
+'''
