@@ -1,0 +1,18 @@
+almtname  /tmp/specs_050119495618151/all.restr.msf
+
+
+groups    /tmp/specs_050119495618151/groups
+patch_sim_cutoff  .40
+patch_min_length  .40
+
+outname   /tmp/specs_050119495618151/out
+
+pdb_name  pdb_2fyd
+pdb_file  /tmp/specs_050119495618151/2fyd.pdb
+
+!exchangeability
+
+max_gaps  0.3
+
+rate_matrix  /var/www/dept/bmad/htdocs/projects/EPSF/specs_server/src/hypercube/08_data/tillier.table
+dssp  /tmp/specs_050119495618151/2fyd.dssp
