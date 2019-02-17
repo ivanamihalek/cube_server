@@ -1,92 +1,42 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01" >
-<html>
+{% extends "base.html" %}
+{% block content %}
 
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=gb2312">
-  <title>Cube - help:seqs</title>
-  <link rel="stylesheet" href="../cube_style.css" type="text/css">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/qtip2/2.0.1/basic/jquery.qtip.min.css">
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script src="//cdn.jsdelivr.net/qtip2/2.0.1/basic/jquery.qtip.min.js"></script>
-  <script>
-    $(function(){$('[title]').qtip({hide:{delay:250,fixed:true},position:{at:'bottom left'}});});
-  </script>
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-44819428-1', 'eopsf.org');
-  ga('send', 'pageview');
-
-</script>
-</head>
-
-<body>
-<div class="container">
-    <div class="mainmenu">
-        <ul>
-            <li><a href="http://cube.local/cube.html" >HOME</a></li>
-            <li><a href="http://cube.local/help/help.html" >HELP</a></li>
-            <li><a href="http://cube.local/code_dwnld.html">CODE</a></li>
-            <li><a href="http://eopsf.org/">ABOUT US</a></li>
-        </ul>
-    </div>
-
-    <div class="logo">
-        <img src="../images/cube_banner.png" width="830">
-    </div>
-
-    <div class="main">
+<div class="main">
 
 
     <left_title>Why look for your own sequences</left_title>
- 
+
     <P> &nbsp;
 
     <P>
-     An important  FAQ: why should I go look for my own collection of sequences? After all, there are plenty of websites that
-     will provide prêt-à-porter sets for me.
+        An important  FAQ: why should I go look for my own collection of sequences? After all, there are plenty of websites that
+        will provide prêt-à-porter sets for me.
 
     <P>
-     Use those collections, by any means, but with the grain of salt. They were all constructed automatically, and 
-     all automated algorithms or pipelines tend to fail now and then.
+        Use those collections, by any means, but with the grain of salt. They were all constructed automatically, and
+        all automated algorithms or pipelines tend to fail now and then.
 
     <P>
-     In all likelihood, you are currently the world's premier expert for the protein you are working on. You are the most qualified person to decide which sequences belong to your analysis.
+        In all likelihood, you are currently the world's premier expert for the protein you are working on. You are the most qualified person to decide which sequences belong to your analysis.
 
     <P>
-     Take a look at your sequences (<a href="viewing_alignment.html">read here</a> about viewing sequences): 
-     <ul>
-          <li> Does your set contain alternative splices for the same gene from the same species? Choose the one 
-               you want to work with. That would typically be the canonical or the longest splice.
-          <li>  Are the sequences  complete?  Try to avoid fragments, if you can.
-          <li>  Are they really all orthologues, or did some paralogues sneak in?  
-          <li>  Are the sequences so distant, that it looks
-           like you would do better job aligning them then the alignment program did?  
-	   If there are few positions to fix, 
-           go ahead and do it in <a href="viewing_alignment.html#sea">Seaview<a>, for example. 
-           Otherwise drop the sequences which are too distant from your 
-              protein of interest - bad alignments only bring in the noise into your discussion.
+        Take a look at your sequences (<a href="viewing_alignment.html">read here</a> about viewing sequences):
+    <ul>
+        <li> Does your set contain alternative splices for the same gene from the same species? Choose the one
+            you want to work with. That would typically be the canonical or the longest splice.
+        <li>  Are the sequences  complete?  Try to avoid fragments, if you can.
+        <li>  Are they really all orthologues, or did some paralogues sneak in?
+        <li>  Are the sequences so distant, that it looks
+            like you would do better job aligning them then the alignment program did?
+            If there are few positions to fix,
+            go ahead and do it in <a href="viewing_alignment.html#sea">Seaview</a>, for example.
+                Otherwise drop the sequences which are too distant from your
+                protein of interest - bad alignments only bring in the noise into your discussion.
     </ul>
 
     <p>
-      <a href="getting_seqs.html">Click here to read about getting the sequences. </a>
-
-    </div>
-
-    <div class="footer">
-           By <a href="http://eopsf.org/">EPSF</a>, 
-           a part of <a href="http://www.bii.a-star.edu.sg/research/bmad/bmad.php"> 
-           Biomolecular Modeling and Design Division</a>, 
-           <a href="http://www.bii.a-star.edu.sg">BII</a>, <a href="http://www.a-star.edu.sg">A*STAR</a>. Design by Harpy.
-    </div>
-
+        <a href="getting_seqs.html">Click here to read about getting the sequences. </a>
 
 </div>
 
-
-</body>
-</html>
-
+{% endblock content %}

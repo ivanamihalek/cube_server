@@ -1,92 +1,43 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01" >
-<html>
+{% extends "base.html" %}
+{% block content %}
 
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=gb2312">
-  <title>Cube:help:checklist</title>
-  <link rel="stylesheet" href="../cube_style.css" type="text/css">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/qtip2/2.0.1/basic/jquery.qtip.min.css">
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script src="//cdn.jsdelivr.net/qtip2/2.0.1/basic/jquery.qtip.min.js"></script>
-  <script>
-    $(function(){$('[title]').qtip({hide:{delay:250,fixed:true},position:{at:'bottom left'}});});
-  </script>
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+<div class="main">
+    <p>Information to collect when analyzing a protein:
+    </p>
 
-  ga('create', 'UA-44819428-1', 'eopsf.org');
-  ga('send', 'pageview');
+    <ul>
+        <li> Let's not miss the common knowledge about the protein: What do <a href="http://www.uniprot.org/" class="external text" title="http://www.uniprot.org/" rel="nofollow">Uniprot</a> and <a href="http://en.wikipedia.org/wiki/Main_Page" class="external text" title="http://en.wikipedia.org/wiki/Main_Page" rel="nofollow">Wikipedia</a> have to say about it?
+        </li>
+    </ul>
+    <p><br>
+    </p>
+    <ul><li> Does the protein have a structure? (check out <a href="http://www.rcsb.org/pdb/home/home.do" class="external text" title="http://www.rcsb.org/pdb/home/home.do" rel="nofollow">PDB</a>, <a href="http://www.rcsb.org/pdb/home/home.do" class="external text" title="http://www.rcsb.org/pdb/home/home.do" rel="nofollow">PDBsum</a>)
+        <ul><li> Yes:
+            <ul><li> Is the structure for the full length of the peptide known? If not, are the remaining pieces of the structure predicted to be disordered (see for example <a href="http://bioinf.cs.ucl.ac.uk/disopred" class="external text" title="http://bioinf.cs.ucl.ac.uk/disopred" rel="nofollow">Disopred</a>) or predicted to have secondary structure (<a href="http://bioinf.cs.ucl.ac.uk/psipred/" class="external text" title="http://bioinf.cs.ucl.ac.uk/psipred/" rel="nofollow">PSIpred</a>). When in doubt, you can always consult other servers, of your own choice.
+            </li><li> What is the info that is available from the structures: interactants, conformational states, metal binding sites, electrostatic picture (see APBS plug-in for Pymol)...&nbsp;?
+            </li><li> What is the biologically relevant oligomerization state? (<a href="http://www.ebi.ac.uk/msd-srv/prot_int/pistart.html" class="external text" title="http://www.ebi.ac.uk/msd-srv/prot_int/pistart.html" rel="nofollow">Pisa</a>)
+            </li></ul>
+        </li><li> No structure:
+            <ul><li> Can the structure be modeled by homology? (Yes, if the structure has been determined for proteins with similar sequence.)  Do we need to model some smaller pieces of structure?  Websites to check out <a href="http://modbase.compbio.ucsf.edu/modbase-cgi/index.cgi" class="external text" title="http://modbase.compbio.ucsf.edu/modbase-cgi/index.cgi" rel="nofollow">Modbase</a> and <a href="http://annotator.bii.a-star.edu.sg" class="external text" title="http://annotator.bii.a-star.edu.sg" rel="nofollow">Annotator</a>
+            </li><li> No related structure has been solved: Which part of the sequence is expected to be ordered? (Consult, for example <a href="http://bioinf.cs.ucl.ac.uk/disopred" class="external text" title="http://bioinf.cs.ucl.ac.uk/disopred" rel="nofollow">Disopred</a>). Take the piece of structure and run it through <a href="http://robetta.bakerlab.org/" class="external text" title="http://robetta.bakerlab.org/" rel="nofollow">Robetta</a>, and perhaps through <a href="http://zhanglab.ccmb.med.umich.edu/I-TASSER/" class="external text" title="http://zhanglab.ccmb.med.umich.edu/I-TASSER/" rel="nofollow">I-Tasser</a> to see if there is an agreement (and to which degree). Run the structure through a couple of 10s of ns of an MD simulation (see for example <a href="http://www.gromacs.org/" class="external text" title="http://www.gromacs.org/" rel="nofollow">Gromacs</a> - you'll probably need some help if you are novice), to see if it holds in one piece.
+            </li></ul>
+        </li></ul>
+    </li></ul>
+    <ul><li> Does the protein contain any known functional domains? (Check out <a href="http://smart.embl-heidelberg.de/" class="external text" title="http://smart.embl-heidelberg.de/" rel="nofollow">SMART</a>, <a href="http://pfam.sanger.ac.uk/" class="external text" title="http://pfam.sanger.ac.uk/" rel="nofollow">Pfam</a> or <a href="http://www.expasy.org/prosite/" class="external text" title="http://www.expasy.org/prosite/" rel="nofollow">Prosite</a>)? Do these domains have known target motifs? (The info can be found in <a href="http://www.expasy.org/prosite/" class="external text" title="http://www.expasy.org/prosite/" rel="nofollow">Prosite</a> domain profile, for example.)
+    </li></ul>
 
-</script>
-</head>
 
-<body>
-<div class="container">
-    <div class="mainmenu">
-        <ul>
-            <li><a href="http://cube.local/cube.html" >HOME</a></li>
-            <li><a href="http://cube.local/help/help.html" >HELP</a></li>
-            <li><a href="http://cube.local/code_dwnld.html">CODE</a></li>
-            <li><a href="http://eopsf.org/">ABOUT US</a></li>
-        </ul>
-    </div>
-
-    <div class="logo">
-        <img src="../images/cube_banner.png" width="830">
-    </div>
-
-    <div class="main">
-			<p>Information to collect when analyzing a protein:
+    <ul><li> How unique is your protein in the genome:
+        <ul><li> The protein belongs to a family of similar proteins found in the same organism:
+            check out <a href="http://cube.local/cube.html" class="external text" title="http://cube.local/specialization.html" rel="nofollow">Cube server</a> for conservation and specialization scoring.
+        </li><li> The protein is unique in an organism: conservation across different organisms
+            <a href="http://cube.local/specs.html" class="external text" title="http://cube.local/conservation.html" rel="nofollow">Specs server</a>
+        </li></ul>
+    </li></ul>
+    <p><br />
+    </p><p>Cube and Specs will provide a spreadsheet in Excel format as well as Pymol session that you can extend with your own annotation. Once you have it all in one place, you can start building your models of protein behavior, consistent with all the prior info you have assembled. Keep track of your progress on your wiki page, for later reference.
 </p>
-
-<ul>
-               <li> Let's not miss the common knowledge about the protein: What do <a href="http://www.uniprot.org/" class="external text" title="http://www.uniprot.org/" rel="nofollow">Uniprot</a> and <a href="http://en.wikipedia.org/wiki/Main_Page" class="external text" title="http://en.wikipedia.org/wiki/Main_Page" rel="nofollow">Wikipedia</a> have to say about it? 
-               </li>
-</ul>
-<p><br>
-</p>
-<ul><li> Does the protein have a structure? (check out <a href="http://www.rcsb.org/pdb/home/home.do" class="external text" title="http://www.rcsb.org/pdb/home/home.do" rel="nofollow">PDB</a>, <a href="http://www.rcsb.org/pdb/home/home.do" class="external text" title="http://www.rcsb.org/pdb/home/home.do" rel="nofollow">PDBsum</a>)
-<ul><li> Yes:
-<ul><li> Is the structure for the full length of the peptide known? If not, are the remaining pieces of the structure predicted to be disordered (see for example <a href="http://bioinf.cs.ucl.ac.uk/disopred" class="external text" title="http://bioinf.cs.ucl.ac.uk/disopred" rel="nofollow">Disopred</a>) or predicted to have secondary structure (<a href="http://bioinf.cs.ucl.ac.uk/psipred/" class="external text" title="http://bioinf.cs.ucl.ac.uk/psipred/" rel="nofollow">PSIpred</a>). When in doubt, you can always consult other servers, of your own choice.
-</li><li> What is the info that is available from the structures: interactants, conformational states, metal binding sites, electrostatic picture (see APBS plug-in for Pymol)...&nbsp;?
-</li><li> What is the biologically relevant oligomerization state? (<a href="http://www.ebi.ac.uk/msd-srv/prot_int/pistart.html" class="external text" title="http://www.ebi.ac.uk/msd-srv/prot_int/pistart.html" rel="nofollow">Pisa</a>)
-</li></ul>
-</li><li> No structure:
-<ul><li> Can the structure be modeled by homology? (Yes, if the structure has been determined for proteins with similar sequence.)  Do we need to model some smaller pieces of structure?  Websites to check out <a href="http://modbase.compbio.ucsf.edu/modbase-cgi/index.cgi" class="external text" title="http://modbase.compbio.ucsf.edu/modbase-cgi/index.cgi" rel="nofollow">Modbase</a> and <a href="http://annotator.bii.a-star.edu.sg" class="external text" title="http://annotator.bii.a-star.edu.sg" rel="nofollow">Annotator</a>
-</li><li> No related structure has been solved: Which part of the sequence is expected to be ordered? (Consult, for example <a href="http://bioinf.cs.ucl.ac.uk/disopred" class="external text" title="http://bioinf.cs.ucl.ac.uk/disopred" rel="nofollow">Disopred</a>). Take the piece of structure and run it through <a href="http://robetta.bakerlab.org/" class="external text" title="http://robetta.bakerlab.org/" rel="nofollow">Robetta</a>, and perhaps through <a href="http://zhanglab.ccmb.med.umich.edu/I-TASSER/" class="external text" title="http://zhanglab.ccmb.med.umich.edu/I-TASSER/" rel="nofollow">I-Tasser</a> to see if there is an agreement (and to which degree). Run the structure through a couple of 10s of ns of an MD simulation (see for example <a href="http://www.gromacs.org/" class="external text" title="http://www.gromacs.org/" rel="nofollow">Gromacs</a> - you'll probably need some help if you are novice), to see if it holds in one piece.
-</li></ul>
-</li></ul>
-</li></ul>
-<ul><li> Does the protein contain any known functional domains? (Check out <a href="http://smart.embl-heidelberg.de/" class="external text" title="http://smart.embl-heidelberg.de/" rel="nofollow">SMART</a>, <a href="http://pfam.sanger.ac.uk/" class="external text" title="http://pfam.sanger.ac.uk/" rel="nofollow">Pfam</a> or <a href="http://www.expasy.org/prosite/" class="external text" title="http://www.expasy.org/prosite/" rel="nofollow">Prosite</a>)? Do these domains have known target motifs? (The info can be found in <a href="http://www.expasy.org/prosite/" class="external text" title="http://www.expasy.org/prosite/" rel="nofollow">Prosite</a> domain profile, for example.)
-</li></ul>
-
-
-<ul><li> How unique is your protein in the genome:
-<ul><li> The protein belongs to a family of similar proteins found in the same organism: 
-check out <a href="http://cube.local/cube.html" class="external text" title="http://cube.local/specialization.html" rel="nofollow">Cube server</a> for conservation and specialization scoring.
-</li><li> The protein is unique in an organism: conservation across different organisms 
- <a href="http://cube.local/specs.html" class="external text" title="http://cube.local/conservation.html" rel="nofollow">Specs server</a>
-</li></ul>
-</li></ul>
-<p><br />
-</p><p>Cube and Specs will provide a spreadsheet in Excel format as well as Pymol session that you can extend with your own annotation. Once you have it all in one place, you can start building your models of protein behavior, consistent with all the prior info you have assembled. Keep track of your progress on your wiki page, for later reference.
-</p>    
-    </div>
-
-    <div class="footer">
-           By <a href="http://eopsf.org/">EPSF</a>, 
-           a part of <a href="http://www.bii.a-star.edu.sg/research/bmad/bmad.php"> 
-           Biomolecular Modeling and Design Division</a>, 
-           <a href="http://www.bii.a-star.edu.sg">BII</a>, <a href="http://www.a-star.edu.sg">A*STAR</a>. Design by Harpy.
-    </div>
-
-
 </div>
 
 
-</body>
-</html>
-
+{% endblock content %}

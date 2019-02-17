@@ -1,165 +1,117 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01" >
-<html>
+{% extends "base.html" %}
+{% block content %}
 
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=gb2312">
-  <title>Cube:help:pymol</title>
-  <link rel="stylesheet" href="../cube_style.css" type="text/css">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/qtip2/2.0.1/basic/jquery.qtip.min.css">
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script src="//cdn.jsdelivr.net/qtip2/2.0.1/basic/jquery.qtip.min.js"></script>
-  <script>
-    $(function(){$('[title]').qtip({hide:{delay:250,fixed:true},position:{at:'bottom left'}});});
-  </script>
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+<div class="main">
 
-  ga('create', 'UA-44819428-1', 'eopsf.org');
-  ga('send', 'pageview');
-
-</script>
-</head>
-
-<body>
-<div class="container">
-    <div class="mainmenu">
-        <ul>
-            <li><a href="http://cube.local/cube.html" >HOME</a></li>
-            <li><a href="http://cube.local/help/help.html" >HELP</a></li>
-            <li><a href="http://cube.local/code_dwnld.html">CODE</a></li>
-            <li><a href="http://eopsf.org/">ABOUT US</a></li>
-        </ul>
-    </div>
-
-    <div class="logo">
-        <img src="../images/cube_banner.png" width="830">
-    </div>
-
-    <div class="main">
-    
     <left_title>Pymol sessions</left_title>
 
-   <!------------------------------------------------------------------------->
-   <table  border="0" cellpadding="0" cellspacing="0" width="90%" align="left" >
+    <!------------------------------------------------------------------------->
+    <table  border="0" cellpadding="0" cellspacing="0" width="90%" align="left" >
 
-          <tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-          </tr>
-
-    
-
-          <tr>
-		<td align="left" colspan=2>  If you are new to PyMOL, consider skimming through the <a href="http://www.pymolwiki.org/index.php/Practical_Pymol_for_Beginners">QuickStart page on PyMOL's wiki</a>.  In particular, you might want to read about <a href="http://www.pymolwiki.org/index.php/Practical_Pymol_for_Beginners#Sessions">PyMOL sessions</a>.
-		</td>
-          </tr> 
-         <tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-          </tr>
-
-         <tr>
-		<td align="left" colspan=2> <a href= "../conservation.html" name="cons">Conservation module</a>
-		of Cube server produces Pymol session with the conservation score mapped on the selected chain of the uploaded structure. 
-		</td>
-          </tr> 
-
-   
-          <tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-          </tr>
         <tr>
-		<td align="left" colspan=2>
-
-		<img src="../images/pymol_session.851px.png" width="851"> 
-		</td>
-          </tr> 
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
 
 
-          <tr>
-		<td align="left" colspan=2> 
-		The remaining chains and heteroatoms present in the PDB file are indicated in schematic way:  
-		peptide chains as dark teal-colored ribbons, small molecules as dark-teal sticks, and "structural" waters 
+
+        <tr>
+            <td align="left" colspan=2>  If you are new to PyMOL, consider skimming through the <a href="http://www.pymolwiki.org/index.php/Practical_Pymol_for_Beginners">QuickStart page on PyMOL's wiki</a>.  In particular, you might want to read about <a href="http://www.pymolwiki.org/index.php/Practical_Pymol_for_Beginners#Sessions">PyMOL sessions</a>.
+            </td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+            <td align="left" colspan=2> <a href= "../conservation.html" name="cons">Conservation module</a>
+                of Cube server produces Pymol session with the conservation score mapped on the selected chain of the uploaded structure.
+            </td>
+        </tr>
+
+
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td align="left" colspan=2>
+
+                <img src="{{ url_for('static', filename='images/pymol_session.851px.png') }}" width="851">
+            </td>
+        </tr>
+
+
+        <tr>
+            <td align="left" colspan=2>
+                The remaining chains and heteroatoms present in the PDB file are indicated in schematic way:
+                peptide chains as dark teal-colored ribbons, small molecules as dark-teal sticks, and "structural" waters
                 (the ones which carry chain label identical to the one selected in the analysis)  as light teal-colored
-		speheres. Metal ions, if present, are indicated as magenta spheres.
-		</td>
-          </tr>
+                speheres. Metal ions, if present, are indicated as magenta spheres.
+            </td>
+        </tr>
 
-         <tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-          </tr>
-
-          <tr>
- 		<td align="left" colspan=2> 
-              <a href="viewing_structure.html"> Read more</a> about structure viewing and using PyMol. 
-		</td>
-          </tr>
-
-         <tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-          </tr>
-         <tr>  
-		<td align="left" colspan=2> <a href= "../specialization.html" name="spec">Specialization  module</a>
-		of Cube server produces Pymol session with both the specialization and the conservation score mapped 
-		on the selected chain of the uploaded structure. The other elements present in the PDB file are indicated
-                similarly as in the conservation case above.
-		</td>
-		
-          </tr> 
-
-  
-          <tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-          </tr>
-          <tr>
-		<td align="left" colspan=2> The difference now is that you can turn off the conservation visualization
-		to reveal - in this order - several other things one can look for in contrasting the sequences:
-		<ol>
-		 <li> 'Discriminant' positions - positions that are well conserved within each group under consideration
-		      but different across different groups (labeled as 'specificity' in the Pymol session).
-		 <li> Conservation within the reference group (that would be the group to which your reference sequence belongs)
-		 <li> 'Determinants' for your group - positions that are relativealy well conserved in the reference group,
-                      and different then in the remaining groups (note that now we are not saying anything about the conservation
-                      status in other groups. The position may be conserved or variable in the other groups, as long as the overlap
-                      with the aminio acid types in the reference group is small).
-		</ol>
-
-		 The other elements present in the PDB file are indicated
-                similarly as in the conservation case above.
-		</td>
-          </tr>
         <tr>
-		<td align="left" colspan=2>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
 
-		<img src="../images/pymol_spec.990px.png" width="990"> 
-		</td>
-          </tr> 
+        <tr>
+            <td align="left" colspan=2>
+                <a href="viewing_structure.html"> Read more</a> about structure viewing and using PyMol.
+            </td>
+        </tr>
+
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td align="left" colspan=2> <a href= "{{ url_for('static', filename='specialization.html') }}" name="spec">Specialization  module</a>
+                of Cube server produces Pymol session with both the specialization and the conservation score mapped
+                on the selected chain of the uploaded structure. The other elements present in the PDB file are indicated
+                similarly as in the conservation case above.
+            </td>
+
+        </tr>
 
 
-    </table>	  
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td align="left" colspan=2> The difference now is that you can turn off the conservation visualization
+                to reveal - in this order - several other things one can look for in contrasting the sequences:
+                <ol>
+                    <li> 'Discriminant' positions - positions that are well conserved within each group under consideration
+                        but different across different groups (labeled as 'specificity' in the Pymol session).
+                    <li> Conservation within the reference group (that would be the group to which your reference sequence belongs)
+                    <li> 'Determinants' for your group - positions that are relativealy well conserved in the reference group,
+                        and different then in the remaining groups (note that now we are not saying anything about the conservation
+                        status in other groups. The position may be conserved or variable in the other groups, as long as the overlap
+                        with the aminio acid types in the reference group is small).
+                </ol>
+
+                The other elements present in the PDB file are indicated
+                similarly as in the conservation case above.
+            </td>
+        </tr>
+        <tr>
+            <td align="left" colspan=2>
+
+                <img src="{{ url_for('static', filename='images/pymol_spec.990px.png') }}" width="990">
+            </td>
+        </tr>
 
 
+    </table>
 
-    </div>
-
-    <div class="footer">
-           By <a href="http://eopsf.org/">EPSF</a>, 
-           a part of <a href="http://www.bii.a-star.edu.sg/research/bmad/bmad.php"> 
-           Biomolecular Modeling and Design Division</a>, 
-           <a href="http://www.bii.a-star.edu.sg">BII</a>, <a href="http://www.a-star.edu.sg">A*STAR</a>. Design by Harpy.
-    </div>
 
 
 </div>
 
 
-</body>
-</html>
 
+{% endblock content %}

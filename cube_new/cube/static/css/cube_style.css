@@ -19,8 +19,9 @@ a:visited { color: #002277; text-decoration: underline; }
 a:hover, a:active, a:focus { text-decoration: none; } /* for keyboard navigation */
 
 .boxed {
-        border: 1px  solid #002277;
+    border: 1px  solid #002277;
 	padding: 8px ;
+	margin:10px;
 }
 
 .topNav {

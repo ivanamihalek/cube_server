@@ -1,75 +1,72 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="main">
+<div class="main">
 
-      <left_title>What  Cube can do with your list  of protein sequences</left_title>
-
-      <P>
+    <left_title>What  Cube can do with your list  of protein sequences</left_title>
 
 
     <table  border="0" cellpadding="2" cellspacing="0" width="100%" align="left">
-  
-        <tr>
-           <td colspan=3><img src="../images/cons_promo.992px.png" width="997" style="float:left"></td>
-       </tr>
 
-        <tr>
-		<td width="330">Produce a 3D conservation map <br> for import into Pymol ... <br> &nbsp; </td>
-		<td  width="300"> ... 1D  conservation map in png format, suitable for import and 
-                   further annotation in your favorite presentation software ...</td>
-		<td> ... and a spreadsheet to which you can add your own annotation. <br> &nbsp; </td>
+        <tr  width="997">
+            <td colspan="3"> <img  src="{{ url_for('static', filename='images/cons_promo.992px.png') }}" width="997" style="float:center"/></td>
         </tr>
+        <tr  width="997">
+            <td width="330">Produce a 3D conservation map <br> for import into Pymol ... <br> &nbsp; </td>
+            <td  width="330"> ... 1D  conservation map in png format, suitable for import and
+                further annotation in your favorite presentation software ...</td>
+            <td  width="330"> ... and a spreadsheet to which  <br> you can add your own annotation. </td>
 
-     </table>
+        </tr>
+    </table>
 
-    
- 
-   <P>
-        Click  <a href="worked_examples/cons_example_output/display.html">here</a> to see a sample results page.
+    <br>
 
-
-    </div>
- 
-     <div class="main">
-
-
-   <left_title>Nice. What does that have to do with my research?</left_title>
-   
-
-   <P>
-   These are tools for planing your experiment.
-
-   <P>
-		Check out the  conserved regions on the surface:
-		Typically they indicate a position where a small ligand (metabolite, or signaling molecule  or metal ion) binds.
-		Larger areas, still better conserved then the rest, perhaps indicate interaction with other proteins. 
-		If the structure is not known, or if the protein is disordered, we have to work with the 1D information alone.
-		A bit more difficult, but still doable. 		
-
-                 <img src="../images/zoom.246px.png" width="246" style="float:right">
-
-	<p>
-
-                Collect in the spreadsheet the data from all sources that you have available - including your own previous work. 
-		Put it all together in a slide,  
-                against the backdrop of the conservation map, and use for discussion with your geek friends. 
-                Are there any regions of conservation to which no purpose or function has been ascribed so far?
+    <p style="float:left"> Click  <a href="worked_examples/cons_example_output/display.html">here</a> to see a sample results page.</p>
 
 
 
-	<p>
-		If you are looking to manipulate novel phenotype, place your mutations in these regions. 
-                Use the conserved patches to guide the docking, or predict the impact of naturally occurring mutations 
-                by the degree of conservation of the region they fall into.
+
+</div>
+
+<div class="main">
 
 
-   
-    </div>
+    <left_title>Nice. What does that have to do with my research?</left_title>
 
-     <div class="main">
-   <left_title><a href="worked_examples/cons_examples.html">
-   Click here to see some worked examples. </a></left_title>
-    </div>
-   
-{% extends "base.html" %}
-{% block content %}
+
+    <P>
+        These are tools for planing your experiment.
+
+    <P>
+        Check out the  conserved regions on the surface:
+        Typically they indicate a position where a small ligand (metabolite, or signaling molecule  or metal ion) binds.
+        Larger areas, still better conserved then the rest, perhaps indicate interaction with other proteins.
+        If the structure is not known, or if the protein is disordered, we have to work with the 1D information alone.
+        A bit more difficult, but still doable.
+
+        <img src="{{ url_for('static', filename='images/zoom.246px.png') }}"  width="246" style="float:right">
+
+    <p>
+
+        Collect in the spreadsheet the data from all sources that you have available - including your own previous work.
+        Put it all together in a slide,
+        against the backdrop of the conservation map, and use for discussion with your geek friends.
+        Are there any regions of conservation to which no purpose or function has been ascribed so far?
+
+
+
+    <p>
+        If you are looking to manipulate novel phenotype, place your mutations in these regions.
+        Use the conserved patches to guide the docking, or predict the impact of naturally occurring mutations
+        by the degree of conservation of the region they fall into.
+
+
+
+</div>
+
+<div class="main">
+    <left_title><a href="worked_examples/cons_examples.html">
+        Click here to see some worked examples. </a></left_title>
+</div>
+
+{% endblock content %}
