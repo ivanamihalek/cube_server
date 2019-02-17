@@ -76,3 +76,8 @@ def workdir_output():
 @help.route('/help/xls_output')
 def xls_output():
     return render_template('help/xls_output.html')
+
+
+@help.route('/help/worked_examples/spec_examples')
+def xls_output():
+    return render_template('help/worked_examples/spec_examples.html')
