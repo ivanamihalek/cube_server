@@ -79,5 +79,9 @@ def xls_output():
 
 
 @help.route('/help/worked_examples/spec_examples')
-def xls_output():
+def spec_examples():
     return render_template('help/worked_examples/spec_examples.html')
+
+@help.route('/help/worked_examples/cons_examples')
+def cons_examples():
+    return render_template('help/worked_examples/cons_examples.html')
