@@ -47,11 +47,12 @@
 
             <tr>
                 <td align="left" width="25%">
-                    {% set urll  = url_for('help.getting_seqs') %}
+                    {% set url_getseqs  = url_for('help.getting_seqs') %}
                     <a title='A file containing input sequences - presumably all
 	                   <a href="http://en.wikipedia.org/wiki/Homology_%28biology%29#Sequence_homology">homologous</a>
-	                   to each other.  <a href="{{ urll }}">Click here</a>'
-                   >File with a list of sequences</a>
+	                   to each other.  <a href="{{ url_getseqs }}">Click here</a>'
+                       href="{{ url_for('help.help_index', _anchor='input') }}">
+                    File with a list of sequences</a>
                     <br>[in GCG or FASTA format]</td>
                 <td align="left" width="35%">
                     <input  type="file" name="fnm" size="15">
