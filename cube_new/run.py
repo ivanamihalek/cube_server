@@ -1,3 +1,5 @@
+#! /usr/bin/python3
+
 from cube import create_app
 
 app = create_app()

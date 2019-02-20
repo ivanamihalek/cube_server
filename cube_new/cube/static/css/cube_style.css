@@ -116,3 +116,8 @@ a:hover, a:active, a:focus { text-decoration: none; } /* for keyboard navigation
 .gene_info { margin-bottom:30px; color:#002277 }
 
 table { width:90%; border-collapse:collapse; text-align:center }
+
+.qtip-content {
+    font-size:16px;
+    line-height:22px;
+}

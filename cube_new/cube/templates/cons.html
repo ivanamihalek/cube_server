@@ -19,6 +19,7 @@
         </tr>
     </table>
 
+    {% set url_help  = url_for('help.help_index', _anchor='input') %}
 
     <form  enctype="multipart/form-data" method="post" name="consform">
         <table border="0" align="center"  cellpadding="0" cellspacing="0" width="90%" align="right">
@@ -31,8 +32,8 @@
 
             <tr>
                 <td align="left" width="25%"> <a title="The results will be reported only for the positions that exist in this sequence.
-	                     If no reference sequence is given, the first squence in the alignment will be used."
-                                                 href="./help/help.html#input">
+	                     If no reference sequence is given, the first sequence in the alignment will be used."
+                                                 href="{{ url_help }}">
                     The name of the reference sequence</a> [optional]</td>
                 <td align="left" width="35%">
                     <input name="qry_nm" type="text" size="15"> </td>
@@ -50,13 +51,14 @@
                     {% set url_getseqs  = url_for('help.getting_seqs') %}
                     <a title='A file containing input sequences - presumably all
 	                   <a href="http://en.wikipedia.org/wiki/Homology_%28biology%29#Sequence_homology">homologous</a>
-	                   to each other.  <a href="{{ url_getseqs }}">Click here</a>'
-                       href="{{ url_for('help.help_index', _anchor='input') }}">
+	                   to each other.  <a href="{{ url_getseqs }}">Click here</a> to read about finding interesting sequences.'
+                       href="{{ url_help }}">
                     File with a list of sequences</a>
                     <br>[in GCG or FASTA format]</td>
                 <td align="left" width="35%">
                     <input  type="file" name="fnm" size="15">
-                    <br> examples: <a href="help/fasta_example.txt">FASTA</a> &nbsp; <a href="help/gcg_example.txt">GCG</a>
+                    <br> examples: <a href="{{ url_for('static', filename='samples/fasta_example.txt') }}">FASTA</a> &nbsp;
+                    <a href="{{ url_for('static', filename='samples/gcg_example.txt') }}">GCG</a>
                 </td>
                 <td align="left"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="checkbox" name="ckb" value=1>
                     <span title="Tick here if you do not want  the server to (re)align your set of sequences.">
@@ -71,12 +73,14 @@
 
 
             <tr>
-                {% set urll  = url_for('help.help_index') %}
-                <td align="left" width="25%"><a title="PDB file with structure of reference sequence. <br>
-                    	A <a href='help/pymol_output.html'>PyMol session</a>
-                        will be generated indicating the levels of conservation on the structure.
-	                    <a href='help/getting_structure.html'>Click here</a>  if you are not sure where to look for the structure."
-                                                href={{ urll }}>Structure file</a><br>[optional]</td>
+                {% set url_pymol = url_for('help.pymol_output') %}
+                {% set url_structure = url_for('help.getting_structure') %}
+                <td align="left" width="25%"><a title="PDB file with structure of reference sequence.
+                    	A <a href='{{ url_pymol }}'>PyMol session</a>
+                        will be generated showing the levels of conservation
+	                    on the structure. <a href='{{ url_structure }}'>Click here</a>
+	                    if you are not sure where to look for the structure."
+                         href={{ url_help }}>Structure file</a><br>[optional]</td>
                 <td align="left" width="35%"><input  type="file" name="structure" size="15"> </td>
                 <td align="left"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Chain <input type="text" name="chain" size="1" value ="A"></td>
             </tr>
@@ -91,7 +95,7 @@
 
             <tr>
                 <td align="left" width="25%"> <a title="Conservation scoring method."
-                                                 href="help/help.html#refs">Method</a></td>
+                                                 href="{{ url_for('help.help_index', _anchor='refs')}}">Method</a></td>
                 <td align="left" width="35%">
                     <select name="method">
                         <option value="rvet">   real-valued ET  </option>
@@ -120,7 +124,7 @@
                 <td width="20%" align="left"> <input type ="submit" name="sub" value="submit" onclick="return submitform(specsform)"> </td>
                 <td width="20%" align="left"> <input type ="reset"  name ="reset" value = "clear"></td>
                 <td align="left" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <a href="help/help.html#refs">how to cite</a> </td>
+                    <a href="{{  url_for('help.help_index', _anchor='citing' }}">how to cite</a> </td>
             </tr>
             <tr>
                 <td>&nbsp;</td>
