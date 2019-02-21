@@ -17,19 +17,36 @@ class UploadHandler:
         self.chain       = request.form['chain']
         self.method      = request.form['method']
 
+        self.clean_seq_fnm = None
+        self.clean_struct_fnm = None
+
+        self.errmsg = None
+
+
+
     def _allowed_file(filename):
         return '.' in filename and \
                filename.rsplit('.', 1)[1].lower() in Config.ALLOWED_EXTENSIONS
 
     # check input, and provide  feedback if not ok
+    def input_ok(self):
+        if not self.seq_file or  self.seq_file.filename == '':
+            self.errmsg = "Please provide a file with input sequences."
+            return False
+        self.clean_seq_fnm = secure_filename(self.seq_file.filename)
+        if not self.clean_seq_fnm  or  self.clean_seq_fnm == '':
+            self.errmsg = "Please provide input sequences in a file with reasonable name."
+            return False
+        if self.struct_file and self.struct_file.filename!='':
+            self.clean_struct_fnm = secure_filename(self.struct_file.filename)
+            if not self.clean_struct_fnm  or  self.clean_struct_fnm == '':
+                 self.errmsg = "Please provide input structure in a file with reasonable name."
+                 return False
+
+        return True
+
 
     def upload_file(self):
-
-        # if user does not a select file, browser will
-        # submit an empty part without filename
-        if self.seq_file.filename == '':
-            print('No selected file')
-            return "empty fnm"
         if self.seq_file and self._allowed_file(self.seq_file.filename):
             filename = secure_filename(self.seq_file.filename)
             print ("************* saving")

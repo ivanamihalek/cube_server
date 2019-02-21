@@ -121,3 +121,16 @@ table { width:90%; border-collapse:collapse; text-align:center }
     font-size:16px;
     line-height:22px;
 }
+
+.error {
+    font-size:24px;
+    color: #002277;
+    padding-bottom:5px;
+    padding-top:5px;
+}
+
+td.error{
+    border: 0px solid red;
+    border-radius: 12px;
+    background-color: #ffbf80;
+}
