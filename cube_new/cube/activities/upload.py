@@ -23,13 +23,13 @@ class UploadHandler:
         self.errmsg = None
 
 
-
-    def _allowed_file(filename):
+    def _allowed_file(self, filename, allowed_extensions):
         return '.' in filename and \
-               filename.rsplit('.', 1)[1].lower() in Config.ALLOWED_EXTENSIONS
+               filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
     # check input, and provide  feedback if not ok
     def input_ok(self):
+        # seq file
         if not self.seq_file or  self.seq_file.filename == '':
             self.errmsg = "Please provide a file with input sequences."
             return False
@@ -37,22 +37,33 @@ class UploadHandler:
         if not self.clean_seq_fnm  or  self.clean_seq_fnm == '':
             self.errmsg = "Please provide input sequences in a file with reasonable name."
             return False
+        if not self._allowed_file(self.clean_seq_fnm, Config.ALLOWED_SEQFILE_EXTENSIONS):
+            self.errmsg = "Please provide input sequences in a file with one of the extensions: "
+            self.errmsg += ", ".join([e for e in Config.ALLOWED_SEQFILE_EXTENSIONS])
+            return False
+
+        # structure file - not struct file is optional
         if self.struct_file and self.struct_file.filename!='':
             self.clean_struct_fnm = secure_filename(self.struct_file.filename)
             if not self.clean_struct_fnm  or  self.clean_struct_fnm == '':
                  self.errmsg = "Please provide input structure in a file with reasonable name."
                  return False
-
+            if not self._allowed_file(self.clean_struct_fnm, Config.ALLOWED_STRUCTFILE_EXTENSIONS):
+                self.errmsg = "Please provide input sequences in a file with one of the extensions: "
+                self.errmsg += ", ".join([e for e in Config.ALLOWED_STRUCTFILE_EXTENSIONS])
+                return False
         return True
 
 
-    def upload_file(self):
-        if self.seq_file and self._allowed_file(self.seq_file.filename):
-            filename = secure_filename(self.seq_file.filename)
-            print ("************* saving")
-            os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
+    def upload_files(self):
+        os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
+        if self.clean_seq_fnm:
+            print ("************* saving", self.clean_seq_fnm)
+            self.seq_file.save(os.path.join(Config.UPLOAD_FOLDER, self.clean_seq_fnm))
+        if self.clean_struct_fnm:
+            print ("************* saving", self.clean_struct_fnm)
+            self.struct_file.save(os.path.join(Config.UPLOAD_FOLDER, self.clean_struct_fnm))
 
-            self.seq_file.save(os.path.join(Config.UPLOAD_FOLDER, filename))
             #return redirect(url_for('uploaded_file', filename=filename))
 
         return

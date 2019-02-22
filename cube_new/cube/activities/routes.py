@@ -15,7 +15,7 @@ def cons():
         if not uploadHandler.input_ok():
             flash(uploadHandler.errmsg, 'error')
             return render_template('cons.html', storage='bottle')
-        # upload_file()
+        uploadHandler.upload_files()
 
         return render_template('home.html', storage='bottle')
     else:

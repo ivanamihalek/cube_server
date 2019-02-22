@@ -6,4 +6,5 @@ class Config:
 
     UPLOAD_FOLDER = '/tmp/cube-server'
     WORk_FOLDER = "public"
-    ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+    ALLOWED_SEQFILE_EXTENSIONS = {'txt', 'fasta', 'fst', 'fa', 'gcg', 'msf', 'afa'}
+    ALLOWED_STRUCTFILE_EXTENSIONS = {'pdb'}
