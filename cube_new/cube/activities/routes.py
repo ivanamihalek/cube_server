@@ -1,5 +1,6 @@
-from flask import request, flash
+from flask import request, flash, Blueprint, render_template
 from cube.activities.upload import *
+from cube.activities.conservation import *
 
 activity = Blueprint('activity', __name__)
 
@@ -16,7 +17,7 @@ def cons():
             flash(uploadHandler.errmsg, 'error')
             return render_template('cons.html', storage='bottle')
         uploadHandler.upload_files()
-
+        conservationist  =  Conservationist(uploadHandler)
         return render_template('home.html', storage='bottle')
     else:
         return render_template('cons.html', storage='bottle')

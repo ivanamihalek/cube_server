@@ -1,10 +1,7 @@
 
-from flask import render_template,  redirect,   url_for, Blueprint
 from werkzeug.utils import secure_filename
 from cube.config import Config
 import os
-
-
 
 class UploadHandler:
     def __init__(self, request):
@@ -63,10 +60,9 @@ class UploadHandler:
         if self.clean_struct_fnm:
             print ("************* saving", self.clean_struct_fnm)
             self.struct_file.save(os.path.join(Config.UPLOAD_FOLDER, self.clean_struct_fnm))
-
-            #return redirect(url_for('uploaded_file', filename=filename))
-
         return
+
+
 
     def report_input_params(self):
         print(">>>>>>>>>>  qry name ", self.qry_name)
