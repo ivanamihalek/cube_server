@@ -1,4 +1,5 @@
 use strict;
+use warnings FATAL => 'all';
 use File::Copy;
 sub process_annotation (@);
 

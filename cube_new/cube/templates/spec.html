@@ -92,7 +92,7 @@
                     <option value="cube">   cube  </option>
                     <option value="cube_sim">   cube with similarity </option>
                 </select></td>
-                <td align="left" >&nbsp;&nbsp;<a href="help/worked_examples/spec_examples.html">worked examples</a> </td>
+                <td align="left" >&nbsp;&nbsp;<a href="{{ url_for('help.spec_examples') }}">worked examples</a> </td>
             </tr>
 
             <tr>
@@ -106,7 +106,7 @@
                 <td width="20%" align="left"> <input type="submit" name="sub" value="submit" onclick="return submitform(specsform)"> </td>
                 <td width="20%" align="left"> <input type = "reset" name ="reset" value = "clear"></td>
                 <td align="left" >&nbsp;
-                    <a href="help/help.html#refs">how to cite</a> </td>
+                    <a href="{{ url_for('help.help_index', _anchor='citing')}} ">how to cite</a> </td>
             </tr>
             <tr>
                 <td>&nbsp;</td>
