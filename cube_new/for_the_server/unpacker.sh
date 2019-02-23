@@ -4,7 +4,7 @@ tar -zxvf ~/tray/current.tar.gz -C $new_dir_name
 chown -R www-data $new_dir_name
 chgrp -R www-data $new_dir_name
 ln -sfn $new_dir_name current
+staging_dir=/tmp/cube-server
+chown -R www-data $staging_dir
+chgrp -R www-data $staging_dir
 systemctl restart apache2
-
-
-
