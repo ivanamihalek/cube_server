@@ -13,10 +13,14 @@ def cons():
         uploadHandler.report_input_params()
         #uploadHandler.upload()
         # if there are problems, render warning page
-        if not uploadHandler.input_ok():
+        if not uploadHandler.filenames_ok():
             flash(uploadHandler.errmsg, 'error')
-            return render_template('cons.html', storage='bottle')
+            return render_template('cons.html')
         uploadHandler.upload_files()
+        if not uploadHandler.upload_ok():
+            flash(uploadHandler.errmsg, 'error')
+            return render_template('cons.html')
+
         conservationist  =  Conservationist(uploadHandler)
         return render_template('home.html', storage='bottle')
     else:

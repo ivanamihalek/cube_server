@@ -1,7 +1,7 @@
 
 from werkzeug.utils import secure_filename
 from cube.config import Config
-import os
+import os, subprocess
 
 class UploadHandler:
     def __init__(self, request):
@@ -17,15 +17,36 @@ class UploadHandler:
         self.clean_seq_fnm = None
         self.clean_struct_fnm = None
 
-        self.errmsg = None
+        self.seq_input_type = None
 
+        self.errmsg = None
 
     def _allowed_file(self, filename, allowed_extensions):
         return '.' in filename and \
                filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
-    # check input, and provide  feedback if not ok
-    def input_ok(self):
+    def _find_seq_input_type(self):
+        cmd = "grep  '>' {}/{} ".format(Config.UPLOAD_FOLDER, self.clean_seq_fnm)
+        output = subprocess.run([cmd],  stdout=subprocess.PIPE, shell=True).stdout
+        if len(output)>0:
+            self.seq_input_type = 'fasta'
+            return
+        cmd = "grep  'Name: ' {}/{} ".format(Config.UPLOAD_FOLDER,self.clean_seq_fnm)
+        output = subprocess.run([cmd],  stdout=subprocess.PIPE, shell=True).stdout
+        if len(output)>0:
+            self.seq_input_type = 'gcg'
+            return
+
+    def _ref_seq_ok(self):
+        if self.seq_input_type == 'fasta':
+            cmd = "grep  '>' {}/{} | grep {}".format(Config.UPLOAD_FOLDER,self.clean_seq_fnm, self.qry_name)
+        else:
+            cmd = "grep 'Name: '  {}/{} | grep {} ".format(Config.UPLOAD_FOLDER,self.clean_seq_fnm, self.qry_name)
+        output = subprocess.run([cmd],  stdout=subprocess.PIPE, shell=True).stdout
+        return (len(output)>0)
+
+    # before the upload to staging:  are the names reasonable?
+    def filenames_ok(self):
         # seq file
         if not self.seq_file or  self.seq_file.filename == '':
             self.errmsg = "Please provide a file with input sequences."
@@ -38,8 +59,7 @@ class UploadHandler:
             self.errmsg = "Please provide input sequences in a file with one of the extensions: "
             self.errmsg += ", ".join([e for e in Config.ALLOWED_SEQFILE_EXTENSIONS])
             return False
-
-        # structure file - not struct file is optional
+        # structure file - note that struct file is optional
         if self.struct_file and self.struct_file.filename!='':
             self.clean_struct_fnm = secure_filename(self.struct_file.filename)
             if not self.clean_struct_fnm  or  self.clean_struct_fnm == '':
@@ -49,8 +69,25 @@ class UploadHandler:
                 self.errmsg = "Please provide input sequences in a file with one of the extensions: "
                 self.errmsg += ", ".join([e for e in Config.ALLOWED_STRUCTFILE_EXTENSIONS])
                 return False
+        # if we're here, we're ok
         return True
 
+    # check input, and provide  feedback if not ok
+    # this is the first round of checking - before moving the files
+    # from the staging to the work directory
+    def upload_ok(self):
+        # is the sequence file format recognizable?
+        self._find_seq_input_type()
+        if not self.seq_input_type:
+            self.errmsg = "Sequence file format not recognized."
+            return False
+
+        # if the ref sequence is given, it should be present in the alignment
+        if not self._ref_seq_ok():
+            self.errmsg  = "{} not found in {}. ".format(self.qry_name, self.clean_seq_fnm)
+            self.errmsg += "\nPlease include the reference sequence, or perhaps check the name spelling"
+            return False
+        return True
 
     def upload_files(self):
         os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
@@ -61,8 +98,6 @@ class UploadHandler:
             print ("************* saving", self.clean_struct_fnm)
             self.struct_file.save(os.path.join(Config.UPLOAD_FOLDER, self.clean_struct_fnm))
         return
-
-
 
     def report_input_params(self):
         print(">>>>>>>>>>  qry name ", self.qry_name)
