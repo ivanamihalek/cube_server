@@ -16,8 +16,18 @@ def check_dependencies():
             exit(1)
     print ("\tdependencies ok")
 
+    print (" = Directory check:")
+    for dirpath in [Config.UPLOAD_DIRECTORY, Config.WORK_DIRECTORY]:
+        if not os.path.exists(dirpath):
+            os.mkdir(dirpath)
+        if not os.path.exists(dirpath):
+            print(dirpath, "not found and could not be made")
+            exit(1)
+    print ("\tdirectories ok")
+
 def create_app():
     app = Flask(__name__)
+    Config.WORK_DIRECTORY = "{}/{}".format(app.root_path,Config.WORK_DIRECTORY)
     app.secret_key = Config.SECRET_KEY
     from cube.main.routes import main
     from cube.errors.handlers import errors

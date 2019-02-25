@@ -21,8 +21,12 @@ def cons():
             flash(uploadHandler.errmsg, 'error')
             return render_template('cons.html')
 
-        conservationist  =  Conservationist(uploadHandler)
-        return render_template('home.html', storage='bottle')
+        conservationist  = Conservationist(uploadHandler)
+        conservationist.run()
+        if not conservationist.run_ok:
+            flash(uploadHandler.errmsg, 'error')
+        return render_template('cons_results.html')
+
     else:
         return render_template('cons.html', storage='bottle')
 
@@ -30,5 +34,4 @@ def cons():
 @activity.route("/spec", methods=['GET', 'POST'])
 def spec():
     return render_template('spec.html', storaage='can')
-
 

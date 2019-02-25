@@ -2,6 +2,7 @@
 from werkzeug.utils import secure_filename
 from cube.config import Config
 import os, subprocess
+import string, random
 
 class UploadHandler:
     def __init__(self, request):
@@ -17,21 +18,25 @@ class UploadHandler:
         self.clean_seq_fnm = None
         self.clean_struct_fnm = None
 
+        self.id_string = self._id_generator()
+        self.staging_dir = "{}/{}".format(Config.UPLOAD_DIRECTORY, self.id_string)
         self.seq_input_type = None
-
         self.errmsg = None
+
+    def _id_generator(self, size=6, chars=string.ascii_uppercase + string.digits):
+        return ''.join(random.choice(chars) for _ in range(size))
 
     def _allowed_file(self, filename, allowed_extensions):
         return '.' in filename and \
                filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
     def _find_seq_input_type(self):
-        cmd = "grep  '>' {}/{} ".format(Config.UPLOAD_FOLDER, self.clean_seq_fnm)
+        cmd = "grep  '>' {}/{} ".format(self.staging_dir, self.clean_seq_fnm)
         output = subprocess.run([cmd],  stdout=subprocess.PIPE, shell=True).stdout
         if len(output)>0:
             self.seq_input_type = 'fasta'
             return
-        cmd = "grep  'Name: ' {}/{} ".format(Config.UPLOAD_FOLDER,self.clean_seq_fnm)
+        cmd = "grep  'Name: ' {}/{} ".format(self.staging_dir, self.clean_seq_fnm)
         output = subprocess.run([cmd],  stdout=subprocess.PIPE, shell=True).stdout
         if len(output)>0:
             self.seq_input_type = 'gcg'
@@ -39,12 +44,13 @@ class UploadHandler:
 
     def _ref_seq_ok(self):
         if self.seq_input_type == 'fasta':
-            cmd = "grep  '>' {}/{} | grep {}".format(Config.UPLOAD_FOLDER,self.clean_seq_fnm, self.qry_name)
+            cmd = "grep  '>' {}/{} | grep {}".format(self.staging_dir, self.clean_seq_fnm, self.qry_name)
         else:
-            cmd = "grep 'Name: '  {}/{} | grep {} ".format(Config.UPLOAD_FOLDER,self.clean_seq_fnm, self.qry_name)
+            cmd = "grep 'Name: '  {}/{} | grep {} ".format(self.staging_dir, self.clean_seq_fnm, self.qry_name)
         output = subprocess.run([cmd],  stdout=subprocess.PIPE, shell=True).stdout
         return (len(output)>0)
 
+    ############################################################
     # before the upload to staging:  are the names reasonable?
     def filenames_ok(self):
         # seq file
@@ -72,6 +78,16 @@ class UploadHandler:
         # if we're here, we're ok
         return True
 
+    def upload_files(self):
+        os.makedirs(self.staging_dir, exist_ok=True)
+        if self.clean_seq_fnm:
+            print ("************* saving", self.clean_seq_fnm)
+            self.seq_file.save(os.path.join(self.staging_dir, self.clean_seq_fnm))
+        if self.clean_struct_fnm:
+            print ("************* saving", self.clean_struct_fnm)
+            self.struct_file.save(os.path.join(self.staging_dir, self.clean_struct_fnm))
+        return
+
     # check input, and provide  feedback if not ok
     # this is the first round of checking - before moving the files
     # from the staging to the work directory
@@ -89,15 +105,6 @@ class UploadHandler:
             return False
         return True
 
-    def upload_files(self):
-        os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
-        if self.clean_seq_fnm:
-            print ("************* saving", self.clean_seq_fnm)
-            self.seq_file.save(os.path.join(Config.UPLOAD_FOLDER, self.clean_seq_fnm))
-        if self.clean_struct_fnm:
-            print ("************* saving", self.clean_struct_fnm)
-            self.struct_file.save(os.path.join(Config.UPLOAD_FOLDER, self.clean_struct_fnm))
-        return
 
     def report_input_params(self):
         print(">>>>>>>>>>  qry name ", self.qry_name)
@@ -106,7 +113,7 @@ class UploadHandler:
         print(">>>>>>>>>>  struct file name ", self.struct_file.filename if self.struct_file else "None")
         print(">>>>>>>>>>  chain ", self.chain)
         print(">>>>>>>>>>  method ", self.method)
-        print(">>>>>>>>>>  upload folder ", Config.UPLOAD_FOLDER)
+        print(">>>>>>>>>>  upload folder ", Config.UPLOAD_DIRECTORY)
 
 
 
