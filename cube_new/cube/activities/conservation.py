@@ -10,7 +10,10 @@ class Conservationist:
         def __init__(self, uploadHandler):
             self.id_string = uploadHandler.id_string
             self.workdir = "{}/{}".format(Config.WORK_DIRECTORY, self.id_string)
-            self.alignment_file = "{}/{}/{}".format(Config.UPLOAD_DIRECTORY, self.id_string, uploadHandler.clean_seq_fnm)
+            self.original_alignment_file = "{}/{}".format(uploadHandler.staging_dir, uploadHandler.clean_seq_fnm)
+            self.original_struct_file = None
+            if uploadHandler.clean_struct_fnm:
+                self.original_struct_file = "{}/{}".format(uploadHandler.staging_dir, uploadHandler.clean_struct_fnm)
             self.qry_name = uploadHandler.qry_name
             self.method = uploadHandler.method
             return
@@ -23,20 +26,19 @@ class Conservationist:
             prms_string += "skip_query \n"
             prms_string += "\n"
          
-            prms_string += "align   %s\n" % self.alignment_file
+            prms_string += "align   %s\n" % self.original_alignment_file
             prms_string += "refseq  %s\n" % self.qry_name
             prms_string += "method  %s\n" % self.method
             prms_string += "\n";
             prms_string += "outn  %s/specs_out\n" % self.workdir
-        
 
             outf = open("%s/cmd"%self.workdir, "w")
             outf.write(prms_string)
             outf.close()
-            #if structure:
-            #    prms_string += "pdbf      jobdir/structure_single_chain.pdb  \n";
-            #    prms_string += "pdbseq    pdb_structure_single_chain\n";
-            #    #dssp_file  &&  (prms_string += "dssp   dssp_file\n");
+            if self.original_struct_file:
+                prms_string += "pdbf      %s\n" %  self.original_strut_file
+                prms_string += "pdbseq    %s\n" %  self.pdbseq
+                #dssp_file  &&  (prms_string += "dssp   dssp_file\n");
                 
 
 

@@ -9,4 +9,7 @@ class Config:
     ALLOWED_SEQFILE_EXTENSIONS = {'txt', 'fasta', 'fst', 'fa', 'gcg', 'msf', 'afa'}
     ALLOWED_STRUCTFILE_EXTENSIONS = {'pdb'}
 
-    DEPENDENCIES = {'specs':'/var/local/bin/specs'}
+    DEPENDENCIES = {'specs':'/var/local/bin/specs',
+                    'muscle':'/var/local/bin/muscle',
+                    'mafft':'/var/local/bin/mafft/mafft.sh', # https://mafft.cbrc.jp/alignment/software/linuxportable.html
+                    }
