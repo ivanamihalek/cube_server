@@ -203,6 +203,8 @@ sub process_input_data (@) {
 	my $ref_seq_automatic = 0;
 	my $file_ct           = 0;
 	my @group_names       = ();
+
+	# check  the alignment file format; transform sf to afa
 	for my $input_seq_file (@input_seq_files ) {
 
 		# do we recognize the format?
@@ -397,6 +399,7 @@ sub process_input_data (@) {
 		$ref_seq_name = $server_name;
 
 	}
+
 	# we want one single file
 	if (@alignment_files==1) {
 		$alignment_file = $alignment_files[0];

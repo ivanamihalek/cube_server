@@ -8,14 +8,15 @@ import subprocess, os, shutil
 class Conservationist:
 
         def __init__(self, uploadHandler):
-            self.id_string = uploadHandler.id_string
-            self.workdir = "{}/{}".format(Config.WORK_DIRECTORY, self.id_string)
+            self.job_id = uploadHandler.job_id
+            self.workdir = "{}/{}".format(Config.WORK_DIRECTORY, self.job_id)
             self.original_alignment_file = "{}/{}".format(uploadHandler.staging_dir, uploadHandler.clean_seq_fnm)
             self.original_struct_file = None
             if uploadHandler.clean_struct_fnm:
                 self.original_struct_file = "{}/{}".format(uploadHandler.staging_dir, uploadHandler.clean_struct_fnm)
             self.qry_name = uploadHandler.qry_name
             self.method = uploadHandler.method
+            self.run_ok = False
             return
 
         def _write_cmd_file(self):
@@ -41,11 +42,24 @@ class Conservationist:
                 #dssp_file  &&  (prms_string += "dssp   dssp_file\n");
                 
 
+        def prepare_run(self):
+            os.mkdir(self.workdir)
+            self._write_cmd_file()
+            # transform msf to afa
+
+            # if not aligned - align
+
+            # restrict to query
+
+            # extract sequence from pdb
+
+            # align pdbseq to the rest of the alignment
+
 
         def run(self):
             specs = Config.DEPENDENCIES['specs']
-            os.mkdir(self.workdir)
-            self._write_cmd_file()
             cmd = "{} {}/cmd ".format(specs, self.workdir)
             print(" +++ ", cmd)
             process = subprocess.run([cmd],  stdout=subprocess.PIPE, shell=True)
+            self.run_ok = True
+            return

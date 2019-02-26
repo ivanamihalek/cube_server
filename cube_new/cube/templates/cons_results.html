@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<div class='main'>
+
+    <left_title> Conservation mapped onto {{job_id}} sequence</left_title>
+    <p> &nbsp;
+    <img class='centerimg' width='430' src="{{ url_for('static', filename='images/cons_legend.png')}}">
+
+    <p>The residues are ranked according to the conservation score, and binned into 5% bins.
+	The bins are colored according to the legend. Note that if 30% or more positions are conserved,
+	the topmost bins will be empty, and the resulting map will be black-and-white.
+	<a href="{{url_for('help.help_index', _anchor='exons')}}"  target='new'>Blue bars</a>, when present, indicate exon boundaries.</p>
+
+
+ </div>
+
+{% endblock content %}

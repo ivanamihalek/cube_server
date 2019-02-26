@@ -18,8 +18,8 @@ class UploadHandler:
         self.clean_seq_fnm = None
         self.clean_struct_fnm = None
         ########################################
-        self.id_string = self._id_generator()
-        self.staging_dir = "{}/{}".format(Config.UPLOAD_DIRECTORY, self.id_string)
+        self.job_id = self._id_generator()
+        self.staging_dir = "{}/{}".format(Config.UPLOAD_DIRECTORY, self.job_id)
         self.seq_input_type = None
         self.errmsg = None
 

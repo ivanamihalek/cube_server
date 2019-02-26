@@ -25,12 +25,19 @@ def cons():
         conservationist.run()
         if not conservationist.run_ok:
             flash(uploadHandler.errmsg, 'error')
-        return render_template('cons_results.html')
+        return cons_results(uploadHandler.job_id)
 
     else:
         return render_template('cons.html', storage='bottle')
 
 
+##########################################################
+@activity.route("/cons/<string:job_id>", methods=['POST'])
+def cons_results(job_id):
+    return render_template('cons_results.html', job_id=job_id)
+
+
+##########################################################
 @activity.route("/spec", methods=['GET', 'POST'])
 def spec():
     return render_template('spec.html', storaage='can')
