@@ -33,10 +33,10 @@ sub conservation (@) {
     # run dssp (solvent accessibility):
     my $dssp_file = "";
     if($structure){
-	$dssp_file = $structure;
-	$dssp_file =~ s/pdb$/dssp/;
-	$cmd = "$dssp -i $structure -o $dssp_file";
-	(system $cmd) && ($dssp_file="");
+        $dssp_file = $structure;
+        $dssp_file =~ s/pdb$/dssp/;
+        $cmd = "$dssp -i $structure -o $dssp_file";
+        (system $cmd) && ($dssp_file="");
     }
 
 
@@ -59,11 +59,9 @@ sub conservation (@) {
 
 
     if($structure){
-	
-	$prms_string .= "pdbf      $jobdir/$structure_single_chain.pdb  \n";
-	$prms_string .= "pdbseq    pdb_$structure_single_chain\n";
-	$dssp_file  &&  ($prms_string .= "dssp   $dssp_file\n");
-	    
+        $prms_string .= "pdbf      $jobdir/$structure_single_chain.pdb  \n";
+        $prms_string .= "pdbseq    pdb_$structure_single_chain\n";
+        $dssp_file  &&  ($prms_string .= "dssp   $dssp_file\n");
     }
     
     $specs_cmd_file = "$jobdir/specs_cmd";
@@ -90,8 +88,8 @@ sub conservation (@) {
     }
 
     if($errmsg = `grep \"Unrecognized amino acid code\" $stdout`){
-	chomp($errmsg);
-	html_die("$errmsg in the uploaded strucure");
+        chomp($errmsg);
+        html_die("$errmsg in the uploaded strucure");
     }
     
     ###############################################
@@ -184,17 +182,17 @@ sub make_conservation_map_png(@){
     my $command;
     
     for my $i(0..$f_counter){
-	my $frm = $i*$range + 1;
-	my $to =  (($i+1)*$range > $resi_count) ?  $resi_count  : ($i+1)*$range;
+        my $frm = $i*$range + 1;
+        my $to =  (($i+1)*$range > $resi_count) ?  $resi_count  : ($i+1)*$range;
 
-	$command = "java -jar $seqReport $score $png_root.$frm\_$to $frm $to > $jobdir/seqReport.out 2>&1";
-	
-	if (system($command)) {
-	    $command =~ s/\s+/\n/g;
-	    html_die "Error running $command: $!";
-	}
-	push(@pngfiles,"$png_root.$frm\_$to.png");
-	
+        $command = "java -jar $seqReport $score $png_root.$frm\_$to $frm $to > $jobdir/seqReport.out 2>&1";
+
+        if (system($command)) {
+            $command =~ s/\s+/\n/g;
+            html_die "Error running $command: $!";
+        }
+        push(@pngfiles,"$png_root.$frm\_$to.png");
+
     }
     
     return ("",\@pngfiles);

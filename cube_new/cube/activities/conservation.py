@@ -1,22 +1,26 @@
 from typing import Any
 
 from cube import Config
-import subprocess, os, shutil
+import subprocess,  os, shutil
 
 # the alignment file probably needs to be checked
 
 class Conservationist:
 
-        def __init__(self, uploadHandler):
-            self.job_id = uploadHandler.job_id
+        def __init__(self, upload_handler):
+            self.job_id = upload_handler.job_id
             self.workdir = "{}/{}".format(Config.WORK_DIRECTORY, self.job_id)
-            self.original_alignment_file = "{}/{}".format(uploadHandler.staging_dir, uploadHandler.clean_seq_fnm)
+            self.original_alignment_file = "{}/{}".format(upload_handler.staging_dir, upload_handler.clean_seq_fnm)
             self.original_struct_file = None
-            if uploadHandler.clean_struct_fnm:
-                self.original_struct_file = "{}/{}".format(uploadHandler.staging_dir, uploadHandler.clean_struct_fnm)
-            self.qry_name = uploadHandler.qry_name
-            self.method = uploadHandler.method
+            if upload_handler.clean_struct_fnm:
+                self.original_struct_file = "{}/{}".format(upload_handler.staging_dir, upload_handler.clean_struct_fnm)
+            self.qry_name = upload_handler.qry_name
+            self.method = upload_handler.method
+            self.specs_outname = "specs_out"
+            self.png_input = "png_in"
+            self.illustration_range = 400
             self.run_ok = False
+            self.errmsg = None
             return
 
         def _write_cmd_file(self):
@@ -31,13 +35,13 @@ class Conservationist:
             prms_string += "refseq  %s\n" % self.qry_name
             prms_string += "method  %s\n" % self.method
             prms_string += "\n";
-            prms_string += "outn  %s/specs_out\n" % self.workdir
+            prms_string += "outn  %s/%s\n" % (self.workdir, self.specs_outname)
 
             outf = open("%s/cmd"%self.workdir, "w")
             outf.write(prms_string)
             outf.close()
             if self.original_struct_file:
-                prms_string += "pdbf      %s\n" %  self.original_strut_file
+                prms_string += "pdbf      %s\n" %  self.original_struct_file
                 prms_string += "pdbseq    %s\n" %  self.pdbseq
                 #dssp_file  &&  (prms_string += "dssp   dssp_file\n");
                 
@@ -57,9 +61,41 @@ class Conservationist:
 
 
         def run(self):
+
+            ### specs
             specs = Config.DEPENDENCIES['specs']
             cmd = "{} {}/cmd ".format(specs, self.workdir)
             print(" +++ ", cmd)
-            process = subprocess.run([cmd],  stdout=subprocess.PIPE, shell=True)
+            process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            if process.returncode != 0:
+                self.errmsg  = process.stdout
+                self.errmsg += process.stderr
+                self.run_ok = False
+                return
+
+            ### cins map
+            # extract the input for the java file
+            specs_score_file = "{}/{}.score".format(self.workdir, self.specs_outname)
+            inf = open(specs_score_file,"r")
+            outf = open(self.png_input,"w")
+            resi_count = 0
+            for line in inf:
+                fields = line.split()
+                if '%' in fields[0] or '.' in fields[3]: continue
+                outf.write(" ".join([fields[2], fields[3], fields[4]]))
+                resi_count += 1
+            inf.close()
+            outf.close()
+
+            pngmaker = Config.DEPENDENCIES['seqreport.jar']
+            png_root = self.job_id
+            f_counter = int(resi_count/self.illustration_range)
+            for i in range(f_counter):
+                    seq_frm = i*self.illustration_range + 1
+                    seq_to =  resi_count if (i+1)*self.illustration_range > resi_count else (i+1)*self.illustration_range
+                    out_fnm = "%s.%s_%s" % (png_root, seq_frm, seq_to)
+                    cmd = "java -jar  {}  {}  {} {} {} > {}/seqReport.out 2>&1".\
+                        format(pngmaker, self.png_input, out_fnm, seq_frm, seq_to, self.workdir)
+
             self.run_ok = True
             return

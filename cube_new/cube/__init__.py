@@ -3,7 +3,7 @@ from cube.config import Config
 import os
 
 def check_dependencies():
-    print (" = Dependency check:")
+    print (" = Dependencies check:")
     for dep, path in Config.DEPENDENCIES.items():
         if not os.path.exists(path):
             print(path, "not found")
@@ -14,7 +14,18 @@ def check_dependencies():
         elif not os.access(path, os.X_OK):
             print(path, "not executable")
             exit(1)
-    print ("\tdependencies ok")
+    print ("\tDependencies ok")
+
+    print (" = Libs check:")
+    for dep, path in Config.LIBS.items():
+        if not os.path.exists(path):
+            print(path, "not found")
+            exit(1)
+        elif os.path.getsize(path)==0:
+            print(path, "is empty")
+            exit(1)
+    print ("\tLibs ok")
+
 
     print (" = Directory check:")
     for dirpath in [Config.UPLOAD_DIRECTORY, Config.WORK_DIRECTORY]:
