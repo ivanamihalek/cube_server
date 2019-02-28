@@ -9,23 +9,23 @@ activity = Blueprint('activity', __name__)
 @activity.route("/cons", methods=['GET', 'POST'])
 def cons():
     if request.method == 'POST':
-        uploadHandler = UploadHandler(request)
-        uploadHandler.report_input_params()
-        #uploadHandler.upload()
+        upload_handler = UploadHandler(request)
+        upload_handler.report_input_params()
+        #upload_handler.upload()
         # if there are problems, render warning page
-        if not uploadHandler.filenames_ok():
-            flash(uploadHandler.errmsg, 'error')
+        if not upload_handler.filenames_ok():
+            flash(upload_handler.errmsg, 'error')
             return render_template('cons.html')
-        uploadHandler.upload_files()
-        if not uploadHandler.upload_ok():
-            flash(uploadHandler.errmsg, 'error')
+        upload_handler.upload_files()
+        if not upload_handler.upload_ok():
+            flash(upload_handler.errmsg, 'error')
             return render_template('cons.html')
 
-        conservationist  = Conservationist(uploadHandler)
+        conservationist = Conservationist(upload_handler)
         conservationist.run()
         if not conservationist.run_ok:
-            flash(uploadHandler.errmsg, 'error')
-        return cons_results(uploadHandler.job_id)
+            flash(upload_handler.errmsg, 'error')
+        return cons_results(conservationist)
 
     else:
         return render_template('cons.html', storage='bottle')
@@ -33,8 +33,8 @@ def cons():
 
 ##########################################################
 @activity.route("/cons/<string:job_id>", methods=['POST'])
-def cons_results(job_id):
-    return render_template('cons_results.html', job_id=job_id)
+def cons_results(conservationist):
+    return render_template('cons_results.html', results_handler=conservationist)
 
 
 ##########################################################

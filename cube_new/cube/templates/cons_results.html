@@ -2,7 +2,7 @@
 {% block content %}
 <div class='main'>
 
-    <left_title> Conservation mapped onto {{job_id}} sequence</left_title>
+    <left_title> Conservation mapped onto {{results_handler.qry_name}} sequence</left_title>
     <p> &nbsp;
     <img class='centering' width='430' src="{{ url_for('static', filename='images/cons_legend.png')}}">
 
@@ -11,6 +11,13 @@
 	the topmost bins will be empty, and the resulting map will be black-and-white.
 	<a href="{{url_for('help.help_index', _anchor='exons')}}"  target='new'>Blue bars</a>, when present, indicate exon boundaries.</p>
 
+    {% for png_file in results_handler.png_files %}
+        <p>png_file</p>
+        {#
+            {% set image_url = url_for('workdir', filename=results_handler.job_id+"/"+png_file) %}
+            <img src="{{image_url}}" style='float:center'>"
+        #}
+    {% endfor %}
 
  </div>
 

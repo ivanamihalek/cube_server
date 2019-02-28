@@ -21,6 +21,7 @@ class Conservationist:
             self.illustration_range = 400
             self.run_ok = False
             self.errmsg = None
+            self.png_files = []
             return
 
         def _write_cmd_file(self):
@@ -62,6 +63,8 @@ class Conservationist:
 
         def run(self):
 
+            self.prepare_run()
+
             ### specs
             specs = Config.DEPENDENCIES['specs']
             cmd = "{} {}/cmd ".format(specs, self.workdir)
@@ -77,25 +80,29 @@ class Conservationist:
             # extract the input for the java file
             specs_score_file = "{}/{}.score".format(self.workdir, self.specs_outname)
             inf = open(specs_score_file,"r")
-            outf = open(self.png_input,"w")
+            png_input_file =  "{}/{}".format(self.workdir, self.png_input)
+            outf = open(png_input_file,"w")
             resi_count = 0
             for line in inf:
                 fields = line.split()
                 if '%' in fields[0] or '.' in fields[3]: continue
-                outf.write(" ".join([fields[2], fields[3], fields[4]]))
+                outf.write(" ".join([fields[2], fields[3], fields[4]])+"\n")
                 resi_count += 1
             inf.close()
             outf.close()
 
-            pngmaker = Config.DEPENDENCIES['seqreport.jar']
+            pngmaker = Config.LIBS['seqreport.jar']
             png_root = self.job_id
             f_counter = int(resi_count/self.illustration_range)
             for i in range(f_counter):
                     seq_frm = i*self.illustration_range + 1
                     seq_to =  resi_count if (i+1)*self.illustration_range > resi_count else (i+1)*self.illustration_range
-                    out_fnm = "%s.%s_%s" % (png_root, seq_frm, seq_to)
+                    out_fnm = "{}.{}_{}" .format(png_root, seq_frm, seq_to)
                     cmd = "java -jar  {}  {}  {} {} {} > {}/seqReport.out 2>&1".\
-                        format(pngmaker, self.png_input, out_fnm, seq_frm, seq_to, self.workdir)
+                        format(pngmaker, png_input_file, "{}/{}".format(self.workdir, out_fnm), seq_frm, seq_to, self.workdir)
+                    process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                    if process.returncode==0:
+                        self.png_files.append(out_fnm+".png")
 
             self.run_ok = True
             return
