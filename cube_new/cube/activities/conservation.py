@@ -9,7 +9,8 @@ class Conservationist:
 
         def __init__(self, upload_handler):
             self.job_id = upload_handler.job_id
-            self.workdir = "{}/{}".format(Config.WORK_DIRECTORY, self.job_id)
+            self.static_path =  "{}/{}".format(Config.WORK_DIRECTORY, self.job_id)
+            self.workdir = "{}/static/{}".format(Config.APP_PATH,self.static_path)
             self.original_alignment_file = "{}/{}".format(upload_handler.staging_dir, upload_handler.clean_seq_fnm)
             self.original_struct_file = None
             if upload_handler.clean_struct_fnm:

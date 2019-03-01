@@ -38,7 +38,7 @@ def check_dependencies():
 
 def create_app():
     app = Flask(__name__)
-    Config.WORK_DIRECTORY = "{}/{}".format(app.root_path,Config.WORK_DIRECTORY)
+    Config.APP_PATH = app.root_path
     app.secret_key = Config.SECRET_KEY
     from cube.main.routes import main
     from cube.errors.handlers import errors

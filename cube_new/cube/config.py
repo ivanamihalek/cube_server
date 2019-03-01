@@ -6,6 +6,7 @@ class Config:
 
     UPLOAD_DIRECTORY = '/tmp/cube-server'
     WORK_DIRECTORY = "workdir"
+    APP_PATH = None # set in _init_py
     ALLOWED_SEQFILE_EXTENSIONS = {'txt', 'fasta', 'fst', 'fa', 'gcg', 'msf', 'afa'}
     ALLOWED_STRUCTFILE_EXTENSIONS = {'pdb'}
 

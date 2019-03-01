@@ -12,11 +12,10 @@
 	<a href="{{url_for('help.help_index', _anchor='exons')}}"  target='new'>Blue bars</a>, when present, indicate exon boundaries.</p>
 
     {% for png_file in results_handler.png_files %}
-        <p>png_file</p>
-        {#
-            {% set image_url = url_for('workdir', filename=results_handler.job_id+"/"+png_file) %}
-            <img src="{{image_url}}" style='float:center'>"
-        #}
+
+        {% set image_path = url_for('static', filename=results_handler.static_path) + "/" + png_file %}
+        <img src="{{image_path}}" style='float:center;'>
+
     {% endfor %}
 
  </div>
