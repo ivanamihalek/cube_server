@@ -19,7 +19,7 @@ class UploadHandler:
         self.clean_struct_fnm = None
         ########################################
         self.job_id = self._id_generator()
-        self.staging_dir = "{}/{}".format(Config.UPLOAD_DIRECTORY, self.job_id)
+        self.staging_dir = "{}/{}".format(Config.UPLOAD_PATH, self.job_id)
         self.seq_input_type = None
         self.errmsg = None
 
@@ -77,7 +77,8 @@ class UploadHandler:
                 return False
         # if we're here, we're ok
         return True
-
+    ############################################################
+    #
     def upload_files(self):
         os.makedirs(self.staging_dir, exist_ok=True)
         if self.clean_seq_fnm:
@@ -113,7 +114,7 @@ class UploadHandler:
         print(">>>>>>>>>>  struct file name ", self.struct_file.filename if self.struct_file else "None")
         print(">>>>>>>>>>  chain ", self.chain)
         print(">>>>>>>>>>  method ", self.method)
-        print(">>>>>>>>>>  upload folder ", Config.UPLOAD_DIRECTORY)
+        print(">>>>>>>>>>  upload folder ", Config.UPLOAD_PATH)
 
 
 

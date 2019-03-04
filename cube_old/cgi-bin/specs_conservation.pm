@@ -110,8 +110,8 @@ sub conservation (@) {
     my $score_file      = "$jobdir/specs_out.score";
     my $input_for_xls   = $score_file;
     if ($seq_annotation_ref) {
-	$input_for_xls  = add_annotation ($score_file, $seq_annotation_ref, 
-					  $name_resolution_file, $alignment_file);
+        $input_for_xls  = add_annotation ($score_file, $seq_annotation_ref,
+                          $name_resolution_file, $alignment_file);
     } 
 
     ##############################################

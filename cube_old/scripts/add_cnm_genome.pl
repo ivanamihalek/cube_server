@@ -1,4 +1,6 @@
 #! /usr/bin/perl -w
+use strict;
+use warnings;
 defined($ARGV[1])  ||
     die "Usage: find_common_nm.pl dictionaryfile genomefile\n";
 #$species_name_file = "/home/zhangzh/speciesName";
