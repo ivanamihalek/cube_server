@@ -129,26 +129,26 @@ sub conservation (@) {
     
     if($structure){
 
-	# check whether chain really exists in this structure
-	# otherwise we get nonsense
-	my $ret  = `awk '\$1=="ATOM"' $structure | head -n1`;
-	my $chainID_in_pdb_file = substr ( $ret,  21, 1);
-	
-	$cmd = "$specs2pml  $score_method  $score_f  $structure $script ";
-	($chainID_in_pdb_file =~ /\w/) && ($cmd .= " $chainID");
-	
-	system($cmd) && html_die("Error running $cmd:$!");
+        # check whether chain really exists in this structure
+        # otherwise we get nonsense
+        my $ret  = `awk '\$1=="ATOM"' $structure | head -n1`;
+        my $chainID_in_pdb_file = substr ( $ret,  21, 1);
 
-	$cmd = "$pymol -qc -u $script > /dev/null";
-	system($cmd) && html_die("Error running $cmd $!");
+        $cmd = "$specs2pml  $score_method  $score_f  $structure $script ";
+        ($chainID_in_pdb_file =~ /\w/) && ($cmd .= " $chainID");
 
-	$session = $script;
-	(($session =~ s/\.pml$/\.pse/)==1) || 
-	    diehard("specs", "Can not construct session name:$cmd");
-	$zipfile = "$session.zip";
-	$cmd = "$zip -j $zipfile $session > /dev/null";
-	
-	system($cmd) && ($zipfile="");
+        system($cmd) && html_die("Error running $cmd:$!");
+
+        $cmd = "$pymol -qc -u $script > /dev/null";
+        system($cmd) && html_die("Error running $cmd $!");
+
+        $session = $script;
+        (($session =~ s/\.pml$/\.pse/)==1) ||
+            diehard("specs", "Can not construct session name:$cmd");
+        $zipfile = "$session.zip";
+        $cmd = "$zip -j $zipfile $session > /dev/null";
+
+        system($cmd) && ($zipfile="");
     }
 
     ###########################################################################

@@ -22,6 +22,7 @@ class Conservationist:
             self.illustration_range = 400
             self.run_ok = False
             self.errmsg = None
+            self.score_file = None
             self.png_files = []
             self.preprocessed_afa = ""
             self.xls = None
@@ -48,7 +49,6 @@ class Conservationist:
                 prms_string += "pdbf      %s\n" %  self.original_struct_file
                 prms_string += "pdbseq    %s\n" %  self.pdbseq
                 #dssp_file  &&  (prms_string += "dssp   dssp_file\n");
-                
 
         def prepare_run(self):
             os.mkdir(self.work_path)
@@ -74,6 +74,7 @@ class Conservationist:
                 self.errmsg  = process.stdout
                 self.run_ok = False
                 return False
+            self.score_file = "{}/{}.score".format(self.work_path, self.specs_outname)
             return True
 
         def conservation_map(self):
@@ -106,22 +107,47 @@ class Conservationist:
             return
 
         def excel_spreadsheet(self):
-            # the basic input is the specs score file
-            xls_input =  "{}/{}.score".format(self.work_path, self.specs_outname)
-            output_name_root = self.original_alignment_file.split("/")[-1].split(".")[0]
+            output_name_root = "conservation_on_the_sequence"
             output_path = "{}/{}".format(self.work_path, output_name_root)
             # if we have the annotation, add the annotation
             #
             xls_script = "{}/{}".format(Config.SCRIPTS_PATH, Config.SCRIPTS['specs2xls'])
-            cmd = "{}   {}  {}".format(xls_script, xls_input,  output_path)
+            # the basic input is the specs score file
+            cmd = "{}   {}  {}".format(xls_script, self.score_file,  output_path)
             process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-            print(" ++++++ ", cmd)
             if process.returncode==0:
                 self.xls = "%s.xls" % output_path
 
             return
 
         def pymol_script(self):
+            if not self.original_struct_file: return
+            output_name_root = "conservation_on_the_structure"
+            output_path = "{}/{}".format(self.work_path, output_name_root)
+            #cmd = "$specs2pml  $score_method  $score_f  $structure $script "
+            #($chainID_in_pdb_file =~ / \w /) & & ($cmd.= " $chainID");
+            pml_creator = "{}/{}".format(Config.SCRIPTS_PATH, Config.SCRIPTS['specs2pml'])
+            # the basic input is the specs score file
+            cmd = "{}   {}  {}".format(pml_creator, self.score_file,  output_path)
+            print(" ++++++ ", cmd)
+            process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            # are these scripts correctly returning 0 ?
+            if process.returncode !=0: return
+
+            pymol = Config.DEPENDENCIES['pymol']
+            cmd = "{} -qc -u  {} > /dev/null ".format(pymol, output_path)
+            process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            if process.returncode !=0: return
+
+
+            session = "{}/{}.pse".format(self.work_path, output_name_root)
+            zipfile = session+ ".zip"
+            # shellzip to be distinguished from zip comman in python
+            shellzip =  Config.DEPENDENCIES['zip']
+            cmd = "{} -i {} {} > /dev/null ".format(shellzip,zipfile, session )
+            process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            if process.returncode !=0: return
+
             return
 
         def directory_zip(self):
@@ -145,6 +171,7 @@ class Conservationist:
             ### postprocess
             self.conservation_map()
             self.excel_spreadsheet()
+            #self.pymol_script()
 
             self.run_ok = True
             return
