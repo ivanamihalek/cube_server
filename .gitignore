@@ -1,10 +1,11 @@
 workdir/
+__pycache__/
 .idea
 
 # Compiled source #
 ###################
 bin
-# src fiels are to be pulled from their own git repos
+# src files are to be pulled from their own git repos
 src
 struct
 *.com
