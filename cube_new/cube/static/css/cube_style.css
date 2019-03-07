@@ -130,7 +130,18 @@ table { width:90%; border-collapse:collapse; text-align:center }
     padding-top:5px;
 }
 
-td.error{
+
+.warning {
+    font-size:24px;
+    line-height:32px;
+    color: 339cff;
+    padding-bottom:5px;
+    padding-top:5px;
+}
+
+
+
+td.error, td.warning{
     border: 0px solid red;
     border-radius: 12px;
     background-color: #ffbf80;

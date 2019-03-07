@@ -25,6 +25,8 @@ def cons():
         conservationist.run()
         if not conservationist.run_ok:
             flash(upload_handler.errmsg, 'error')
+        if conservationist.warn:
+            flash(conservationist.warn, 'warning')
         return cons_results(conservationist)
 
     else:
