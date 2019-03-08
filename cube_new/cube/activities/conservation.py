@@ -148,6 +148,7 @@ class Conservationist:
 			return
 
 		def pymol_script(self):
+			# note that we will use the original structure here, with other chains, ions etc
 			if not self.original_structure_path: return
 			output_name_root = "conservation_on_the_structure"
 			output_path = "{}/{}".format(self.work_path, output_name_root)
@@ -155,22 +156,20 @@ class Conservationist:
 			#($chainID_in_pdb_file =~ / \w /) & & ($cmd.= " $chainID");
 			pml_creator = "{}/{}".format(Config.SCRIPTS_PATH, Config.SCRIPTS['specs2pml'])
 			# the basic input is the specs score file
-			cmd = "{}   {}  {}".format(pml_creator, self.score_file,  output_path)
-			print(" ++++++ ", cmd)
+			cmd = "{} rvet {} {} {}.pml {}".format(pml_creator, self.score_file, self.original_structure_path, output_path, self.chain)
 			process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 			# are these scripts correctly returning 0 ?
 			if process.returncode !=0: return
 
 			pymol = Config.DEPENDENCIES['pymol']
-			cmd = "{} -qc -u  {} > /dev/null ".format(pymol, output_path)
+			cmd = "{} -qc -u  {}.pml > /dev/null ".format(pymol, output_path)
 			process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 			if process.returncode !=0: return
 
-
-			session = "{}/{}.pse".format(self.work_path, output_name_root)
+			session = "{}.pse".format(output_path)
 			zipfile = session+ ".zip"
 			# shellzip to be distinguished from zip command in python
-			shellzip =  Config.DEPENDENCIES['zip']
+			shellzip = Config.DEPENDENCIES['zip']
 			cmd = "{} -i {} {} > /dev/null ".format(shellzip,zipfile, session )
 			process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 			if process.returncode !=0: return
