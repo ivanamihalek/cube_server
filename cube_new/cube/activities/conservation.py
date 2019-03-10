@@ -8,16 +8,19 @@ import subprocess,  os, shutil
 class Conservationist:
 
 		def __init__(self, upload_handler):
+
 			# directories
 			self.job_id = upload_handler.job_id
 			self.workdir = "{}/{}".format(Config.WORK_DIRECTORY, self.job_id)
 			self.work_path = "{}/{}".format(Config.WORK_PATH, self.job_id)
+
 			# input
 			self.original_alignment_path = upload_handler.original_alignment_path
 			self.original_structure_path = upload_handler.original_structure_path
 			self.chain = upload_handler.chain if upload_handler.chain else "-"
 			self.qry_name = upload_handler.qry_name
 			self.method = upload_handler.method
+
 			# output
 			self.specs_outname = "specs_out"
 			self.png_input = "png_in"
@@ -29,7 +32,12 @@ class Conservationist:
 			self.preprocessed_afa = ""
 			self.xls = None
 			self.pdbseq = None
+
 			self.clean_structure_path = None
+			self.pse_zip = None
+
+			self.workdir_zip = None
+
 			self.warn = None
 			return
 
@@ -143,7 +151,7 @@ class Conservationist:
 			cmd = "{}   {}  {}".format(xls_script, self.score_file,  output_path)
 			process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 			if process.returncode==0:
-				self.xls = "%s.xls" % output_path
+				self.xls = "{}/{}.xls".format(self.workdir,output_name_root)
 
 			return
 
@@ -152,8 +160,6 @@ class Conservationist:
 			if not self.original_structure_path: return
 			output_name_root = "conservation_on_the_structure"
 			output_path = "{}/{}".format(self.work_path, output_name_root)
-			#cmd = "$specs2pml  $score_method  $score_f  $structure $script "
-			#($chainID_in_pdb_file =~ / \w /) & & ($cmd.= " $chainID");
 			pml_creator = "{}/{}".format(Config.SCRIPTS_PATH, Config.SCRIPTS['specs2pml'])
 			# the basic input is the specs score file
 			cmd = "{} rvet {} {} {}.pml {}".format(pml_creator, self.score_file, self.original_structure_path, output_path, self.chain)
@@ -170,13 +176,25 @@ class Conservationist:
 			zipfile = session+ ".zip"
 			# shellzip to be distinguished from zip command in python
 			shellzip = Config.DEPENDENCIES['zip']
-			cmd = "{} -i {} {} > /dev/null ".format(shellzip,zipfile, session )
+			cmd = "{} {} {} > /dev/null ".format(shellzip, zipfile, session)
 			process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-			if process.returncode !=0: return
+			if process.returncode ==0:
+				self.pse_zip = "{}/{}.pse.zip".format(self.workdir,output_name_root)
 
 			return
 
 		def directory_zip(self):
+			curr = os.getcwd()
+			os.chdir(Config.WORK_PATH)
+			shellzip = Config.DEPENDENCIES['zip']
+			archive_name = "cube_workdir_{}.zip".format(self.job_id)
+			cmd = "{} -r {} {} > /dev/null ".format(shellzip, archive_name, self.job_id)
+			process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+			if process.returncode ==0:
+				os.rename(archive_name, "{}/{}".format(self.work_path, archive_name))
+				self.workdir_zip = "{}/{}".format(self.workdir, archive_name)
+
+			os.chdir(curr)
 			return
 
 		###################################################
@@ -198,6 +216,7 @@ class Conservationist:
 			self.conservation_map()
 			self.excel_spreadsheet()
 			self.pymol_script()
+			self.directory_zip()
 
 			self.run_ok = True
 			return

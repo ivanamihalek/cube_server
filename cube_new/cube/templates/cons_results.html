@@ -2,8 +2,43 @@
 {% block content %}
 <div class='main'>
 
-    <left_title> Conservation mapped onto {{results_handler.qry_name}} sequence</left_title>
+   <hr>
+
     <table>
+        <tr><td>
+            <left_title> Downloadables</left_title>
+        </td></tr>
+        <tr><td>  &nbsp;  </td></tr>
+
+        {% if results_handler.xls  %}
+        <tr><td>
+            <a href="{{ url_for('static', filename=results_handler.xls)}}"> Xls spreadsheet </a>
+        </td></tr>
+        {% endif %}
+
+        {% if results_handler.pse_zip  %}
+        <tr><td>
+            <a href="{{ url_for('static', filename=results_handler.pse_zip)}}"> Pymol session (zipped) </a>
+        </td></tr>
+        {% endif %}
+
+        {% if results_handler.workdir_zip  %}
+        <tr><td>
+            <a href="{{ url_for('static', filename=results_handler.workdir_zip)}}"> The complete workdir (zipped) </a>
+        </td></tr>
+        {% endif %}
+
+        <tr><td>  &nbsp;  </td></tr>
+        <tr><td>  &nbsp;  </td></tr>
+    </table>
+
+    <hr>
+
+    <table>
+        <tr><td>
+        <left_title> Conservation mapped onto {{results_handler.qry_name}} sequence</left_title>
+        <tr><td>
+
         <tr><td>
             <img class='centering' width='430' style='float:left;' src="{{ url_for('static', filename='images/cons_legend.png')}}">
         </td></tr>
