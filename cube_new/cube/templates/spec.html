@@ -17,6 +17,8 @@
         </tr>
     </table>
 
+    {% set url_help  = url_for('help.help_index', _anchor='input') %}
+
     <form  enctype="multipart/form-data" method="post" name="specform">
         <table border="0" align="center" cellpadding="0" cellspacing="0" width="90%">
             <tr>
@@ -27,7 +29,7 @@
 
             <tr>
                 <td align="left" width="25%"> <a title= "The results will be reported only for the positions that exist in this sequence.
-	                     If no reference sequence is given, the first sequence in the alignment will be used." href="./help/help.html#input">
+	                     If no reference sequence is given, the first sequence in the alignment will be used." href="{{ url_help }}">
                     The name of the reference sequence</a> [optional]</td>
                 <td align="left" width="35%"> <input name="qry_nm" type="text" size="15"> </td>
                 <td>&nbsp;</td>
@@ -46,19 +48,20 @@
 	                                        <a href='help/getting_seqs.html'>Click here</a>
                                                 if you do not have the  sequences yet. &nbsp;
 					<a href='help/help.html#names'>Read more</a> about FASTA format."
-                                                 href="help/help.html#input">Sequence files</a> (2 or more)
+                                                 href="{{ url_help }}">Sequence files</a> (2 or more)
                     <br>[in GCG or FASTA format]
                 </td>
 
                 <td align="left" width="35%">
                     <input type="file" name="fnm" size="15" multiple="multiple"
                            title="To select multiple files, Ctrl-Click each file or drag over them.">
-                    <br> examples: <a href="fasta_example.txt">FASTA</a> &nbsp; <a href="gcg_example.txt">GCG</a>
+                    <br> examples: <a href="{{ url_for('static', filename='samples/fasta_example.txt') }}">FASTA</a> &nbsp;
+                    <a href="{{ url_for('static', filename='samples/gcg_example.txt') }}">GCG</a>
                 </td>
 
                 <td align="left"> <input type="checkbox" name="ckb" value=1>
                     <span title="Tick here if you do not want  the server to (re)align your set of sequences.">
-	  Already aligned?</span></td>
+	                    Already aligned?</span></td>
             </tr>
 
             <tr>
@@ -68,12 +71,15 @@
             </tr>
 
             <tr>
-                <td align="left" width="25%"> <a title="PDB file with structure of reference sequence. <br>
-	A <a href='help/pymol_output.html'>PyMol session</a>
-           will be generated indicating the levels of conservation on the structure.
-	   <a href='help/getting_structure.html'>Click here</a>  if you are not sure where to look for the structure."
-                                                 href="help/help.html#input">Structure file</a>
-                    <br>[optional]</td>
+                {% set url_pymol = url_for('help.pymol_output') %}
+                {% set url_structure = url_for('help.getting_structure') %}
+                <td align="left" width="25%"><a title="PDB file with structure of reference sequence.
+                    	A <a href='{{ url_pymol }}'>PyMol session</a>
+                        will be generated showing the levels of specialization
+	                    on the structure. <a href='{{ url_structure }}'>Click here</a>
+	                    if you are not sure where to look for the structure."
+                                                href={{ url_help }}>Structure file</a><br>[optional]</td>
+
                 <td align="left" width="35%"><input type="file" name="structure" size="15"></td>
                 <td align="left"> &nbsp;<a title="Please provide the chain identifier if the PDB file contains more than one chain.">
                     Chain</a>
