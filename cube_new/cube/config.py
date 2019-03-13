@@ -15,6 +15,7 @@ class Config:
     ALLOWED_STRUCTFILE_EXTENSIONS = {'pdb'}
 
     DEPENDENCIES = {'specs': '/var/local/bin/specs',
+                    'cube': '/var/local/bin/hypercube',
                     'muscle':'/var/local/bin/muscle',
                     'mafft':'/var/local/bin/mafft/mafft.sh',  # https://mafft.cbrc.jp/alignment/software/linuxportable.html
                     'pymol': '/usr/local/bin/pymol',

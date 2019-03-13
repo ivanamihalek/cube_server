@@ -441,7 +441,7 @@ sub process_input_data (@) {
 			$chainID = substr ( $ret,  21, 1) ||  "A";
 		}
 		$chainID = uc($chainID);
-		# we'll always process, because there is no and to pdb shennanigans
+		# we'll always process, because there is no end to pdb shennanigans
 		my $cmd = "$pdb_extract_n_clean $structure_file pdb_$structure_name$chainID $chainID";
 		my $ret = `$cmd`;
 		$ret && html_die ($ret);
