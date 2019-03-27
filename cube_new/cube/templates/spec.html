@@ -3,6 +3,20 @@
 
 <div class="main">
 
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+
+            <table  align="center" cellpadding="0" cellspacing="0" width="100%"  >
+                {% for category, message in messages %}
+                    <tr><td class="{{ category }}">
+                           <div class="{{ category }}">  {{ message }} </div>
+                    </td></tr>
+               {% endfor %}
+            </table>
+
+        {% endif %}
+    {% endwith %}
+
     <table border="0" align="center" cellpadding="0" cellspacing="0" width="100%">
         <tr>
             <td>&nbsp;</td>
@@ -17,7 +31,8 @@
         </tr>
     </table>
 
-    {% set url_help  = url_for('help.help_index', _anchor='input') %}
+    {% set url_help   = url_for('help.help_index', _anchor='input') %}
+    {% set url_fasta  = url_for('help.help_index', _anchor='names') %}
 
     <form  enctype="multipart/form-data" method="post" name="specform">
         <table border="0" align="center" cellpadding="0" cellspacing="0" width="90%">
@@ -43,23 +58,23 @@
             </tr>
 
             <tr>
-                <td align="left" width="25%"> <a title="Each group that you would like to contrast  <br>
-	                                        should be in a separate fasta file.<br>
-	                                        <a href='help/getting_seqs.html'>Click here</a>
-                                                if you do not have the  sequences yet. &nbsp;
-					<a href='help/help.html#names'>Read more</a> about FASTA format."
-                                                 href="{{ url_help }}">Sequence files</a> (2 or more)
+                <td align="left" width="25%">
+                    {% set url_getseqs  = url_for('help.getting_seqs') %}
+
+                    <a title='Each group that you would like to contrast  should be in a separate fasta file.
+	                         <a href="{{ url_getseqs }}">Click here</a> if you do not have the  sequences yet.
+					         <a href="{{ url_fasta }}">Read more</a> about FASTA format.'
+                       href="{{ url_help }}">Sequence files</a> (2 or more)
                     <br>[in GCG or FASTA format]
                 </td>
-
                 <td align="left" width="35%">
-                    <input type="file" name="fnm" size="15" multiple="multiple"
-                           title="To select multiple files, Ctrl-Click each file or drag over them.">
+                    <input  type="file" name="fnm" size="15">
                     <br> examples: <a href="{{ url_for('static', filename='samples/fasta_example.txt') }}">FASTA</a> &nbsp;
-                    <a href="{{ url_for('static', filename='samples/gcg_example.txt') }}">GCG</a>
+                                    <a href="{{ url_for('static', filename='samples/gcg_example.txt') }}">GCG</a>
                 </td>
 
-                <td align="left"> <input type="checkbox" name="ckb" value=1>
+
+                <td align="left"> <input type="checkbox" name="aligned" value=1>
                     <span title="Tick here if you do not want  the server to (re)align your set of sequences.">
 	                    Already aligned?</span></td>
             </tr>
@@ -128,14 +143,13 @@
 
 
             <tr>
+                {% set url_xls_help  = url_for('help.xls_output', _anchor='spec') %}
                 <td align="left">  <input type="button" name="addanno"
-                                          title="Contribute your own annotation, using numbering in any sequence you have provided.
-                             It will be added to the
-			    <a href='http://cube.local/help/xls_output.html#spec'>spreadsheet</a> Cube produces."
+                                          title='Contribute your own annotation, using numbering in any sequence you have provided.
+                                           It will be added to the <a href={{url_xls_help}}>spreadsheet</a> Cube produces.'
                                           value="Add annotation"
                                           onclick=toggleA(this)>
-                    <input id="anno" type="hidden"
-                           name="anno" value="0">
+                    <input id="anno" type="hidden" name="anno" value="0">
                 </td>
 
                 <td>&nbsp;</td>
@@ -152,7 +166,8 @@
             </tr>
 
             <tr class="annotations">
-                <th align="left" title="For long names <a href='help/help.html#names'>check here</a>.">Sequence name
+                {% set url_names  = url_for('help.help_index', _anchor='names') %}
+                <th align="left" title='For long names <a href={{url_names}}>check here</a>.'>Sequence name
                 </th>
                 <th align="left" title="Example: 45-56, 83, 115">
                     Position(s)

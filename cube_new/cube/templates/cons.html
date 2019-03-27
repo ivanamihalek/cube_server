@@ -67,7 +67,8 @@
 	                   to each other.  <a href="{{ url_getseqs }}">Click here</a> to read about finding interesting sequences.'
                        href="{{ url_help }}">
                     File with a list of sequences</a>
-                    <br>[in GCG or FASTA format]</td>
+                    <br>[in GCG or FASTA format]
+                </td>
                 <td align="left" width="35%">
                     <input  type="file" name="fnm" size="15">
                     <br> examples: <a href="{{ url_for('static', filename='samples/fasta_example.txt') }}">FASTA</a> &nbsp;
@@ -154,10 +155,10 @@
 
 
             <tr>
+                {% set url_xls_help  = url_for('help.xls_output', _anchor='cons') %}
                 <td align="left">  <input type="button" name="addanno"
-                                          title="Contribute your own annotation, using numbering in any sequence you have provided.
-                             It will be added to the
-			    <a href='http://cube.local/help/xls_output.html#cons'>spreadsheet</a> Cube produces."
+                                          title='Contribute your own annotation, using numbering in any sequence you have provided.
+                                                It will be added to the <a href="{{ url_xls_help }}">spreadsheet</a> Cube produces.'
                                           value="Add annotation"
                                           onclick=toggleA(this)>
                     <input id="anno" type="hidden"
@@ -178,7 +179,8 @@
             </tr>
 
             <tr class="annotations">
-                <th align="left" title="For long names <a href='help/help.html#names'>check here</a>.">Sequence name
+                {% set url_names  = url_for('help.help_index', _anchor='names') %}
+                <th align="left" title='For long names <a href="{{url_names}}">check here</a>.'>Sequence name
                 </th>
                 <th align="left" title="Example: 45-56, 83, 115">
                     Position(s)
