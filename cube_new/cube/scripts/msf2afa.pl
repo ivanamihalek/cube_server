@@ -1,6 +1,8 @@
 #! /usr/bin/perl -w 
-use IO::Handle;         #autoflush
-use File::Copy;     # copy a file (no kidding)
+use strict;
+use warnings;
+use IO::Handle; #autoflush
+use File::Copy; # copy a file (no kidding)
 # FH -> autoflush(1);
 defined $ARGV[0]  ||
     die "Usage: msf2afa.pl <msffile> \n"; 

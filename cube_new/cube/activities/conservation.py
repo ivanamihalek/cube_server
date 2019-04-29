@@ -68,12 +68,23 @@ class Conservationist:
 			# transform msf to afa
 
 			# if not aligned - align
+			# TODO this might not exist if we are aligning ourselves
 			self.preprocessed_afa = self.original_alignment_path
 
 			# restrict to query
+			afa_prev = self.preprocessed_afa
+			if self.qry_name:
+				restrict_to_qry_script = "{}/{}".format(Config.SCRIPTS_PATH, Config.SCRIPTS['restrict_afa_to_query'])
+				self.preprocessed_afa = "{}/alnmt_restricted_to_ref_seq.afa".format(self.work_path)
+				cmd = "{} {} {} > {}".format(restrict_to_qry_script, afa_prev, self.qry_name, self.preprocessed_afa)
+				process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+				if process.returncode!=0:
+					self.warn = "Problem restricting to reference sequence"
+					self.preprocessed_afa = afa_prev
 
+			# cleanup pdb and extract chain
+			afa_prev = self.preprocessed_afa
 			if self.original_structure_path:
-				# cleanup pdb and extract chain
 				# (note that it will also produce file with the corresponding sequence)
 				pdb_cleanup_script = "{}/{}".format(Config.SCRIPTS_PATH, Config.SCRIPTS['pdb_cleanup'])
 				self.pdbseq = ".".join(self.original_structure_path.split("/")[-1].split(".")[:-1])+self.chain
@@ -86,13 +97,12 @@ class Conservationist:
 				else:
 					self.clean_structure_path = "{}/{}.pdb".format(self.work_path, self.pdbseq)
 					# align pdbseq to the rest of the alignment
-					alignment_file = self.original_alignment_path # TODO this might not exist if we are aligning ourselves
 					mafft = Config.DEPENDENCIES['mafft']
-					self.preprocessed_afa = "{}/alignment_w_pdb_seq.afa".format(self.work_path)
-					cmd = "{} --add {} {} > {}".format(mafft, self.clean_structure_path.replace('.pdb', '.seq'), alignment_file, self.preprocessed_afa)
+					self.preprocessed_afa = "{}/alnmt_w_pdb_seq.afa".format(self.work_path)
+					cmd = "{} --add {} {} > {}".format(mafft, self.clean_structure_path.replace('.pdb', '.seq'), afa_prev, self.preprocessed_afa)
 					process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 					if process.returncode!=0:
-						self.preprocessed_afa = self.original_alignment_path
+						self.preprocessed_afa = afa_prev
 						self.warn = "Problem running mafft"
 						self.original_structure_path = None
 						return

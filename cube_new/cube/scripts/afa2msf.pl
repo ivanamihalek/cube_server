@@ -1,5 +1,7 @@
 #! /usr/bin/perl -w
-use IO::Handle;         #autoflush
+use strict;
+use warnings;
+use IO::Handle; #autoflush
 # FH -> autoflush(1);
 
 # if fasta already aligned, convert to msf
