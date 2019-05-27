@@ -108,7 +108,6 @@ class Conservationist:
 						return
 			self._write_cmd_file()
 
-
 		def check_run_ok(self, process):
 			if process.returncode != 0:
 				self.errmsg  = process.stdout
