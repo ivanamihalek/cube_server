@@ -105,7 +105,10 @@ class UploadHandler:
 		if not self.multiple_seq_files: self.seq_input_type= list(self.seq_input_types.values())[0]
 		# if the ref sequence is given, it should be present in the alignment
 		if not self._ref_seq_ok():
-			self.errmsg  = "{} not found in {}.".format(self.qry_name, self.clean_seq_fnm)
+			if self.multiple_seq_files:
+				self.errmsg  = "{} not found in any of the input sequence files.".format(self.qry_name)
+			else:
+				self.errmsg  = "{} not found in {}.".format(self.qry_name, self.clean_seq_fnm)
 			self.errmsg += "\nPlease include the reference sequence, or perhaps check the name spelling"
 			return False
 		# if the structure is given
