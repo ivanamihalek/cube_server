@@ -5,14 +5,17 @@ import os, subprocess
 import string, random
 
 class UploadHandler:
-	def __init__(self, request, multiple_seq_files=False):
-		self.multiple_seq_files = multiple_seq_files
+	def __init__(self, request):
+		self.multiple_seq_files = False
 		self.qry_name    = request.form['qry_nm']
-		if multiple_seq_files:
+
+		self.seq_files = None
+		if 'fnms' in request.files:
 			# careful:  request.files is empty dict if no file selected
-			self.seq_files = request.files.getlist('fnms') if 'fnm' in request.files else None
-		else:
-			self.seq_files = [request.files['fnm']] if 'fnm' in request.files else None
+			self.seq_files = request.files.getlist('fnms')
+			self.multiple_seq_files = True
+		elif 'fnm' in request.files:
+			self.seq_files = [request.files['fnm']]
 
 		self.original_alignment_paths = []
 		self.original_alignment_path  = None
@@ -78,8 +81,9 @@ class UploadHandler:
 		os.makedirs(self.staging_dir, exist_ok=True)
 		for seq_file, clean_seq_fnm in self.clean_seq_fnms.items():
 			print ("************* saving", clean_seq_fnm)
-			self.original_alignment_paths.append(os.path.join(self.staging_dir, clean_seq_fnm))
-			seq_file.save(self.original_alignment_path)
+			upload_path = os.path.join(self.staging_dir, clean_seq_fnm)
+			self.original_alignment_paths.append(upload_path)
+			seq_file.save(upload_path)
 		if not self.multiple_seq_files: self.original_alignment_path = self.original_alignment_paths[0]
 		if self.clean_struct_fnm:
 			print("************* saving", self.clean_struct_fnm)
@@ -98,7 +102,7 @@ class UploadHandler:
 				self.errmsg = "Sequence file format not recognized."
 				return False
 			self.seq_input_types[alignment_path] = seq_input_type
-		if not self.multiple_seq_files: self.seq_input_type= self.seq_input_types.values()[0]
+		if not self.multiple_seq_files: self.seq_input_type= list(self.seq_input_types.values())[0]
 		# if the ref sequence is given, it should be present in the alignment
 		if not self._ref_seq_ok():
 			self.errmsg  = "{} not found in {}.".format(self.qry_name, self.clean_seq_fnm)
@@ -154,7 +158,7 @@ class UploadHandler:
 				self.errmsg += ", ".join([e for e in Config.ALLOWED_SEQFILE_EXTENSIONS])
 				return False
 			self.clean_seq_fnms[seq_file] = clean_seqname
-		if not self.multiple_seq_files: self.clean_seq_fnm = self.clean_seq_fnms.values()[0]
+		if not self.multiple_seq_files: self.clean_seq_fnm = list(self.clean_seq_fnms.values())[0]
 		# structure file - note that struct file is optional
 		if self.struct_file and self.struct_file.filename!='':
 			self.clean_struct_fnm = secure_filename(self.struct_file.filename)
@@ -172,8 +176,8 @@ class UploadHandler:
 	def report_input_params(self):
 		print(">>>>>>>>>>  qry name ", self.qry_name)
 		if self.seq_files:
-			for fnm in self.seq_file.filenames:
-				print(">>>>>>>>>>  seq file name ", fnm)
+			for seq_file in self.seq_files:
+				print(">>>>>>>>>>  seq file name ", seq_file.filename)
 		print(">>>>>>>>>>  aligned", self.aligned)
 		print(">>>>>>>>>>  struct file name ", self.struct_file.filename if self.struct_file else "None")
 		print(">>>>>>>>>>  chain ", self.chain)
