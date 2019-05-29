@@ -1,7 +1,8 @@
 
 
 from cube import Config
-import subprocess,  os, shutil
+import subprocess,  os
+from shutil import copyfile, move
 
 # the alignment file probably needs to be checked
 
@@ -74,8 +75,28 @@ class Specialist:
 			# if not aligned - align
 			# TODO this might not exist if we are aligning ourselves
 			self.preprocessed_afas = self.original_alignment_paths
-			
+
+			# group file
+
 			# profile alignment for all files that we have
+			prev_aln = "{}/prev.afa".format(self.work_path)
+			last_aln = "{}/all.afa".format(self.work_path)
+			copyfile(self.preprocessed_afas[0], self.preprocessed_afas)
+			for afa in self.preprocessed_afas[1:]:
+				move(last_aln, prev_aln)
+				muscle = Config.DEPENDENCIES['muscle']
+				cmd = "{} -profile -in1 {} -in2 {} -out {} > {}/muscle.out".format(muscle, prev_aln, afa, last_aln, self.work_path)
+				process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+				if process.returncode!=0:
+					self.warn = "Problem in profile alignment"
+					self.profile_afa = None
+					return
+			if os.path.getsize(last_aln)==0:
+				self.warn = "Problem in profile alignment. Are your sequences aligned?"
+				self.warn += "If not please un-tick the 'My sequences are not aligned' checkbox."
+				self.profile_afa = None
+				return
+
 
 			# restrict to query
 			afa_prev = self.profile_afa
@@ -221,19 +242,19 @@ class Specialist:
 			self.prepare_run()
 
 			### cube
-			cube = Config.DEPENDENCIES['cube']
-			cmd = "{} {}/cmd ".format(cube, self.work_path)
-			print(" +++ ", cmd)
-			process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+			# cube = Config.DEPENDENCIES['cube']
+			# cmd = "{} {}/cmd ".format(cube, self.work_path)
+			# print(" +++ ", cmd)
+			# process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 
 			### check specs finished ok
-			if not self.check_run_ok(process): return
-
-			### postprocess
-			self.specialization_map()
-			self.excel_spreadsheet()
-			self.pymol_script()
-			self.directory_zip()
+			# if not self.check_run_ok(process): return
+			#
+			# ### postprocess
+			# self.specialization_map()
+			# self.excel_spreadsheet()
+			# self.pymol_script()
+			# self.directory_zip()
 
 			self.run_ok = True
 			return
