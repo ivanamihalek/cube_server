@@ -412,7 +412,7 @@ sub process_input_data (@) {
 		for my $aln ( @alignment_files[1 .. $#alignment_files] ) {
 			`mv  $last_aln $prev_aln`;
 			$cmd  = "$muscle -profile -in1 $prev_aln -in2 $aln  -out $last_aln >  $jobdir/muscle.out 2>&1";
-			# system  commaind will use bash, usually -- we are ounting on it for the output redirect
+			# system  command will use bash, usually -- we are ounting on it for the output redirect
 			system ($cmd);
 			if (-z $last_aln)  {
 				my $errlog = `cat $jobdir/muscle.out`;
@@ -441,10 +441,10 @@ sub process_input_data (@) {
 			$chainID = substr ( $ret,  21, 1) ||  "A";
 		}
 		$chainID = uc($chainID);
-		# we'll always process, because there is no end to pdb shennanigans
+		# we'll always process, because there is no end to pdb shenanigans
 		my $cmd = "$pdb_extract_n_clean $structure_file pdb_$structure_name$chainID $chainID";
 		my $ret = `$cmd`;
-		$ret && html_die ($ret);
+		$ret && html_die($ret);
 
 		$structure_single_chain = "$structure_name$chainID";
 		# add the structure sequence to the alignment
@@ -454,8 +454,8 @@ sub process_input_data (@) {
 		# actually lets use mafft - muscle profile can miss tha alignment for the sequence
 		# which is already present in the big alignment
 		$cmd = "$mafft --add $seq_file $alignment_file  > $jobdir/tmp.afa";
-		system($cmd) && html_die ("error running $cmd\n");
-		(-z "$jobdir/tmp.afa") && html_die ("error running $cmd:\nthe output is empty\n");
+		system($cmd) && html_die("error running $cmd\n");
+		(-z "$jobdir/tmp.afa") && html_die("error running $cmd:\nthe output is empty\n");
 		`mv $jobdir/tmp.afa $alignment_file`;
 
 	}

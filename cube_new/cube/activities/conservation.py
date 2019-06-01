@@ -18,7 +18,7 @@ class Conservationist:
 			self.original_alignment_path = upload_handler.original_alignment_path
 			self.original_structure_path = upload_handler.original_structure_path
 			self.chain = upload_handler.chain if upload_handler.chain else "-"
-			self.qry_name = upload_handler.qry_name
+			self.ref_seq_name = upload_handler.ref_seq_name
 			self.method = upload_handler.method
 
 			# output
@@ -50,7 +50,7 @@ class Conservationist:
 			prms_string += "\n"
 
 			prms_string += "align   %s\n" % self.preprocessed_afa
-			prms_string += "refseq  %s\n" % self.qry_name
+			prms_string += "refseq  %s\n" % self.ref_seq_name
 			prms_string += "method  %s\n" % self.method
 			prms_string += "\n";
 			prms_string += "outn  %s/%s\n" % (self.work_path, self.specs_outname)
@@ -71,16 +71,21 @@ class Conservationist:
 			# TODO this might not exist if we are aligning ourselves
 			self.preprocessed_afa = self.original_alignment_path
 
+			# choose reference sequence if we do not have one
+			if not self.ref_seq_name:
+				cmd = "grep '>'  {} | head -n1".format(self.preprocessed_afa)
+				output = subprocess.run([cmd], stdout=subprocess.PIPE, shell=True).stdout
+				self.ref_seq_name = output[1:].decode('utf8').strip().split(" ")[0]
+				print (" ***** using %s as ref seq" % self.ref_seq_name)
 			# restrict to query
 			afa_prev = self.preprocessed_afa
-			if self.qry_name:
-				restrict_to_qry_script = "{}/{}".format(Config.SCRIPTS_PATH, Config.SCRIPTS['restrict_afa_to_query'])
-				self.preprocessed_afa = "{}/alnmt_restricted_to_ref_seq.afa".format(self.work_path)
-				cmd = "{} {} {} > {}".format(restrict_to_qry_script, afa_prev, self.qry_name, self.preprocessed_afa)
-				process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-				if process.returncode!=0:
-					self.warn = "Problem restricting to reference sequence"
-					self.preprocessed_afa = afa_prev
+			restrict_to_qry_script = "{}/{}".format(Config.SCRIPTS_PATH, Config.SCRIPTS['restrict_afa_to_query'])
+			self.preprocessed_afa = "{}/alnmt_restricted_to_ref_seq.afa".format(self.work_path)
+			cmd = "{} {} {} > {}".format(restrict_to_qry_script, afa_prev, self.ref_seq_name, self.preprocessed_afa)
+			process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+			if process.returncode!=0:
+				self.warn = "Problem restricting to reference sequence"
+				self.preprocessed_afa = afa_prev
 
 			# cleanup pdb and extract chain
 			afa_prev = self.preprocessed_afa

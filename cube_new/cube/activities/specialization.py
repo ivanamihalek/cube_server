@@ -19,7 +19,7 @@ class Specialist:
 			self.original_alignment_paths = upload_handler.original_alignment_paths
 			self.original_structure_path = upload_handler.original_structure_path
 			self.chain = upload_handler.chain if upload_handler.chain else "-"
-			self.qry_name = upload_handler.qry_name
+			self.ref_seq_name = upload_handler.ref_seq_name
 
 			# output
 			self.specs_outname = "specs_out"
@@ -30,6 +30,7 @@ class Specialist:
 			self.score_file = None
 			self.png_files = []
 			self.preprocessed_afas = []
+			self.representative_seq = {}
 			self.profile_afa = None
 			self.xls = None
 			self.pdbseq = None
@@ -65,51 +66,48 @@ class Specialist:
 			outf.write(prms_string)
 			outf.close()
 
-
-		###################################################
-
-		def prepare_run(self):
-			os.mkdir(self.work_path)
-			# transform msf to afa
-
-			# if not aligned - align
-			# TODO this might not exist if we are aligning ourselves
-			self.preprocessed_afas = self.original_alignment_paths
-
-			# group file
-
-			# profile alignment for all files that we have
+		########################
+		def _profile_alnmt(self):
 			prev_aln = "{}/prev.afa".format(self.work_path)
 			last_aln = "{}/all.afa".format(self.work_path)
-			copyfile(self.preprocessed_afas[0], self.preprocessed_afas)
+			copyfile(self.preprocessed_afas[0], last_aln)
+			muscle_out = None
 			for afa in self.preprocessed_afas[1:]:
 				move(last_aln, prev_aln)
 				muscle = Config.DEPENDENCIES['muscle']
-				cmd = "{} -profile -in1 {} -in2 {} -out {} > {}/muscle.out".format(muscle, prev_aln, afa, last_aln, self.work_path)
+				muscle_out = "{}/muscle.out".format(self.work_path)
+				cmd = "{} -profile -in1 {} -in2 {} -out {} > {}".format(muscle, prev_aln, afa, last_aln, muscle_out)
 				process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 				if process.returncode!=0:
 					self.warn = "Problem in profile alignment"
 					self.profile_afa = None
-					return
+					return False
 			if os.path.getsize(last_aln)==0:
 				self.warn = "Problem in profile alignment. Are your sequences aligned?"
 				self.warn += "If not please un-tick the 'My sequences are not aligned' checkbox."
 				self.profile_afa = None
-				return
+				return False
+			self.profile_afa = last_aln
+			os.remove(prev_aln)
+			if muscle_out and os.path.getsize(muscle_out)==0: os.remove(muscle_out)
+			return True
 
-
-			# restrict to query
+		########################
+		def _restrict_to_qry(self):
 			afa_prev = self.profile_afa
-			if self.qry_name:
+			if self.ref_seq_name:
 				restrict_to_qry_script = "{}/{}".format(Config.SCRIPTS_PATH, Config.SCRIPTS['restrict_afa_to_query'])
 				self.preprocessed_afa = "{}/alnmt_restricted_to_ref_seq.afa".format(self.work_path)
-				cmd = "{} {} {} > {}".format(restrict_to_qry_script, afa_prev, self.qry_name, self.preprocessed_afa)
+				cmd = "{} {} {} > {}".format(restrict_to_qry_script, afa_prev, self.ref_seq_name, self.preprocessed_afa)
 				process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 				if process.returncode!=0:
 					self.warn = "Problem restricting to reference sequence"
 					self.profile_afa = afa_prev
+			return True
 
-			# cleanup pdb and extract chain
+
+		########################
+		def _structure_prep(self):
 			afa_prev = self.profile_afa
 			if self.original_structure_path:
 				# (note that it will also produce file with the corresponding sequence)
@@ -132,7 +130,51 @@ class Specialist:
 						self.profile_afa = afa_prev
 						self.warn = "Problem running mafft"
 						self.original_structure_path = None
-						return
+						return False
+			return True
+
+		########################
+		def _group_prep(self):
+			for alnmt_file in self.preprocessed_afas:
+				inf = open(alnmt_file,"r")
+				for line in inf:
+					if line[0] != ">": continue
+					seqname = line[1:].strip().split(" ")[0]
+					if (self.ref_seq_name and seqname == self.ref_seq_name) or alnmt_file not in self.representative_seq:
+						self.representative_seq[alnmt_file]=seqname
+				inf.close()
+			return
+
+		###################################################
+		def _prepare_run(self):
+			os.mkdir(self.work_path)
+			# transform msf to afa
+
+			# if not aligned - align
+			# TODO this might not exist if we are aligning ourselves
+			self.preprocessed_afas = self.original_alignment_paths
+
+			# group file
+			if not self._group_prep(): return
+
+			# profile alignment for all files that we have
+			if not self._profile_alnmt(): return
+			return
+
+			# restrict the alignmen to positions that
+			# are not gap in at leas one of the group representatives
+			self._restrict_to_qry()
+			return
+
+			# cleanup pdb and extract chain
+			if not self._structure_prep(): return
+
+			# command file for the scoring prog
+			self._write_cmd_file()
+
+
+
+
 			self._write_cmd_file()
 		################
 		def check_run_ok(self, process):
@@ -239,7 +281,7 @@ class Specialist:
 		def run(self):
 
 			### prepare
-			self.prepare_run()
+			self._prepare_run()
 
 			### cube
 			# cube = Config.DEPENDENCIES['cube']

@@ -7,7 +7,7 @@ import string, random
 class UploadHandler:
 	def __init__(self, request):
 		self.multiple_seq_files = False
-		self.qry_name    = request.form['qry_nm']
+		self.ref_seq_name = request.form['qry_nm']
 
 		self.seq_files = None
 		if 'fnms' in request.files:
@@ -20,7 +20,7 @@ class UploadHandler:
 		self.original_alignment_paths = []
 		self.original_alignment_path  = None
 		# ditto for the checkbox   - if not checked, it does not exist
-		self.aligned     = ('aligned' in  request.form)
+		self.aligned = ('aligned' in  request.form)
 
 		self.clean_seq_fnms = {}
 		# this will be the copy of the first file name - so I can recycle the code for both spec and conservation
@@ -48,7 +48,6 @@ class UploadHandler:
 		return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
 	############################################################
-	#
 	def _find_seq_input_type(self, alignment_path):
 		cmd = "grep  '>' {} ".format(alignment_path)
 		output = subprocess.run([cmd],  stdout=subprocess.PIPE, shell=True).stdout
@@ -63,12 +62,15 @@ class UploadHandler:
 		return None
 
 	def _ref_seq_ok(self):
+		# if the name of the reference sequence is not specified,
+		# we are going to use the first one
+		if not self.ref_seq_name: return True
 		refseq_ok = False
 		for alignment_path in self.original_alignment_paths:
 			if self.seq_input_types[alignment_path] == 'fasta':
-				cmd = "grep  '>' {} | grep {}".format(alignment_path, self.qry_name)
+				cmd = "grep  '>' {} | grep {}".format(alignment_path, self.ref_seq_name)
 			else:
-				cmd = "grep 'Name: '  {} | grep {} ".format(alignment_path, self.qry_name)
+				cmd = "grep 'Name: '  {} | grep {} ".format(alignment_path, self.ref_seq_name)
 			output = subprocess.run([cmd],  stdout=subprocess.PIPE, shell=True).stdout
 			if len(output)>0:
 				refseq_ok = True
@@ -106,9 +108,9 @@ class UploadHandler:
 		# if the ref sequence is given, it should be present in the alignment
 		if not self._ref_seq_ok():
 			if self.multiple_seq_files:
-				self.errmsg  = "{} not found in any of the input sequence files.".format(self.qry_name)
+				self.errmsg  = "{} not found in any of the input sequence files.".format(self.ref_seq_name)
 			else:
-				self.errmsg  = "{} not found in {}.".format(self.qry_name, self.clean_seq_fnm)
+				self.errmsg  = "{} not found in {}.".format(self.ref_seq_name, self.clean_seq_fnm)
 			self.errmsg += "\nPlease include the reference sequence, or perhaps check the name spelling"
 			return False
 		# if the structure is given
@@ -177,7 +179,7 @@ class UploadHandler:
 
 
 	def report_input_params(self):
-		print(">>>>>>>>>>  qry name ", self.qry_name)
+		print(">>>>>>>>>>  qry name ", self.ref_seq_name)
 		if self.seq_files:
 			for seq_file in self.seq_files:
 				print(">>>>>>>>>>  seq file name ", seq_file.filename)
