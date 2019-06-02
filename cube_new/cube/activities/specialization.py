@@ -44,27 +44,17 @@ class Specialist:
 			return
 
 
-		def _write_cmd_file(self):
-			prms_string = ""
-			prms_string += "patch_sim_cutoff   0.4\n"
-			prms_string += "patch_min_length   0.4\n"
-			prms_string += "sink  0.3  \n"
-			prms_string += "skip_query \n"
-			prms_string += "\n"
-
-			prms_string += "align   %s\n" % self.preprocessed_afa
-			prms_string += "groups  %s\n" % self.group_file
-
-			prms_string += "\n"
-			prms_string += "outn  %s/%s\n" % (self.work_path, self.specs_outname)
-			if self.clean_structure_path:
-				prms_string += "pdbf      %s\n" % self.clean_structure_path
-				prms_string += "pdbseq    %s\n" % self.pdbseq
-				#dssp_file  &&  (prms_string += "dssp   dssp_file\n");
-
-			outf = open("%s/cmd"%self.work_path, "w")
-			outf.write(prms_string)
-			outf.close()
+		##############################################
+		def _group_prep(self):
+			for alnmt_file in self.preprocessed_afas:
+				inf = open(alnmt_file,"r")
+				for line in inf:
+					if line[0] != ">": continue
+					seqname = line[1:].strip().split(" ")[0]
+					if (self.ref_seq_name and seqname == self.ref_seq_name) or alnmt_file not in self.representative_seq:
+						self.representative_seq[alnmt_file]=seqname
+				inf.close()
+			return True
 
 		########################
 		def _profile_alnmt(self):
@@ -95,20 +85,21 @@ class Specialist:
 		########################
 		def _restrict_to_qry(self):
 			afa_prev = self.profile_afa
-			if self.ref_seq_name:
-				restrict_to_qry_script = "{}/{}".format(Config.SCRIPTS_PATH, Config.SCRIPTS['restrict_afa_to_query'])
-				self.preprocessed_afa = "{}/alnmt_restricted_to_ref_seq.afa".format(self.work_path)
-				cmd = "{} {} {} > {}".format(restrict_to_qry_script, afa_prev, self.ref_seq_name, self.preprocessed_afa)
-				process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-				if process.returncode!=0:
-					self.warn = "Problem restricting to reference sequence"
-					self.profile_afa = afa_prev
+			if not self.representative_seq or len(self.representative_seq)==0: return False
+			rep_seq_names = " ".join(list(self.representative_seq.values()))
+			restrict_to_qry_script = "{}/{}".format(Config.SCRIPTS_PATH, Config.SCRIPTS['restrict_afa_to_query'])
+			self.preprocessed_afa = "{}/alnmt_restricted_to_ref_seq.afa".format(self.work_path)
+			cmd = "{} {} {} > {}".format(restrict_to_qry_script, afa_prev, rep_seq_names, self.preprocessed_afa)
+			process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+			if process.returncode!=0:
+				self.warn = "Problem restricting to reference sequence"
+				self.preprocessed_afa = afa_prev
+				return False
 			return True
-
 
 		########################
 		def _structure_prep(self):
-			afa_prev = self.profile_afa
+			afa_prev = self.preprocessed_afa
 			if self.original_structure_path:
 				# (note that it will also produce file with the corresponding sequence)
 				pdb_cleanup_script = "{}/{}".format(Config.SCRIPTS_PATH, Config.SCRIPTS['pdb_cleanup'])
@@ -119,33 +110,45 @@ class Specialist:
 				if process.returncode!=0:
 					self.original_structure_path = None
 					self.warn = "Problem with the structure file"
+					return False
 				else:
 					self.clean_structure_path = "{}/{}.pdb".format(self.work_path, self.pdbseq)
 					# align pdbseq to the rest of the alignment
 					mafft = Config.DEPENDENCIES['mafft']
-					self.profile_afa = "{}/alnmt_w_pdb_seq.afa".format(self.work_path)
-					cmd = "{} --add {} {} > {}".format(mafft, self.clean_structure_path.replace('.pdb', '.seq'), afa_prev, self.profile_afa)
+					self.preprocessed_afa = "{}/alnmt_w_pdb_seq.afa".format(self.work_path)
+					cmd = "{} --add {} {} > {}".format(mafft, self.clean_structure_path.replace('.pdb', '.seq'), afa_prev, self.preprocessed_afa)
 					process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 					if process.returncode!=0:
-						self.profile_afa = afa_prev
+						self.preprocessed_afa = afa_prev
 						self.warn = "Problem running mafft"
 						self.original_structure_path = None
 						return False
 			return True
 
 		########################
-		def _group_prep(self):
-			for alnmt_file in self.preprocessed_afas:
-				inf = open(alnmt_file,"r")
-				for line in inf:
-					if line[0] != ">": continue
-					seqname = line[1:].strip().split(" ")[0]
-					if (self.ref_seq_name and seqname == self.ref_seq_name) or alnmt_file not in self.representative_seq:
-						self.representative_seq[alnmt_file]=seqname
-				inf.close()
-			return
+		def _write_cmd_file(self):
+			prms_string = ""
+			prms_string += "patch_sim_cutoff   0.4\n"
+			prms_string += "patch_min_length   0.4\n"
+			prms_string += "sink  0.3  \n"
+			prms_string += "skip_query \n"
+			prms_string += "\n"
 
-		###################################################
+			prms_string += "align   %s\n" % self.preprocessed_afa
+			prms_string += "groups  %s\n" % self.group_file
+
+			prms_string += "\n"
+			prms_string += "outn  %s/%s\n" % (self.work_path, self.specs_outname)
+			if self.clean_structure_path:
+				prms_string += "pdbf      %s\n" % self.clean_structure_path
+				prms_string += "pdbseq    %s\n" % self.pdbseq
+				#dssp_file  &&  (prms_string += "dssp   dssp_file\n");
+
+			outf = open("%s/cmd"%self.work_path, "w")
+			outf.write(prms_string)
+			outf.close()
+
+		#############################################
 		def _prepare_run(self):
 			os.mkdir(self.work_path)
 			# transform msf to afa
@@ -155,28 +158,26 @@ class Specialist:
 			self.preprocessed_afas = self.original_alignment_paths
 
 			# group file
+			# (what could go wrong here?)
+			# todo: output group file here
 			if not self._group_prep(): return
 
 			# profile alignment for all files that we have
 			if not self._profile_alnmt(): return
-			return
 
-			# restrict the alignmen to positions that
+			# restrict the alignment to positions that
 			# are not gap in at leas one of the group representatives
 			self._restrict_to_qry()
-			return
 
 			# cleanup pdb and extract chain
 			if not self._structure_prep(): return
+			return
 
 			# command file for the scoring prog
 			self._write_cmd_file()
 
 
-
-
-			self._write_cmd_file()
-		################
+		######################################
 		def check_run_ok(self, process):
 			if process.returncode != 0:
 				self.errmsg  = process.stdout
