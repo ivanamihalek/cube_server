@@ -20,6 +20,7 @@ class Specialist:
 			self.original_structure_path = upload_handler.original_structure_path
 			self.chain = upload_handler.chain if upload_handler.chain else "-"
 			self.ref_seq_name = upload_handler.ref_seq_name
+			self.method = upload_handler.method
 
 			# output
 			self.specs_outname = "specs_out"
@@ -46,14 +47,23 @@ class Specialist:
 
 		##############################################
 		def _group_prep(self):
+			if not self.preprocessed_afas or len(self.preprocessed_afas)==0: return False
+			self.group_file = "{}/groups".format(self.work_path)
+			outf = open(self.group_file, "w")
 			for alnmt_file in self.preprocessed_afas:
+				other_names = []
 				inf = open(alnmt_file,"r")
 				for line in inf:
 					if line[0] != ">": continue
 					seqname = line[1:].strip().split(" ")[0]
 					if (self.ref_seq_name and seqname == self.ref_seq_name) or alnmt_file not in self.representative_seq:
 						self.representative_seq[alnmt_file]=seqname
+					else:
+						other_names.append(seqname)
 				inf.close()
+				outf.write("name "+self.representative_seq[alnmt_file] + "\n")
+				outf.write("\n".join(other_names)+"\n")
+			outf.close()
 			return True
 
 		########################
@@ -73,7 +83,7 @@ class Specialist:
 					self.profile_afa = None
 					return False
 			if os.path.getsize(last_aln)==0:
-				self.warn = "Problem in profile alignment. Are your sequences aligned?"
+				self.warn  = "Problem in profile alignment. Are your sequences aligned?"
 				self.warn += "If not please un-tick the 'My sequences are not aligned' checkbox."
 				self.profile_afa = None
 				return False
@@ -128,21 +138,21 @@ class Specialist:
 		########################
 		def _write_cmd_file(self):
 			prms_string = ""
+
 			prms_string += "patch_sim_cutoff   0.4\n"
 			prms_string += "patch_min_length   0.4\n"
-			prms_string += "sink  0.3  \n"
-			prms_string += "skip_query \n"
-			prms_string += "\n"
-
-			prms_string += "align   %s\n" % self.preprocessed_afa
-			prms_string += "groups  %s\n" % self.group_file
+			prms_string += "almtname  %s\n" % self.preprocessed_afa.split("/")[-1]
+			prms_string += "groups  %s\n" % self.group_file.split("/")[-1]
 
 			prms_string += "\n"
-			prms_string += "outn  %s/%s\n" % (self.work_path, self.specs_outname)
+			prms_string += "outname  %s\n" % self.specs_outname
 			if self.clean_structure_path:
-				prms_string += "pdbf      %s\n" % self.clean_structure_path
-				prms_string += "pdbseq    %s\n" % self.pdbseq
+				prms_string += "pdb_file     %s\n" % self.clean_structure_path.split("/")[-1]
+				prms_string += "pdb_name   %s\n" % self.pdbseq.split("/")[-1]
 				#dssp_file  &&  (prms_string += "dssp   dssp_file\n");
+
+			if self.method=="cube_sim":
+				prms_string += "exchangeability"
 
 			outf = open("%s/cmd"%self.work_path, "w")
 			outf.write(prms_string)
@@ -159,7 +169,6 @@ class Specialist:
 
 			# group file
 			# (what could go wrong here?)
-			# todo: output group file here
 			if not self._group_prep(): return
 
 			# profile alignment for all files that we have
@@ -171,13 +180,12 @@ class Specialist:
 
 			# cleanup pdb and extract chain
 			if not self._structure_prep(): return
-			return
 
 			# command file for the scoring prog
 			self._write_cmd_file()
 
 
-		######################################
+		############################################################################
 		def check_run_ok(self, process):
 			if process.returncode != 0:
 				self.errmsg  = process.stdout
@@ -263,8 +271,6 @@ class Specialist:
 			return
 
 		def directory_zip(self):
-			curr = os.getcwd()
-			os.chdir(Config.WORK_PATH)
 			shellzip = Config.DEPENDENCIES['zip']
 			archive_name = "cube_workdir_{}.zip".format(self.job_id)
 			cmd = "{} -r {} {} > /dev/null ".format(shellzip, archive_name, self.job_id)
@@ -273,9 +279,7 @@ class Specialist:
 				os.rename(archive_name, "{}/{}".format(self.work_path, archive_name))
 				self.workdir_zip = "{}/{}".format(self.workdir, archive_name)
 
-			os.chdir(curr)
 			return
-
 
 
 		###################################################
@@ -284,11 +288,16 @@ class Specialist:
 			### prepare
 			self._prepare_run()
 
+			### from this point one we are in the workdir
+			curr = os.getcwd()
+			os.chdir(Config.WORK_PATH)
+
 			### cube
-			# cube = Config.DEPENDENCIES['cube']
-			# cmd = "{} {}/cmd ".format(cube, self.work_path)
-			# print(" +++ ", cmd)
-			# process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+			cube = "%s cmd "% Config.DEPENDENCIES['cube']
+			print(" +++ ", cube)
+			# todo: change cube to read in afa
+			# todo: find sim matrix and arrange the path to be passed to cube
+			#process = subprocess.run([cube], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 
 			### check specs finished ok
 			# if not self.check_run_ok(process): return
@@ -298,6 +307,7 @@ class Specialist:
 			# self.excel_spreadsheet()
 			# self.pymol_script()
 			# self.directory_zip()
+			os.chdir(curr)
 
 			self.run_ok = True
 			return
