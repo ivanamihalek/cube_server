@@ -51,18 +51,18 @@ class Specialist:
 			self.group_file = "{}/groups".format(self.work_path)
 			outf = open(self.group_file, "w")
 			for alnmt_file in self.preprocessed_afas:
-				other_names = []
+				sequence_names = []
 				inf = open(alnmt_file,"r")
 				for line in inf:
 					if line[0] != ">": continue
 					seqname = line[1:].strip().split(" ")[0]
-					if (self.ref_seq_name and seqname == self.ref_seq_name) or alnmt_file not in self.representative_seq:
+					sequence_names.append(seqname)
+					if (self.ref_seq_name and seqname==self.ref_seq_name) or alnmt_file not in self.representative_seq:
 						self.representative_seq[alnmt_file]=seqname
-					else:
-						other_names.append(seqname)
+
 				inf.close()
 				outf.write("name "+self.representative_seq[alnmt_file] + "\n")
-				outf.write("\n".join(other_names)+"\n")
+				outf.write("\n".join(sequence_names)+"\n")
 			outf.close()
 			return True
 
