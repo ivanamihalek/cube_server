@@ -246,7 +246,6 @@ sub generate_cmd_file(@){
     $prms_string =~ s/groups/groups    $group_file/;
     $prms_string =~ s/outname/outname   $outnm/;
 
-
     if($pdbf){
         $prms_string =~ s/!pdb_file/pdb_file  $pdbf/;
         $prms_string =~ s/!pdb_name/pdb_name  pdb_$struct_nm/;

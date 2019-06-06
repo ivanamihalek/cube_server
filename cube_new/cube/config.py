@@ -10,6 +10,7 @@ class Config:
     APP_PATH = None
     WORK_PATH = None
     SCRIPTS_PATH = "scripts"
+    DATA_PATH = "data"
 
     ALLOWED_SEQFILE_EXTENSIONS = {'txt', 'fasta', 'fst', 'fa', 'gcg', 'msf', 'afa'}
     ALLOWED_STRUCTFILE_EXTENSIONS = {'pdb'}
@@ -33,3 +34,5 @@ class Config:
                "sort_by_taxonomy":"sort_by_taxonomy.pl", "specs2pml":"specs2pml.pl", "specs2xls":"specs2xls.pl"}
 
     PERL_MODULES = ['Spreadsheet::WriteExcel']
+
+    DATA = {"tillier":"tillier.table"}

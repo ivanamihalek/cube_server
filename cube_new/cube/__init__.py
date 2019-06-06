@@ -57,6 +57,15 @@ def check_dependencies():
             exit()
     print("\tperl modules ok")
 
+    print(" = Data check:")
+    for datafile in Config.DATA.values():
+        fullpath = "{}/{}".format(Config.DATA_PATH, datafile)
+        if not os.path.exists(fullpath):
+            print (fullpath, "not found")
+            exit()
+    print("\tscripts ok")
+
+
 
 ##########################################
 def create_app():
@@ -65,6 +74,7 @@ def create_app():
     Config.APP_PATH = app.root_path
     Config.WORK_PATH = "{}/static/{}".format(Config.APP_PATH,Config.WORK_DIRECTORY)
     Config.SCRIPTS_PATH  = "{}/{}".format(Config.APP_PATH, Config.SCRIPTS_PATH)
+    Config.DATA_PATH  = "{}/{}".format(Config.APP_PATH, Config.DATA_PATH)
 
     app.secret_key = Config.SECRET_KEY
     from cube.main.routes import main

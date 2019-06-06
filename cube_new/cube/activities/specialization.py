@@ -141,9 +141,9 @@ class Specialist:
 
 			prms_string += "patch_sim_cutoff   0.4\n"
 			prms_string += "patch_min_length   0.4\n"
+			prms_string += "max_gaps  0.3\n"
 			prms_string += "almtname  %s\n" % self.preprocessed_afa.split("/")[-1]
-			prms_string += "groups  %s\n" % self.group_file.split("/")[-1]
-
+			prms_string += "groups    %s\n" % self.group_file.split("/")[-1]
 			prms_string += "\n"
 			prms_string += "outname  %s\n" % self.specs_outname
 			if self.clean_structure_path:
@@ -152,7 +152,8 @@ class Specialist:
 				#dssp_file  &&  (prms_string += "dssp   dssp_file\n");
 
 			if self.method=="cube_sim":
-				prms_string += "exchangeability"
+				prms_string += "exchangeability\n"
+			prms_string += "rate_matrix  %s/%s\n" % (Config.DATA_PATH, Config.DATA["tillier"])
 
 			outf = open("%s/cmd"%self.work_path, "w")
 			outf.write(prms_string)
@@ -192,6 +193,7 @@ class Specialist:
 				self.errmsg += process.stderr
 				self.run_ok = False
 				return False
+			# todo hypercube's error messagescd
 			if "Unrecognized amino acid code" in process.stdout.decode("utf-8"):
 				self.errmsg  = process.stdout
 				self.run_ok = False
@@ -290,18 +292,15 @@ class Specialist:
 
 			### from this point one we are in the workdir
 			curr = os.getcwd()
-			os.chdir(Config.WORK_PATH)
+			os.chdir(self.work_path)
 
 			### cube
 			cube = "%s cmd "% Config.DEPENDENCIES['cube']
-			print(" +++ ", cube)
-			# todo: change cube to read in afa
-			# todo: find sim matrix and arrange the path to be passed to cube
-			#process = subprocess.run([cube], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+			process = subprocess.run([cube], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 
 			### check specs finished ok
-			# if not self.check_run_ok(process): return
-			#
+			if not self.check_run_ok(process): return
+
 			# ### postprocess
 			# self.specialization_map()
 			# self.excel_spreadsheet()
