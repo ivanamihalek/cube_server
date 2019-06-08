@@ -193,11 +193,6 @@ class Specialist:
 				self.errmsg += process.stderr
 				self.run_ok = False
 				return False
-			# todo hypercube's error messagescd
-			if "Unrecognized amino acid code" in process.stdout.decode("utf-8"):
-				self.errmsg  = process.stdout
-				self.run_ok = False
-				return False
 			self.score_file = "{}/{}.score".format(self.work_path, self.specs_outname)
 			return True
 
@@ -207,23 +202,28 @@ class Specialist:
 			inf = open(specs_score_file,"r")
 			png_input_file =  "{}/{}".format(self.work_path, self.png_input)
 			outf = open(png_input_file,"w")
+			number_of_groups = len(self.representative_seq)
 			resi_count = 0
+			cons_column = 2
+			spec_column = cons_column + number_of_groups+1
+			aa_type     = (3+2*(number_of_groups+1)) - 1
+			aa_number   = aa_type + 1
 			for line in inf:
 				fields = line.split()
-				if '%' in fields[0] or '.' in fields[3]: continue
-				outf.write(" ".join([fields[2], fields[3], fields[4]])+"\n")
+				if '%' in fields[0]: continue
+				outf.write(" ".join([fields[cons_column], fields[spec_column], fields[aa_type], fields[aa_number]])+"\n")
 				resi_count += 1
 			inf.close()
 			outf.close()
 
-			pngmaker = Config.LIBS['seqreport.jar']
-			png_root = 'conservation_map'
+			pngmaker = Config.LIBS['seqreport-spec.jar']
+			png_root = 'specialization_map'
 			f_counter = int(resi_count/self.illustration_range)
 			for i in range(f_counter):
 				seq_frm = i*self.illustration_range + 1
 				seq_to =  resi_count if (i+1)*self.illustration_range > resi_count else (i+1)*self.illustration_range
 				out_fnm = "{}.{}_{}" .format(png_root, seq_frm, seq_to)
-				cmd = "java -jar  {}  {}  {} {} {} > {}/seqReport.out 2>&1". \
+				cmd = "java -jar  {}  {}  {} {} {} > {}/seqreport-spec.out 2>&1". \
 					format(pngmaker, png_input_file, "{}/{}".format(self.work_path, out_fnm), seq_frm, seq_to, self.work_path)
 				process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 				if process.returncode==0:
@@ -302,7 +302,7 @@ class Specialist:
 			if not self.check_run_ok(process): return
 
 			# ### postprocess
-			# self.specialization_map()
+			self.specialization_map()
 			# self.excel_spreadsheet()
 			# self.pymol_script()
 			# self.directory_zip()

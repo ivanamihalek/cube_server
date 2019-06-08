@@ -148,7 +148,7 @@ class Conservationist:
 				seq_frm = i*self.illustration_range + 1
 				seq_to =  resi_count if (i+1)*self.illustration_range > resi_count else (i+1)*self.illustration_range
 				out_fnm = "{}.{}_{}" .format(png_root, seq_frm, seq_to)
-				cmd = "java -jar  {}  {}  {} {} {} > {}/seqReport.out 2>&1". \
+				cmd = "java -jar  {}  {}  {} {} {} > {}/seqreport.out 2>&1". \
 					format(pngmaker, png_input_file, "{}/{}".format(self.work_path, out_fnm), seq_frm, seq_to, self.work_path)
 				process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 				if process.returncode==0:
