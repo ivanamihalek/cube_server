@@ -232,10 +232,10 @@ class Specialist:
 
 		def excel_spreadsheet(self):
 			output_name_root = "specialization_on_the_sequence"
-			output_path = "{}/{}".format(self.work_path, output_name_root)
+			output_path = "{}/{}.xls".format(self.work_path, output_name_root)
 			# if we have the annotation, add the annotation
 			#
-			xls_script = "{}/{}".format(Config.SCRIPTS_PATH, Config.SCRIPTS['specs2xls'])
+			xls_script = "{}/{}".format(Config.SCRIPTS_PATH, Config.SCRIPTS['hc2xls'])
 			# the basic input is the specs score file
 			cmd = "{}   {}  {}".format(xls_script, self.score_file,  output_path)
 			process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -303,7 +303,7 @@ class Specialist:
 
 			# ### postprocess
 			self.specialization_map()
-			# self.excel_spreadsheet()
+			self.excel_spreadsheet()
 			# self.pymol_script()
 			# self.directory_zip()
 			os.chdir(curr)
