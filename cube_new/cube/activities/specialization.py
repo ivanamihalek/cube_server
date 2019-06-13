@@ -241,7 +241,6 @@ class Specialist:
 			process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 			if process.returncode==0:
 				self.xls = "{}/{}.xls".format(self.workdir,output_name_root)
-
 			return
 
 		def pymol_script(self):
@@ -249,9 +248,11 @@ class Specialist:
 			if not self.original_structure_path: return
 			output_name_root = "specialization_on_the_structure"
 			output_path = "{}/{}".format(self.work_path, output_name_root)
-			pml_creator = "{}/{}".format(Config.SCRIPTS_PATH, Config.SCRIPTS['specs2pml'])
+			pml_creator = "{}/{}".format(Config.SCRIPTS_PATH, Config.SCRIPTS['hc2pml'])
 			# the basic input is the specs score file
-			cmd = "{} rvet {} {} {}.pml {}".format(pml_creator, self.score_file, self.original_structure_path, output_path, self.chain)
+			cmd = "{} {} {} {}.pml ".format(pml_creator, self.score_file, self.original_structure_path, output_path)
+			if self.chain: cmd += " -c {}".format(self.chain)
+			cmd += " -g {}".format(self.ref_seq_name)
 			process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 			# are these scripts correctly returning 0 ?
 			if process.returncode !=0: return
@@ -269,10 +270,11 @@ class Specialist:
 			process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 			if process.returncode ==0:
 				self.pse_zip = "{}/{}.pse.zip".format(self.workdir,output_name_root)
-
 			return
 
 		def directory_zip(self):
+			curr = os.getcwd()
+			os.chdir(Config.WORK_PATH)
 			shellzip = Config.DEPENDENCIES['zip']
 			archive_name = "cube_workdir_{}.zip".format(self.job_id)
 			cmd = "{} -r {} {} > /dev/null ".format(shellzip, archive_name, self.job_id)
@@ -280,7 +282,7 @@ class Specialist:
 			if process.returncode ==0:
 				os.rename(archive_name, "{}/{}".format(self.work_path, archive_name))
 				self.workdir_zip = "{}/{}".format(self.workdir, archive_name)
-
+			os.chdir(curr)
 			return
 
 
@@ -304,8 +306,8 @@ class Specialist:
 			# ### postprocess
 			self.specialization_map()
 			self.excel_spreadsheet()
-			# self.pymol_script()
-			# self.directory_zip()
+			self.pymol_script()
+			self.directory_zip()
 			os.chdir(curr)
 
 			self.run_ok = True

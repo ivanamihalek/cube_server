@@ -11,7 +11,7 @@ class Conservationist:
 
 			# directories
 			self.job_id = upload_handler.job_id
-			self.workdir = "{}/{}".format(Config.WORK_DIRECTORY, self.job_id)
+			self.workdir   = "{}/{}".format(Config.WORK_DIRECTORY, self.job_id)
 			self.work_path = "{}/{}".format(Config.WORK_PATH, self.job_id)
 
 			# input
@@ -176,7 +176,7 @@ class Conservationist:
 			output_path = "{}/{}".format(self.work_path, output_name_root)
 			pml_creator = "{}/{}".format(Config.SCRIPTS_PATH, Config.SCRIPTS['specs2pml'])
 			# the basic input is the specs score file
-			cmd = "{} rvet {} {} {}.pml {}".format(pml_creator, self.score_file, self.original_structure_path, output_path, self.chain)
+			cmd = "{} {} {} {} {}.pml {}".format(pml_creator, self.method, self.score_file, self.original_structure_path, output_path, self.chain)
 			process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 			# are these scripts correctly returning 0 ?
 			if process.returncode !=0: return

@@ -4,3 +4,21 @@ bug: "Name duplicates previous WSGI daemon definition."
 The bug has been since fixed in certbot 0.31, but because
 the provider i'm using is stuck with Ubuntu 16.04,
 I am stuck with certbot 0.28.
+
+A2 is stuck on kernel release 2.6 (uname -a)
+so many things do not work
+
+installation instructions for lapack, last update 2018-09-30 relies on g77
+https://www.gnu.org/software/gcc/testing/testing-lapack.html
+
+to install g77:
+https://nukephysik101.wordpress.com/2017/04/05/compiling-fortran77-code-in-ubuntu-16/
+
+some hints here https://www2.physics.ox.ac.uk/it-services/where-has-g77-gone-to
+"For various historical reasons, g77 has been declared obsolete, and has been replaced by gfortran. ""
+
+Invalid token at (2) in expression or subexpression at (1)
+http://icl.cs.utk.edu/lapack-forum/archives/lapack/msg00546.html
+Since 3.2,  LAPACK moved to fortran 90 standard, so you cannot use g77
+
+-- moving to a different provider --
