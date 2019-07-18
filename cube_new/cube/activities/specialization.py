@@ -1,6 +1,8 @@
 
 
 from cube import Config
+from cube.activities.utils import Utils
+
 import subprocess,  os
 from shutil import copyfile, move
 
@@ -16,7 +18,9 @@ class Specialist:
 			self.work_path = "{}/{}".format(Config.WORK_PATH, self.job_id)
 
 			# input
-			self.original_alignment_paths = upload_handler.original_alignment_paths
+			self.original_seqfile_paths = upload_handler.original_seqfile_paths
+			self.seq_input_types = upload_handler.seq_input_types
+			self.input_aligned = upload_handler.aligned
 			self.original_structure_path = upload_handler.original_structure_path
 			self.chain = upload_handler.chain if upload_handler.chain else "-"
 			self.ref_seq_name = upload_handler.ref_seq_name
@@ -42,6 +46,9 @@ class Specialist:
 			self.workdir_zip = None
 
 			self.warn = None
+
+			# toolbox
+			self.utils = Utils(self.job_id)
 			return
 
 
@@ -161,12 +168,30 @@ class Specialist:
 
 		#############################################
 		def _prepare_run(self):
-			os.mkdir(self.work_path)
+
 			# transform msf to afa
 
 			# if not aligned - align
-			# TODO this might not exist if we are aligning ourselves
-			self.preprocessed_afas = self.original_alignment_paths
+			self.preprocessed_afas = []
+			for seqfile in self.original_seqfile_paths:
+				preprocessed_afa = self.utils.construct_afa_name(seqfile)
+				if self.input_aligned:
+					filetype = self.seq_input_types[seqfile]
+					if filetype=='fasta':
+						# TODO check all seqs the same length
+						copyfile(seqfile, preprocessed_afa)
+					elif filetype=='gcg':
+						# convert to afa
+						if not self.utils.msf2afa(seqfile, preprocessed_afa):
+							self.errmsg = self.utils.errmsg
+							return None
+						# again check if the same length
+				else:
+					# if not aligned - align
+					if not self.utils.align(seqfile, preprocessed_afa):
+						self.errmsg = self.utils.errmsg
+						return None
+				self.preprocessed_afas.append(preprocessed_afa)
 
 			# group file
 			# (what could go wrong here?)
@@ -244,33 +269,10 @@ class Specialist:
 			return
 
 		def pymol_script(self):
-			# note that we will use the original structure here, with other chains, ions etc
-			if not self.original_structure_path: return
-			output_name_root = "specialization_on_the_structure"
-			output_path = "{}/{}".format(self.work_path, output_name_root)
-			pml_creator = "{}/{}".format(Config.SCRIPTS_PATH, Config.SCRIPTS['hc2pml'])
-			# the basic input is the specs score file
-			cmd = "{} {} {} {}.pml ".format(pml_creator, self.score_file, self.original_structure_path, output_path)
-			if self.chain: cmd += " -c {}".format(self.chain)
-			cmd += " -g {}".format(self.ref_seq_name)
-			process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-			# are these scripts correctly returning 0 ?
-			if process.returncode !=0: return
+			pml_args = [self.original_structure_path, self.score_file, self.chain, self.ref_seq_name ]
+			ret = self.utils.pymol_script("spec", pml_args)
+			if ret: [self.pml, self.pse_zip] = ret
 
-			pymol = Config.DEPENDENCIES['pymol']
-			cmd = "{} -qc -u  {}.pml > /dev/null ".format(pymol, output_path)
-			process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-			if process.returncode !=0: return
-
-			session = "{}.pse".format(output_path)
-			zipfile = session+ ".zip"
-			# shellzip to be distinguished from zip command in python
-			shellzip = Config.DEPENDENCIES['zip']
-			cmd = "{} {} {} > /dev/null ".format(shellzip, zipfile, session)
-			process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-			if process.returncode ==0:
-				self.pse_zip = "{}/{}.pse.zip".format(self.workdir,output_name_root)
-			return
 
 		def directory_zip(self):
 			curr = os.getcwd()
@@ -289,12 +291,14 @@ class Specialist:
 		###################################################
 		def run(self):
 
-			### prepare
-			self._prepare_run()
+			os.mkdir(self.work_path)
 
-			### from this point one we are in the workdir
+			### from this point on we are in the workdir
 			curr = os.getcwd()
 			os.chdir(self.work_path)
+
+			### prepare
+			self._prepare_run()
 
 			### cube
 			cube = "%s cmd "% Config.DEPENDENCIES['cube']

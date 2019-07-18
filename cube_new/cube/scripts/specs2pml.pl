@@ -1,30 +1,33 @@
 #!/usr/bin/perl -w
 
- 
 
+use strict;
+use warnings;
 (defined $ARGV[3]) ||
-    die "Usage:  $0  <method [rvet|majf|entr]>  <specs score file>  <pdb_file_full_path>  <output name> [<chain> and/or -r and/or -b] \n"; 
-($method, $ranks_file, $pdb_file, $output_file) = @ARGV;
+    die "Usage:  $0  <method [rvet|majf|entr]>  <specs score file>  <pdb_file_full_path>  <output name> [<chain> and/or -r and/or -b and/or -p] \n";
+my ($method, $ranks_file, $pdb_file, $output_file) = @ARGV;
 
 ##################################################
 #set the pallette:
-$COLOR_RANGE = 20;
-$green = $blue = $red = 0;
+my $COLOR_RANGE = 20;
+my ($green, $blue, $red) = (0, 0, 0);
 
 
-$N = 5;
-$C1 = $COLOR_RANGE-1;
+my $N = 5;
+my $C1 = $COLOR_RANGE-1;
 
 $red = 1.00;
 $green =  0.83;
 $blue =    0.17;
-$color[0] = "[$red, $green, $blue]"; 
+my @color = ();
+my @color_name = ();
+$color[0] = "[$red, $green, $blue]";
 $color_name[0] = "c0";
 
-$bin_size = $C1/$N;
-for ( $ctr=1; $ctr <= int ($COLOR_RANGE/$N); $ctr++ ) {
+my $bin_size = $C1/$N;
+for (my  $ctr=1; $ctr <= int ($COLOR_RANGE/$N); $ctr++ ) {
 
-    $ratio =  ( int ( 100*($bin_size- $ctr+1)/$bin_size) ) /100;
+    my $ratio =  ( int ( 100*($bin_size- $ctr+1)/$bin_size) ) /100;
     $red   = $ratio;
     $green = $blue = 0;
 		 
@@ -33,9 +36,9 @@ for ( $ctr=1; $ctr <= int ($COLOR_RANGE/$N); $ctr++ ) {
 
 }
 
-for ( $ctr= int ($COLOR_RANGE/$N)+1 ; $ctr <= $COLOR_RANGE; $ctr++ ) {
+for (my  $ctr= int ($COLOR_RANGE/$N)+1 ; $ctr <= $COLOR_RANGE; $ctr++ ) {
 
-    $ratio =  ( $ctr -  $COLOR_RANGE/$N)/ ($COLOR_RANGE*($N-1)/$N);
+    my $ratio =  ( $ctr -  $COLOR_RANGE/$N)/ ($COLOR_RANGE*($N-1)/$N);
     $red   = $ratio;
     $green = $blue = $red;
 		 
@@ -46,52 +49,57 @@ for ( $ctr= int ($COLOR_RANGE/$N)+1 ; $ctr <= $COLOR_RANGE; $ctr++ ) {
 
 ##################################################
 # input
-$chain = "";
-$reverse = 0;
-$backbone = 0;
+my $chain = "";
+my $reverse = 0;
+my $backbone = 0;
+my $write_pse = 0; # write pymol session file?
 
-for  $argctr ( 4 .. 5 ) {
+for  my $argctr ( 4 .. 5 ) {
     if ( defined  $ARGV[ $argctr ] ){
-	if ( $ARGV[$argctr ] eq "-r" ) {
-	    $reverse  = 1;
-	} elsif ( $ARGV[ $argctr ] eq "-b" ) {
-	    $backbone  = 1;
-	} else {
-	    $chain =  $ARGV[4];
-	}
+        if ( $ARGV[$argctr ] eq "-r" ) {
+            $reverse  = 1;
+        } elsif ( $ARGV[ $argctr ] eq "-b" ) {
+            $backbone  = 1;
+        } elsif ( $ARGV[ $argctr ] eq "-p" ) {
+            $write_pse  = 1;
+        } else {
+            $chain =  $ARGV[4];
+        }
     }
 }
 
 open (RANKS_FILE, "<$ranks_file") || 
     die "cno $ranks_file\n";
     
-$method_column = -1;
-$pdb_id_column = -1;
-$bad_cvg       = 0.5;
-$min_cvg       = 1.0;
+my $method_column = -1;
+my $pdb_id_column = -1;
+my $bad_cvg       = 0.5;
+my $min_cvg       = 1.0;
+my %cvg = ();
 
 while ( <RANKS_FILE> ) {
+    my @aux;
     next if ( !/\S/ );
     if ( /^\%/ ){
-	@aux = split;
-	shift @aux;
-	for ($ctr=0; $ctr< $#aux; $ctr++) {
-	    if ($aux[$ctr] eq $method ) {
-		$method_column = $ctr;
-	    } elsif ($aux[$ctr] eq "pdb_id") { 
-		$pdb_id_column = $ctr;
-	    }
-	}
+        @aux = split;
+        shift @aux;
+        for (my $ctr=0; $ctr< $#aux; $ctr++) {
+            if ($aux[$ctr] eq $method ) {
+                $method_column = $ctr;
+            } elsif ($aux[$ctr] eq "pdb_id") {
+                $pdb_id_column = $ctr;
+            }
+        }
     } elsif ($method_column > -1 && $pdb_id_column > -1) {
-	chomp;
-	@aux = split;
-	$pdb_id = $aux[$pdb_id_column];
-	next if ($pdb_id =~ '-' || $pdb_id =~ '\.'  );
-	$cvg{$pdb_id} = $aux[$method_column];
-	($cvg{$pdb_id}< $min_cvg) && ($min_cvg=$cvg{$pdb_id});
-	if ( $reverse ) {
-	    $cvg{$pdb_id} = 1 - $cvg{$pdb_id};
-	}
+        chomp;
+        @aux = split;
+        my $pdb_id = $aux[$pdb_id_column];
+        next if ($pdb_id =~ '-' || $pdb_id =~ '\.'  );
+        $cvg{$pdb_id} = $aux[$method_column];
+        ($cvg{$pdb_id}< $min_cvg) && ($min_cvg=$cvg{$pdb_id});
+        if ( $reverse ) {
+            $cvg{$pdb_id} = 1 - $cvg{$pdb_id};
+        }
     }
 }
 close RANKS_FILE;
@@ -103,6 +111,7 @@ close RANKS_FILE;
 
 
 # open the output file
+my $filename;
 if  ($reverse ) {
     $filename = $output_file.".rev";
 } else {
@@ -110,6 +119,15 @@ if  ($reverse ) {
 }
 
 open (FPTR, ">$filename") || die "cno $filename\n";
+
+print  FPTR "# To run this file from command line:\n";
+print  FPTR "# > pymol $output_file\n";
+print  FPTR "# To run from pymol itself, open pymol and find $output_file\n";
+print  FPTR "# in the 'File'->'Run Script ...' dropdown menu.\n\n";
+print  FPTR "# If you do not have pymol installed, check \n";
+print  FPTR "# https://pymolwiki.org/index.php/Windows_Install\n";
+print  FPTR "# or the links for other platforms at the bottom of that page. \n\n";
+
 print  FPTR "load $pdb_file, the_whole_thing\n";
 print  FPTR "zoom complete=1\n";
 print  FPTR "bg_color white\n";
@@ -128,15 +146,15 @@ if (!$chain) {
 
 
 
-for $ctr ( 0 .. $#color ) {
+for my $ctr ( 0 .. $#color ) {
     print  FPTR "set_color $color_name[$ctr] = $color[$ctr]\n";
 }
 
-@poorly_scoring = ();
+my @poorly_scoring = ();
 
-foreach $pos ( keys %cvg ) {
+foreach my $pos ( keys %cvg ) {
 
-    $color_index = int ($cvg{$pos}*$COLOR_RANGE );
+    my $color_index = int ($cvg{$pos}*$COLOR_RANGE );
     
     print FPTR "color $color_name[$color_index], resid $pos ";
     if ( $chain ){
@@ -148,12 +166,12 @@ foreach $pos ( keys %cvg ) {
     }      
 }
 
-$from = 0;
-$slc   = "";
+my $from = 0;
+my $slc   = "";
 while ($from < int (@poorly_scoring) ) {
-    $to = $from + 10;
+    my $to = $from + 10;
     ($to > $#poorly_scoring)  &&  ($to=$#poorly_scoring);
-    $reslist = join "+", @poorly_scoring[$from .. $to];
+    my $reslist = join "+", @poorly_scoring[$from .. $to];
     if ($slc) {
        $slc .= "select poorly_scoring, poorly_scoring or resid $reslist\n"
     } else {
@@ -196,16 +214,17 @@ print  FPTR $slc;
 
 print  FPTR "deselect \n";
 
+if ($write_pse) {
+    my $session_file = $output_file;
+    if ($output_file =~ /\.pml$/) {
+        $session_file =~ s/\.pml$/\.pse/;
+    }
+    else {
+        $session_file .= ".pse";
 
-$session_file = $output_file;
-if ($output_file =~ /\.pml$/) {
-    $session_file =~ s/\.pml$/\.pse/;
-} else {
-    $session_file .= ".pse";
-    
+    }
+    print FPTR "save $session_file \n";
 }
-print  FPTR "save $session_file \n";
-
 
 close FPTR; 
 

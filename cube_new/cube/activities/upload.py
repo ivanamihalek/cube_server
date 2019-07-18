@@ -17,10 +17,10 @@ class UploadHandler:
 		elif 'fnm' in request.files:
 			self.seq_files = [request.files['fnm']]
 
-		self.original_alignment_paths = []
-		self.original_alignment_path  = None
+		self.original_seqfile_paths = []
+		self.original_seqfile_path  = None
 		# ditto for the checkbox   - if not checked, it does not exist
-		self.aligned = ('aligned' in  request.form)
+		self.aligned = ('aligned' in request.form)
 
 		self.clean_seq_fnms = {}
 		# this will be the copy of the first file name - so I can recycle the code for both spec and conservation
@@ -66,7 +66,7 @@ class UploadHandler:
 		# we are going to use the first one
 		if not self.ref_seq_name: return True
 		refseq_ok = False
-		for alignment_path in self.original_alignment_paths:
+		for alignment_path in self.original_seqfile_paths:
 			if self.seq_input_types[alignment_path] == 'fasta':
 				cmd = "grep  '>' {} | grep {}".format(alignment_path, self.ref_seq_name)
 			else:
@@ -84,9 +84,9 @@ class UploadHandler:
 		for seq_file, clean_seq_fnm in self.clean_seq_fnms.items():
 			print ("************* saving", clean_seq_fnm)
 			upload_path = os.path.join(self.staging_dir, clean_seq_fnm)
-			self.original_alignment_paths.append(upload_path)
+			self.original_seqfile_paths.append(upload_path)
 			seq_file.save(upload_path)
-		if not self.multiple_seq_files: self.original_alignment_path = self.original_alignment_paths[0]
+		if not self.multiple_seq_files: self.original_seqfile_path = self.original_seqfile_paths[0]
 		if self.clean_struct_fnm:
 			print("************* saving", self.clean_struct_fnm)
 			self.original_structure_path = os.path.join(self.staging_dir, self.clean_struct_fnm)
@@ -98,7 +98,7 @@ class UploadHandler:
 	# from the staging to the work directory
 	def upload_ok(self):
 		# is the sequence file format recognizable?
-		for alignment_path in self.original_alignment_paths:
+		for alignment_path in self.original_seqfile_paths:
 			seq_input_type = self._find_seq_input_type(alignment_path)
 			if not seq_input_type:
 				self.errmsg = "Sequence file format not recognized."

@@ -19,9 +19,11 @@ class Config:
                     'cube': '/var/local/bin/hypercube',
                     'muscle':'/var/local/bin/muscle',
                     'mafft':'/var/local/bin/mafft/mafft.sh',  # https://mafft.cbrc.jp/alignment/software/linuxportable.html
-                    'pymol': '/usr/local/bin/pymol',
                     'zip': '/usr/bin/zip'
                     }
+    OPTIONAL = {'pymol': '/usr/local/bin/pymol'}
+    #OPTIONAL = {'pymol': '/usr/local/dummy/pymol'}
+
     LIBS = {'seqreport.jar': '/var/local/java/SeqReport.jar',
                     'seqreport-spec.jar': '/var/local/java/SeqReportEE.jar'
             }

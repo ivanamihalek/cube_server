@@ -19,7 +19,7 @@ open ( AFA, "<$afa") ||
 
 while ( <AFA> ) {
     chomp;
-    if (/^>\s*(.+)/ ) {
+    if (/^>\s*(\S+)/ ) {
 		$name = $1;
 		push @names,$name;
 		$sequence{$name} = "";
@@ -30,6 +30,7 @@ while ( <AFA> ) {
     }
 }
 close AFA;
+
 
 # sanity check:
 @names || die "Error in $0: no seqs found.\n"; 
@@ -49,11 +50,6 @@ $max_pos--;
 my @delete;
 foreach my $pos ( 0 .. $max_pos ) {
     
-    #if ( $array[$query_seq][$pos] =~ '\.' ) {
-    ###########################################################################################################################
-    ##since in afa2msf.pl, zonghong has changed all '.' to '-' in order for seaview to count properly, here we have to change
-    ##to detect '-'  
-    ##########################################################################################################################
     $delete[$pos] = 1;
     for my $query_seq (@protected_names) {
 		defined $array{$query_seq} || next;

@@ -17,9 +17,13 @@
         {% endif %}
 
         {% if results_handler.pse_zip  %}
-        <tr><td>
-            <a href="{{ url_for('static', filename=results_handler.pse_zip)}}"> Pymol session (zipped) </a>
-        </td></tr>
+			<tr><td>
+				<a href="{{ url_for('static', filename=results_handler.pse_zip)}}"> Pymol session (zipped) </a>
+			</td></tr>
+        {% elif results_handler.pml  %}
+			 <tr><td>
+				<a href="{{ url_for('static', filename=results_handler.pml)}}"> Pymol script (pml) </a>
+			 </td></tr>
         {% endif %}
 
         {% if results_handler.workdir_zip  %}
