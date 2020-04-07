@@ -1,3 +1,4 @@
+rm -rf cube/static/workdir/*
 tar -cvf current.tar cube/ requirements.txt cube.wsgi run.py
 gzip current.tar
 source ~/.bashrc

@@ -22,7 +22,6 @@ class Config:
                     'zip': '/usr/bin/zip'
                     }
     OPTIONAL = {'pymol': '/usr/local/bin/pymol'}
-    #OPTIONAL = {'pymol': '/usr/local/dummy/pymol'}
 
     LIBS = {'seqreport.jar': '/var/local/java/SeqReport.jar',
                     'seqreport-spec.jar': '/var/local/java/SeqReportEE.jar'

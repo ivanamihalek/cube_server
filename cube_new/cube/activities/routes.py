@@ -11,7 +11,7 @@ activity = Blueprint('activity', __name__)
 def cons():
 	if request.method == 'POST':
 		upload_handler = UploadHandler(request)
-		upload_handler.report_input_params()
+		#upload_handler.report_input_params()
 		# if there are problems, render warning page
 		if not upload_handler.filenames_ok():
 			flash(upload_handler.errmsg, 'error')
@@ -24,7 +24,8 @@ def cons():
 		conservationist = Conservationist(upload_handler)
 		conservationist.run()
 		if not conservationist.run_ok:
-			flash(upload_handler.errmsg, 'error')
+			flash(conservationist.errmsg, 'error')
+			return render_template('cons.html')
 		if conservationist.warn:
 			flash(conservationist.warn, 'warning')
 		return cons_results(conservationist)

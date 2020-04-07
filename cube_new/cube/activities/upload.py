@@ -82,13 +82,11 @@ class UploadHandler:
 	def upload_files(self):
 		os.makedirs(self.staging_dir, exist_ok=True)
 		for seq_file, clean_seq_fnm in self.clean_seq_fnms.items():
-			print ("************* saving", clean_seq_fnm)
 			upload_path = os.path.join(self.staging_dir, clean_seq_fnm)
 			self.original_seqfile_paths.append(upload_path)
 			seq_file.save(upload_path)
 		if not self.multiple_seq_files: self.original_seqfile_path = self.original_seqfile_paths[0]
 		if self.clean_struct_fnm:
-			print("************* saving", self.clean_struct_fnm)
 			self.original_structure_path = os.path.join(self.staging_dir, self.clean_struct_fnm)
 			self.struct_file.save(self.original_structure_path)
 		return
@@ -116,7 +114,7 @@ class UploadHandler:
 		# if the structure is given
 		if self.struct_file:
 			# which chains do we have in the provided structure file?
-			cmd = " awk -F '' '{}' {} | uniq ".format("{print $22}", self.original_structure_path)
+			cmd = "awk '$1==\"ATOM\"'  {} | awk -F '' '{}' | uniq ".format( self.original_structure_path, "{print $22}")
 			process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 			chains = process.stdout.decode("utf-8").strip().split("\n")
 			if self.chain and self.chain != "-":

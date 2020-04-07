@@ -9,4 +9,6 @@ mkdir -p /tmp/cube-server
 chown -R www-data $staging_dir
 chgrp -R www-data $staging_dir
 systemctl restart apache2
+rm -f ~/tray/current.tar.gz
+
 

@@ -7,6 +7,7 @@ from shutil import copyfile
 
 # the alignment file probably needs to be checked
 
+
 class Conservationist:
 
 	def __init__(self, upload_handler):
@@ -71,7 +72,6 @@ class Conservationist:
 		outf.close()
 
 	def prepare_run(self):
-
 		self.preprocessed_afa = self.utils.construct_afa_name(self.original_seqfile_path)
 		if self.input_aligned:
 			filetype = self.seq_input_types[self.original_seqfile_path]
@@ -134,12 +134,12 @@ class Conservationist:
 
 	def check_run_ok(self, process):
 		if process.returncode != 0:
-			self.errmsg  = process.stdout
-			self.errmsg += process.stderr
+			self.errmsg  = process.stdout.decode("utf-8").strip()
+			self.errmsg += process.stderr.decode("utf-8").strip()
 			self.run_ok = False
 			return False
 		if "Unrecognized amino acid code" in process.stdout.decode("utf-8"):
-			self.errmsg  = process.stdout
+			self.errmsg = process.stdout.decode("utf-8")
 			self.run_ok = False
 			return False
 		self.score_file = "{}/{}.score".format(self.work_path, self.specs_outname)
@@ -162,13 +162,12 @@ class Conservationist:
 
 		pngmaker = Config.LIBS['seqreport.jar']
 		png_root = 'conservation_map'
-		f_counter = int(resi_count/self.illustration_range)
-		for i in range(f_counter):
-			seq_frm = i*self.illustration_range + 1
-			seq_to =  resi_count if (i+1)*self.illustration_range > resi_count else (i+1)*self.illustration_range
+		for i in range(0,resi_count, self.illustration_range):
+			seq_frm = i+1
+			seq_to  = min(resi_count, i+self.illustration_range)
 			out_fnm = "{}.{}_{}" .format(png_root, seq_frm, seq_to)
-			cmd = "java -jar  {}  {}  {} {} {} > {}/seqreport.out 2>&1". \
-				format(pngmaker, png_input_file, "{}/{}".format(self.work_path, out_fnm), seq_frm, seq_to, self.work_path)
+			cmd  = f"java -jar  {pngmaker}  {png_input_file} {self.work_path}/{out_fnm} {seq_frm} {seq_to} "
+			cmd += f" > {self.work_path}/seqreport.out 2>&1"
 			process = subprocess.run([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 			if process.returncode==0:
 				self.png_files.append(out_fnm+".png")

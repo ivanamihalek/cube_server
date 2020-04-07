@@ -88,6 +88,7 @@ class Utils:
 				pse_zip = "{}/{}.pse.zip".format(self.workdir,output_name_root)
 				os.remove(session)
 
+
 		return [pml, pse_zip]
 
 
