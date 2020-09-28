@@ -1,5 +1,0 @@
-4504477	2	N-acetylthreonine
-4504477	183	iron binding
-4504477	250	Phosphoserine
-4504477	266	iron binding
-4504477	349	iron binding

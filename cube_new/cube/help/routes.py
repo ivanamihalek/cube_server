@@ -85,3 +85,8 @@ def spec_examples():
 @help.route('/help/worked_examples/cons_examples')
 def cons_examples():
     return render_template('help/worked_examples/cons_examples.html')
+
+@help.route('/help/cons_example_output')
+def cons_example_output():
+    return render_template('help/worked_examples/cons_example_output/display.html')
+
