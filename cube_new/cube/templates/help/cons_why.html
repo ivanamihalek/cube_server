@@ -35,38 +35,41 @@
     <left_title>Nice. What does that have to do with my research?</left_title>
 
 
-    <P>
-        These are tools for planing your experiment.
+    <p>
+        These are tools for planing your experiment. These are tools for interpretation of variants, seen in healthy people,
+		and disease-related.</p>
 
-    <P>
+    <p>
         Check out the  conserved regions on the surface:
         Typically they indicate a position where a small ligand (metabolite, or signaling molecule  or metal ion) binds.
-        Larger areas, still better conserved then the rest, perhaps indicate interaction with other proteins.
-        If the structure is not known, or if the protein is disordered, we have to work with the 1D information alone.
-        A bit more difficult, but still doable.
+        Larger areas, still better conserved then the rest, perhaps indicate interaction with other proteins.</p>
 
         <img src="{{ url_for('static', filename='images/zoom.246px.png') }}"  width="246" style="float:right">
 
-    <p>
+	<p> Check out the conserved cluster of residues deep inside a globular domain. This is the "folding core"
+		of the domain. A mutation in that region may cause domain misfolding. Cells will typically get rid of such proteins
+		through <a href="https://academic.oup.com/jb/article/147/1/19/753995">ubiquitin-proteasome system</a>. </p>
 
-        Collect in the spreadsheet the data from all sources that you have available - including your own previous work.
+    <p>    If the structure is not known, or if the protein is disordered, we have to work with the 1D information alone.
+		A bit more difficult, but still doable.
+		Collect in the spreadsheet the data from all sources that you have available - including your own previous work.
         Put it all together in a slide,
         against the backdrop of the conservation map, and use for discussion with your geek friends.
-        Are there any regions of conservation to which no purpose or function has been ascribed so far?
-
+        Are there any regions of conservation to which no purpose or function has been ascribed so far? </p>
 
 
     <p>
         If you are looking to manipulate novel phenotype, place your mutations in these regions.
         Use the conserved patches to guide the docking, or predict the impact of naturally occurring mutations
-        by the degree of conservation of the region they fall into.
+        by the degree of conservation of the region they fall into. If you are trying to understand the
+		impact of a variant - these are the regions which may cause dysfunction.</p>
 
 
 
 </div>
 
 <div class="main">
-    <left_title><a href="worked_examples/cons_examples.html">
+    <left_title><a href="{{ url_for('help.cons_examples') }}">
         Click here to see some worked examples. </a></left_title>
 </div>
 

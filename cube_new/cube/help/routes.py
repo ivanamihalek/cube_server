@@ -10,9 +10,20 @@ def aligning_seqs():
 def checklist():
     return render_template('help/checklist.html')
 
+
+
+@help.route('/help/cons_examples')
+def cons_examples():
+    return render_template('help/worked_examples/cons_examples.html')
+
+@help.route('/help/cons_example_output')
+def cons_example_output():
+    return render_template('help/worked_examples/cons_example_output/display.html')
+
 @help.route('/help/cons_why')
 def cons_why():
     return render_template('help/cons_why.html')
+
 
 
 @help.route('/help/getting_annotation')
@@ -31,6 +42,7 @@ def getting_seqs():
 def getting_structure():
     return render_template('help/getting_structure.html')
 
+
 @help.route('/help/help_index')
 def help_index():
     return render_template('help/help.html')
@@ -44,6 +56,7 @@ def on_comparative_analysis():
 @help.route('/help/pymol_output')
 def pymol_output():
     return render_template('help/pymol_output.html')
+
 
 @help.route('/help/spec_why')
 def spec_why():
@@ -82,11 +95,5 @@ def xls_output():
 def spec_examples():
     return render_template('help/worked_examples/spec_examples.html')
 
-@help.route('/help/worked_examples/cons_examples')
-def cons_examples():
-    return render_template('help/worked_examples/cons_examples.html')
 
-@help.route('/help/cons_example_output')
-def cons_example_output():
-    return render_template('help/worked_examples/cons_example_output/display.html')
 

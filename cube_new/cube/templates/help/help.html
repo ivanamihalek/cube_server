@@ -12,17 +12,17 @@
                     <P>
                         Cube is a server for comparative analysis of protein sequences.
                         A group of sequences can be compared to find regions they have in common
-                        ('<a href="../conservation.html">conservation analysis</a>').
+                        ('<a href="{{ url_for('help.cons_why') }}">conservation analysis</a>').
 
                         Alternatively, if  it is known that the  sequences can be divided into several  groups or classes,
                         such as two
-                        <a href="../db/html/homologues.html">paralogous</a> families of proteins,  or proteins from two different
+                        <a href="https://en.wikipedia.org/wiki/Sequence_homology#Paralogy">paralogous</a> families of proteins,  or proteins from two different
                         <a href="http://en.wikipedia.org/wiki/Kingdom_%28biology%29">kingdoms</a>,
                         they can be contrasted to
                         find regions in which they differ,
                         conferring  the specific function to each group
-                        ('<a href="../specialization.html">specialization analysis</a>').
-                        Follow <a href="on_comparative_analysis.html">this link</a> to read more about why-and-how of protein sequence comparison.
+                        ('<a href="{{ url_for('help.spec_why') }}">specialization analysis</a>').
+                        Follow <a href="{{ url_for('help.on_comparative_analysis') }}">this link</a> to read more about why-and-how of protein sequence comparison.
 
 
                     <P>
