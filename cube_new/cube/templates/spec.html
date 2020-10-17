@@ -59,7 +59,7 @@
 
             <tr>
                 <td align="left" width="25%">
-                    {% set url_getseqs  = url_for('help.getting_seqs') %}
+                    {% set url_getseqs  = url_for('help.input', input_type='sequences') %}
 
                     <a title='Each group that you would like to contrast  should be in a separate fasta file.
 	                         <a href="{{ url_getseqs }}">Click here</a> if you do not have the  sequences yet.
@@ -87,8 +87,8 @@
             </tr>
 
             <tr>
-                {% set url_pymol = url_for('help.pymol_output') %}
-                {% set url_structure = url_for('help.getting_structure') %}
+                {% set url_pymol = url_for('help.output', output_type='pymol') %}
+                {% set url_structure = url_for('help.input', input_type='structure') %}
                 <td align="left" width="25%"><a title="PDB file with structure of reference sequence.
                     	A <a href='{{ url_pymol }}'>PyMol session</a>
                         will be generated showing the levels of specialization
@@ -109,7 +109,9 @@
             </tr>
 
             <tr>
-                <td align="left" width="20%"><a title="Specialization scoring method." href="./help/help.html#refs">Method</a></td>
+                <td align="left" width="20%">
+                    <a title="Specialization scoring method."
+					   href="{{ url_for('help.help_index', _anchor='refs')}}">Method</a></td>
                 <td align="left" width="20%"><select name="method">
                     <option value="cube">   cube  </option>
                     <option value="cube_sim">   cube with similarity </option>
@@ -144,7 +146,7 @@
 
 
             <tr>
-                {% set url_xls_help  = url_for('help.xls_output', _anchor='spec') %}
+                {% set url_xls_help  = url_for('help.output', output_type='xls', _anchor='spec') %}
                 <td align="left">  <input type="button" name="addanno"
                                           title='Contribute your own annotation, using numbering in any sequence you have provided.
                                            It will be added to the <a href={{url_xls_help}}>spreadsheet</a> Cube produces.'
