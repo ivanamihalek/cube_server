@@ -2,98 +2,71 @@ from flask import render_template,  Blueprint
 
 help = Blueprint('help', __name__)
 
-@help.route('/help/aligning_seqs')
-def aligning_seqs():
-    return render_template('help/aligning_seqs.html')
+
+#########################################
+@help.route('/help/help_index')
+def help_index():
+	return render_template('help/help.html')
+
 
 @help.route('/help/checklist')
 def checklist():
-    return render_template('help/checklist.html')
+	return render_template('help/checklist.html')
 
 
-
-@help.route('/help/cons_examples')
-def cons_examples():
-    return render_template('help/worked_examples/cons_examples.html')
-
-@help.route('/help/cons_example_output')
-def cons_example_output():
-    return render_template('help/worked_examples/cons_example_output/display.html')
-
-@help.route('/help/cons_why')
-def cons_why():
-    return render_template('help/cons_why.html')
+#########################################
+@help.route('/help/cons_examples_intro')
+def cons_examples_intro():
+	return render_template('help/worked_examples/cons_examples_intro.html')
 
 
-
-@help.route('/help/getting_annotation')
-def getting_annotation():
-    return render_template('help/getting_annotation.html')
-
-@help.route('/help/getting_groups_of_seqs')
-def getting_groups_of_seqs():
-    return render_template('help/getting_groups_of_seqs.html')
-
-@help.route('/help/getting_seqs')
-def getting_seqs():
-    return render_template('help/getting_seqs.html')
-
-@help.route('/help/getting_structure')
-def getting_structure():
-    return render_template('help/getting_structure.html')
+#########################################
+@help.route('/help/cons_example/<string:name>/<string:page>')
+def cons_example(name, page):
+	# page is either instructions or results
+	name = name.lower()
+	if name == 'hppd_no_structure':
+		return render_template(f"help/worked_examples/cons_example_HPPD_no_structure/{page}.html")
+	elif name == 'hppd_w_structure':
+		return render_template(f"help/worked_examples/cons_example_HPPD_w_structure/{page}.html")
+	else: # ACE2 is default; as of this writing it has only results page
+		return render_template('help/worked_examples/cons_example_ACE2/results.html')
 
 
-@help.route('/help/help_index')
-def help_index():
-    return render_template('help/help.html')
-
-
-@help.route('/help/on_comparative_analysis')
-def on_comparative_analysis():
-    return render_template('help/on_comparative_analysis.html')
-
-
-@help.route('/help/pymol_output')
-def pymol_output():
-    return render_template('help/pymol_output.html')
-
-
-@help.route('/help/spec_why')
-def spec_why():
-    return render_template('help/spec_why.html')
-
-
-@help.route('/help/viewing_alignment')
-def viewing_alignment():
-    return render_template('help/viewing_alignment.html')
-
-@help.route('/help/viewing_structure')
-def viewing_structure():
-    return render_template('help/viewing_structure.html')
-
-
-@help.route('/help/which_species')
-def which_species():
-    return render_template('help/which_species.html')
-
-
-@help.route('/help/why_get_seqs')
-def why_get_seqs():
-    return render_template('help/why_get_seqs.html')
-
-@help.route('/help/workdir_output')
-def workdir_output():
-    return render_template('help/workdir_output.html')
-
-
-@help.route('/help/xls_output')
-def xls_output():
-    return render_template('help/xls_output.html')
-
-
+#########################################
 @help.route('/help/worked_examples/spec_examples')
 def spec_examples():
-    return render_template('help/worked_examples/spec_examples.html')
+	return render_template('help/worked_examples/spec_examples.html')
+
+
+#########################################
+@help.route('/help/input/<string:input_type>')
+def input(input_type):
+	# input_type: alignment, annotation, sequences, sequence_families, structure
+	return render_template(f"help/input/{input_type}.html")
+
+
+#########################################
+@help.route('/help/output/<string:output_type>')
+def output(output_type):
+	# output_type: pymol  workdir xls
+	return render_template(f"help/output/{output_type}.html")
+
+
+#########################################
+@help.route('/help/viewers/<string:viewer_type>')
+def viewers(viewer_type):
+	# output_type: alignment  structure
+	return render_template(f"help/viewers/{viewer_type}.html")
+
+
+#########################################
+# it looks like the route name and the function name must match
+# even though the manual does not say so
+@help.route('/help/topics/<string:topic>')
+def topics(topic):
+	# topic: cons_why on_comparative_analysis  spec_why  which_species why_get_seqs
+	return render_template(f"help/topics/{topic}.html")
 
 
 

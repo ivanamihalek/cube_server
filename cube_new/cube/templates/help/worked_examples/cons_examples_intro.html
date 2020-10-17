@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<div class="main">
+
+	<table  border="0" align="center"  cellpadding="0" cellspacing="0" width="100%" align="left" >
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+
+		<tr>
+			<td align="left" width ="65%" >
+				<left_title>Conservation scoring - worked examples</left_title>
+			</td>
+			<td >&nbsp;</td>
+		</tr>
+	</table>
+
+	<table  border="0" cellpadding="0" cellspacing="0" width="90%" align="left" >
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+
+		<tr>
+			<td align="center" width="40%">
+				<img src="{{ url_for('static', filename='images/cons_map.frame.png') }}" width="245">
+			</td>
+
+			<td>
+				<table width= 100%>
+					<tr><td>
+						<a href="{{ url_for('help.cons_example', name='ACE2', page='results') }}">
+							<img src="{{ url_for('static', filename='images/this_way.png') }}" width="113">
+						</a>
+					</td></tr>
+					<tr><td align="left">
+						<a href="{{ url_for('help.cons_example', name='ACE2', page='results') }}"> Example 1: Conservation on ACE2.</a>
+
+					</td></tr>
+				</table>
+			</td>
+
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+
+		<tr>
+			<td align="center" width="40%">
+				<img src="{{ url_for('static', filename='images/cons_map.frame.png') }}" width="245">
+			</td>
+
+			<td>
+				<table width= 100%>
+					<tr><td>
+						<a href="{{ url_for('help.cons_example', name='HPPD_no_structure', page='instructions') }}">
+							<img src="{{ url_for('static', filename='images/this_way.png') }}" width="113">
+						</a>
+					</td></tr>
+					<tr><td align="left">
+						<a href="{{ url_for('help.cons_example', name='HPPD_no_structure', page='instructions') }}">Example 2:
+							Conservation in HPPD Enzyme.</a>
+						Learn how to map  conservation onto protein sequence.
+						Create excel spreadsheets with conservation data, and conservation maps in png format.
+					</td></tr>
+				</table>
+			</td>
+
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+
+		<tr>
+			<td align="center" width="40%">
+				<img src="{{ url_for('static', filename='images/hppd.frame.png') }}" width="235">
+			</td>
+
+			<td>
+				<table width= 100%>
+					<tr><td>
+						<a href="{{ url_for('help.cons_example', name='HPPD_w_structure', page='instructions') }}">
+							<img src="{{ url_for('static', filename='images/this_way.png') }}" width="113">
+						</a>
+					</td></tr>
+					<tr><td align="left">
+						<a href="{{ url_for('help.cons_example', name='HPPD_w_structure', page='instructions') }}">Example 3:
+							Conservation in HPPD Enzyme Redux.</a>
+						Learn how to map  conservation onto protein structure.
+						Add annotation to the spreadsheet.
+					</td></tr>
+				</table>
+			</td>
+
+
+		</tr>
+
+	</table>
+
+
+</div>
+
+{% endblock content %}

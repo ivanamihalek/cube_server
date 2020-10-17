@@ -12,7 +12,7 @@
                     <P>
                         Cube is a server for comparative analysis of protein sequences.
                         A group of sequences can be compared to find regions they have in common
-                        ('<a href="{{ url_for('help.cons_why') }}">conservation analysis</a>').
+                        ('<a href="{{ url_for('help.topics', topic='cons_why') }}">conservation analysis</a>').
 
                         Alternatively, if  it is known that the  sequences can be divided into several  groups or classes,
                         such as two
@@ -21,8 +21,8 @@
                         they can be contrasted to
                         find regions in which they differ,
                         conferring  the specific function to each group
-                        ('<a href="{{ url_for('help.spec_why') }}">specialization analysis</a>').
-                        Follow <a href="{{ url_for('help.on_comparative_analysis') }}">this link</a> to read more about why-and-how of protein sequence comparison.
+                        ('<a href="{{ url_for('help.topics', topic='spec_why') }}">specialization analysis</a>').
+                        Follow <a href="{{ url_for('help.topics', topic='on_comparative_analysis') }}">this link</a> to read more about why-and-how of protein sequence comparison.
 
 
                     <P>
@@ -70,17 +70,19 @@
         <tr>
             <td colspan=2 align="left">
                 <P>
-                    <a name="conservation"> The only required input on the <a href="../conservation.html">conservation</a> page
-
-                        is a set of sequences in <a href=" fasta_example.txt">fasta</a> format. You can read more about the FASTA format on its <a href='http://en.wikipedia.org/wiki/FASTA_format'>Wikipedia page</a>.
+                    <a name="conservation"> The only required input on the <a href="{{ url_for('activity.cons') }}">conservation</a> page
+                         is a set of sequences in <a href="{{ url_for('static', filename='samples/fasta_example.txt') }}">fasta</a> format.
+                        You can read more about the FASTA format on its <a href='http://en.wikipedia.org/wiki/FASTA_format'>Wikipedia page</a>.
                 <P>
                     If you do not have  sequences
                     homologous to your protein,  you can
-                    <a href="getting_seqs.html">read more</a> about finding them by clicking <a href="getting_seqs.html">here</a>.
+                    <a href="{{ url_for('help.input', input_type='sequences') }}">read more</a>
+                    about finding them by clicking <a href="{{ url_for('help.input', input_type='sequences') }}">here</a>.
 
                 <P>
                     Optionally,  the sequences can be pre-aligned (the server accepts
-                    <a href=" fasta_example.txt">fasta</a> and <a href="gcg_example.txt">msf</a>
+                    <a href="{{ url_for('static', filename='samples/fasta_example.txt') }}">fasta</a> and
+                    <a href="{{ url_for('static', filename='samples/gcg_example.txt') }}">msf</a>
                     formats). If your sequences are already aligned, please tick the "my sequences are aligned" checkbox, otherwise
                     the server will ignore your original alignment.
 
@@ -92,7 +94,8 @@
                     will be used.
 
                 <P>
-                    In addition, the structure can be provided. Check <a href="getting_structure.html">here</a>
+                    In addition, the structure can be provided. Check
+                        <a href="{{ url_for('help.input', input_type='structure') }}">here</a>
                     if you are not sure whether your protein has a known structure.
 
 
@@ -115,20 +118,21 @@
         <tr>
             <td colspan=2 align="left">
                 <P>
-                    <a name="conservation">On the <a href="../conservation.html">specialization</a> page,
+                    <a name="specialization">On the <a href="{{ url_for('activity.spec') }}">specialization</a> page,
                         the input consists of sequences already divided into meaningful groups.
                         The groups can be arbitrary, but typically they are expected to represent
-                        <a href="../db/html/homologues.html">paralogous</a>  families
+                        <a href="https://en.wikipedia.org/wiki/Sequence_homology#Paralogy">paralogous</a>  families
                         of proteins in comparable taxonomical samples, or protein
-                        <a href="../db/html/homologues.html">orthologues</a> divided into clearly distinct
+                        <a href="https://en.wikipedia.org/wiki/Sequence_homology#Orthology">orthologues</a> divided into clearly distinct
                         <a href="http://en.wikipedia.org/wiki/Biological_classification">taxonomical groups</a>.
 
 
                 <P>
                     Each group of sequences  should be in
-                    <a href=" fasta_example.txt">fasta</a> format if the sequences are not aligned, or
+                    <a href="{{ url_for('static', filename='samples/fasta_example.txt') }}">fasta</a> format if the sequences are not aligned, or
 
-                    <a href=" fasta_example.txt">fasta</a> or  <a href="gcg_example.txt">msf</a> if they are (aligned).
+                    <a href="{{ url_for('static', filename='samples/fasta_example.txt') }}" >fasta</a> or
+                    <a href="{ url_for('static', filename='samples/gcg_example.txt') }}">msf</a> if they are (aligned).
 
                 <P>
                     Annotation, according to numbering in any of the sequences in the alignment can also be provided. It
@@ -153,7 +157,8 @@
             <td align="left" colspan=2>
                 <P>
                     This is arguably a subtopic of the input section, but it is so important and potentially confusing,
-                    that we believe it deserves a section of its own. In <a href=" fasta_example.txt">FASTA</a> format, in particular,
+                    that we believe it deserves a section of its own. In
+                    <a href= "{{ url_for('static', filename='samples/fasta_example.txt') }}">FASTA</a> format, in particular,
                     a sequence header might look something like this
                 <pre>
            >gi|114647465|ref|XP_528667.2| PREDICTED: 4-hydroxyphenylpyruvate dioxygenase isoform 3 [Pan troglodytes]. 

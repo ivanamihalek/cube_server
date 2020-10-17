@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+<div class='main'>
+
+   <hr>
+    <left_title> This is a sample page: conservation of ACE2 across orthologues</left_title>
+   <hr>
+
+    <table>
+        <tr><td>
+            <left_title> Downloadables</left_title>
+        </td></tr>
+        <tr><td>  &nbsp;  </td></tr>
+
+        <tr><td>
+            <a href="{{ url_for('static', filename='samples/conservation/conservation_on_the_sequence.xls')}}"> Xls spreadsheet </a>
+        </td></tr>
+
+        <tr><td>
+            <a href="{{ url_for('static', filename='samples/conservation/conservation_on_the_structure.pse.zip')}}"> Pymol session (zipped) </a>
+        </td></tr>
+        <tr><td>
+            <a href="{{ url_for('static', filename='samples/conservation/conservation_on_the_structure.pml')}}"> Pymol script (pml) </a>
+        </td></tr>
+        <tr><td>
+            <a href="{{ url_for('static', filename='samples/conservation/cube_workdir_OUG1H4.zip')}}"> The complete workdir (zipped) </a>
+        </td></tr>
+
+        <tr><td>  &nbsp;  </td></tr>
+        <tr><td>  &nbsp;  </td></tr>
+    </table>
+
+    <hr>
+
+    <table>
+        <tr><td>
+        <left_title> Conservation mapped onto homo_sapiens sequence</left_title>
+        <tr><td>
+
+        <tr><td>
+            <img class='centering' width='430' style='float:left;' src="{{ url_for('static', filename='images/cons_legend.png')}}">
+        </td></tr>
+
+        <tr><td>  &nbsp;  </td></tr>
+
+        <tr><td>
+            <p style="align:left;">
+            The residues are ranked according to the conservation score, and binned into 5% bins.
+            The bins are colored according to the legend. Note that if 30% or more positions are conserved,
+            the topmost bins will be empty, and the resulting map will be black-and-white.
+            <a href="{{url_for('help.help_index', _anchor='exons')}}"  target='new'>Blue bars</a>, when present, indicate exon boundaries.
+            </p>
+        </td></tr>
+
+        <tr><td>  &nbsp;   </td></tr>
+
+        <tr><td>
+             <img src="{{ url_for('static', filename='samples/conservation/ACE2_conservation_map.1_400.png')}}" style='float:center;'>
+             <img src="{{ url_for('static', filename='samples/conservation/ACE2_conservation_map.401_800.png')}}" style='float:center;'>
+
+
+        </td></tr>
+
+    </table>
+ </div>
+
+{% endblock content %}

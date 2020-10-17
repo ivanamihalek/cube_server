@@ -32,7 +32,8 @@
 					</tr>
 					<tr>
 						<td>
-							<a href="{{ url_for('help.cons_why') }}" title="Click to read more">
+						<!---a href="{{ url_for('help.cons_example', name='HPPD_w_structure', page='instructions') }}"-->
+							<a href="{{ url_for('help.topics', topic='cons_why') }}" title="Click to read more">
 								<img src="{{ url_for('static', filename='images/question_mark.130px.png') }}" width="60" align="center">
 							</a>
 						</td>
@@ -88,7 +89,7 @@
 			<td width=30%>
 				<table width= 100%>
 					<tr><td>
-						<a href="{{ url_for('help.spec_why') }}" title="Click to read more">
+						<a href="{{ url_for('help.topics', topic='spec_why') }}" title="Click to read more">
 							<img src="{{ url_for('static', filename='images/question_mark.130px.png') }}" width="60" align="center">
 						</a>
 					</td></tr>

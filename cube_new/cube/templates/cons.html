@@ -61,7 +61,7 @@
 
             <tr>
                 <td align="left" width="25%">
-                    {% set url_getseqs  = url_for('help.getting_seqs') %}
+                    {% set url_getseqs  = url_for('help.input', input_type="sequences") %}
                     <a title='A file containing input sequences - presumably all
 	                   <a href="http://en.wikipedia.org/wiki/Homology_%28biology%29#Sequence_homology">homologous</a>
 	                   to each other.  <a href="{{ url_getseqs }}">Click here</a> to read about finding interesting sequences.'
@@ -87,8 +87,8 @@
 
 
             <tr>
-                {% set url_pymol = url_for('help.pymol_output') %}
-                {% set url_structure = url_for('help.getting_structure') %}
+                {% set url_pymol = url_for('help.output', output_type="pymol") %}
+                {% set url_structure = url_for('help.input', input_type="structure") %}
                 <td align="left" width="25%"><a title="PDB file with structure of reference sequence.
                     	A <a href='{{ url_pymol }}'>PyMol session</a>
                         will be generated showing the levels of conservation
@@ -123,7 +123,7 @@
                         <option value="maj_s">  majority  fraction with similarity</option>
                     </select></td>
                 <td align="left" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <a href="{{  url_for('help.cons_examples') }}">worked examples</a>
+                    <a href="{{  url_for('help.cons_examples_intro') }}">worked examples</a>
                 </td>
             </tr>
 
@@ -155,7 +155,7 @@
 
 
             <tr>
-                {% set url_xls_help  = url_for('help.xls_output', _anchor='cons') %}
+                {% set url_xls_help  = url_for('help.output', output_type="xls", _anchor='cons') %}
                 <td align="left">  <input type="button" name="addanno"
                                           title='Contribute your own annotation, using numbering in any sequence you have provided.
                                                 It will be added to the <a href="{{ url_xls_help }}">spreadsheet</a> Cube produces.'
