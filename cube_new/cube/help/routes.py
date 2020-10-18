@@ -34,10 +34,16 @@ def cons_example(name, page):
 
 
 #########################################
-@help.route('/help/worked_examples/spec_examples')
-def spec_examples():
-	return render_template('help/worked_examples/spec_examples.html')
+@help.route('/help/spec_examples_intro')
+def spec_examples_intro():
+	return render_template('help/worked_examples/spec_examples_intro.html')
 
+
+#########################################
+@help.route('/help/spec_example/<string:name>/<string:page>')
+def spec_example(name, page):
+	# page is either instructions or results
+	return render_template(f"help/worked_examples/spec_example_{name}/{page}.html")
 
 #########################################
 @help.route('/help/input/<string:input_type>')

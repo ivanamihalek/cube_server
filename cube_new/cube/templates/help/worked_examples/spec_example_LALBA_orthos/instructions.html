@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<div class="main">
+
+	<left_title>Specialization scoring:  detecting  specialization between protein paralogues.</left_title>
+
+
+	<table  border="0" cellpadding="0" cellspacing="0" width="90%" align="left" >
+
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+
+		<tr>
+			<td align="left"> For the impatient: click
+				<a href="spec_example_output/display.html">here</a> to go straight to the results page.
+			</td>
+		</tr>
+
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+
+		<tr>
+			<td align="left" colspan=3>
+				Let's  look at lactalbumin and locate the regions of specialization since it diverged from lysozyme C,
+				some 300 to 400 million years ago.
+				Download the example directory
+				<a href="spec_example_input.zip">here</a>
+				(right click, save and unzip).
+
+
+
+			</td>
+		</tr>
+
+
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+
+		<tr>
+			<td align="left" colspan=3> The directory contains two files with extension *.fasta, and one PDB (structural file).
+				Fasta files contain a
+				collection of eutherian orthologues  for lysozyme-C and &alpha;-lactalbumin, obtained from
+				<a href="http://cegg.unige.ch/orthodb6">OrthoDB</a> database.
+				<a href="http://www.ebi.ac.uk/thornton-srv/databases/cgi-bin/pdbsum/GetPage.pl?pdbcode=2fyd">2fyd.pdb</a>
+				contains the structure of &alpha;-lactalbumin in complex with 1,4-galactosyltransferase, the enzyme it regulates.
+			</td>
+		</tr>
+
+
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+
+
+		<tr>
+			<td align="left" colspan=3>
+				You can upload both fasta files to Cube  at once, by pressing ctrl while making the selection. If you upload the pdb file,
+				the <a href="../pymol_output.html#spec">pymol session</a> will be produced. You can use it to inspect the interface
+				between the two proteins. Note that this interaction is specific for lactalbumin. Compare the levels of conservation
+				across both lactalbumin and lysozyme families, with  the specialization within lacatalbumin group of orthologues.
+				It is a cautionary tale about using conservation as a guide when the collection of sequences is a mixture of
+				different paralogues - proteins similar in sequence, but with diverged function.
+			</td>
+		</tr>
+
+
+
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+
+		<tr>
+			<td align="left"> Not happy with the alignment produced by the server?
+				<a href="../aligning_seqs.html">Read here</a>
+				about re-aligning sequences by yourself.
+			</td>
+			<td>&nbsp;</td>
+
+
+	</table>
+
+
+</div>
+
+
+{% endblock content %}
