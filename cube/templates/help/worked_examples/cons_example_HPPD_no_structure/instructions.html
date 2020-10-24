@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<div class="main">
+
+	<left_title>Conservation scoring 1:  mapping conservation onto a protein sequence</left_title>
+
+
+	<table  border="0" cellpadding="0" cellspacing="0" width="90%" align="left" >
+
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+
+		<tr>
+			<td align="left"> For the impatient: click
+				<a href="{{ url_for('help.cons_example', name='hppd_no_structure', page='results' )}}">here</a>
+				to go straight to the results page.
+			</td>
+		</tr>
+
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+
+		<tr>
+			<td align="left">
+				Take <a href="http://www.uniprot.org/uniprot/P32754" target="_blank">4-hydroxyphenylpyruvate dioxygenase</a>,
+				one fo the key enyzmes in the degradation of tyrosine,  as an example.
+				Download the folder with the input files for this example by clicking
+				<a href="{{ url_for('static', filename='samples/conservation/HPPD_no_struct/HPPD_input.zip')}}">here</a>
+				(right click, save, and unzip). Find the file  with the sequences homologous to HPPD
+				(HPD.orthos.fasta) and upload on the
+				<a href="{{ url_for('activity.cons')}}" target="_blank" >conservation scoring page</a>.
+				You can leave the Reference Sequence field empty for the moment.
+				Click submit.
+			</td>
+		</tr>
+
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+
+		<tr>
+			<td align="left">
+				Admire the conservation map produced. You can download it by right clicking on it, and selecting "Save image."
+				HPPD is an enzyme. Where do you think the residues belonging to the
+				catalytic pocket are?
+			</td>
+		</tr>
+
+
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+
+		<tr>
+			<td align="left">
+				The conservation was mapped to the  first seqeunce in the uploaded file.
+				Now try mapping the conservation onto the sequence of D. rerio.
+				Paste the name  "human" (without quotation marks) into the field "The name of the reference sequence" and repeat your run by
+				clicking on the submit button.
+			</td>
+		</tr>
+
+
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+
+		<tr>
+			<td  align="left"> Do not have your own set of sequences?
+				<a href="{{ url_for('help.input', input_type='sequences')}}">Read more.</a>
+			</td>
+			<td>&nbsp;</td>
+		</tr>
+
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+
+		<tr>
+			<td align="left"> Not happy with the alignment produced by the server?
+				<a href="{{ url_for('help.input', input_type='alignment')}}">Read here</a>
+				about re-aligning sequences  yourself.
+			</td>
+			<td>&nbsp;</td>
+
+
+	</table>
+
+
+</div>
+
+
+
+{% endblock content %}
