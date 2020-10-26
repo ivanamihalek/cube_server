@@ -19,7 +19,7 @@
 
 		<tr>
 			<td align="left"> For the impatient: click
-				<a href="spec_example_output/display.html">here</a> to go straight to the results page.
+				<a href="{{ url_for('help.spec_example', name='LALBA_paras', page='results') }}">here</a> to go straight to the results page.
 			</td>
 		</tr>
 
@@ -67,7 +67,7 @@
 
 		<tr>
 			<td align="left"> Not happy with the alignment produced by the server?
-				<a href="../aligning_seqs.html">Read here</a>
+				<a href="{{ url_for('help.input', input_type='alignment') }}">Read here</a>
 				about re-aligning sequences by yourself.
 			</td>
 			<td>&nbsp;</td>

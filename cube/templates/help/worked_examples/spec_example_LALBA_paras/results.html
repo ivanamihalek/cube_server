@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block content %}
+<div class='main'>
+
+   <hr>
+
+    <table>
+        <tr><td>
+            <left_title> Downloadables</left_title>
+        </td></tr>
+        <tr><td>  &nbsp;  </td></tr>
+
+        {% if results_handler.xls  %}
+        <tr><td>
+            <a href="{{ url_for('static', filename=results_handler.xls)}}"> Xls spreadsheet </a>
+        </td></tr>
+        {% endif %}
+
+        {% if results_handler.pse_zip  %}
+        <tr><td>
+            <a href="{{ url_for('static', filename=results_handler.pse_zip)}}"> Pymol session (zipped) </a>
+        </td></tr>
+        {% elif results_handler.pml  %}
+			 <tr><td>
+				<a href="{{ url_for('static', filename=results_handler.pml)}}"> Pymol script (pml) </a>
+			 </td></tr>
+        {% endif %}
+
+        {% if results_handler.workdir_zip  %}
+        <tr><td>
+            <a href="{{ url_for('static', filename=results_handler.workdir_zip)}}"> The complete workdir (zipped) </a>
+        </td></tr>
+        {% endif %}
+
+        <tr><td>  &nbsp;  </td></tr>
+        <tr><td>  &nbsp;  </td></tr>
+    </table>
+
+    <hr>
+
+    <table>
+        <tr><td>
+        <left_title> Specialization mapped onto {{results_handler.ref_seq_name}} sequence</left_title>
+        <tr><td>
+
+        <tr><td>
+            <img class='centering' width='430' style='float:left;' src="{{ url_for('static', filename='images/cons_spec_legend.png')}}">
+        </td></tr>
+
+        <tr><td>  &nbsp;  </td></tr>
+
+        <tr><td>
+            <p style="align:left;">
+            </p>
+
+            <p style="align:left;"> This page shows two different scores side by side.
+                The first one (white-black-red scale) scores the overall conservation,
+                while the other one (blue-white-orange scale) scores the specialization between the sequence groups.
+                Click <a href="{{url_for('help.help_index', _anchor='output')}}"  target='new'>here</a> to read more.
+            </p>
+
+            <p style="align:left;">
+                In either scheme, the residues are ranked according to the score, and binned into 5% bins.
+                The bins are  colored according to the legend. Note that if 30% or more positions are conserved,
+                the topmost bins will be empty, and the resulting conservation map will be black-and-white.
+                The comparable case for the specialization happens when there is no strong specialization signal
+                in the alignment, and all positions appear pale on the colored scale.
+            </p>
+
+
+        </td></tr>
+
+        <tr><td>  &nbsp;   </td></tr>
+
+        <tr><td>
+            {% for png_file in results_handler.png_files %}
+
+            {% set image_path = url_for('static', filename=results_handler.workdir) + "/" + png_file %}
+            <img src="{{image_path}}" style='float:center;'>
+
+            {% endfor %}
+        </td></tr>
+
+    </table>
+ </div>
+
+{% endblock content %}
